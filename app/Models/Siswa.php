@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Siswa extends Model
 {
-    //
+    public function absensis(): HasMany
+    {
+        return $this->hasMany(Absensi::class);
+    }
 }
