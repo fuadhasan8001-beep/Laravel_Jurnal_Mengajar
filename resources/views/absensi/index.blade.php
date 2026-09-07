@@ -3,48 +3,10 @@
 @section('title', 'Absensi Siswa')
 
 @section('content')
-    <h2>Absensi Siswa</h2>
-
+    <div class="page-head"><div><h1>Kelola absensi</h1><p>Rekap kehadiran siswa berdasarkan jurnal mengajar.</p></div><span class="status approved">Status D = dispensasi</span></div>
     @forelse ($jurnals as $jurnal)
-        <div>
-            <h3>
-                {{ $jurnal->tanggal }}
-            </h3>
-
-            <p>
-                Guru ID: {{ $jurnal->guru_id }} |
-                Kelas ID: {{ $jurnal->kelas_id }} |
-                Mapel ID: {{ $jurnal->mapel_id }}
-            </p>
-
-            @if ($jurnal->absensis->count())
-                <table border="1" cellpadding="8">
-                    <thead>
-                        <tr>
-                            <th>Siswa</th>
-                            <th>Status</th>
-                            <th>Catatan</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach ($jurnal->absensis as $absensi)
-                            <tr>
-                                <td>{{ $absensi->siswa->nama ?? 'Nama siswa belum tersedia' }}</td>
-                                <td>{{ $absensi->status }}</td>
-                                <td>{{ $absensi->catatan ?? '-' }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <p>Belum ada data absensi.</p>
-            @endif
-
-        </div>
-
-        <hr>
+        <section class="panel" style="margin-bottom:18px"><div class="panel-head"><div><h2>{{ $jurnal->tanggal }}</h2><span class="eyebrow">Guru ID {{ $jurnal->guru_id }} · Kelas {{ $jurnal->kelas_id }} · Mapel {{ $jurnal->mapel_id }}</span></div><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa tercatat</span></div>@if ($jurnal->absensis->count())<div class="table-wrap"><table><thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($jurnal->absensis as $absensi)<tr><td><strong>{{ $absensi->siswa->nama_siswa ?? 'Nama siswa belum tersedia' }}</strong></td><td><span class="status {{ $absensi->status === 'D' ? 'approved' : 'pending' }}">{{ $absensi->status }}</span></td><td>{{ $absensi->catatan ?? '-' }}</td></tr>@endforeach</tbody></table></div>@else<div class="empty">Belum ada data absensi untuk jurnal ini.</div>@endif</section>
     @empty
-        <p>Belum ada jurnal yang tersedia.</p>
+        <section class="panel"><div class="empty">Belum ada jurnal yang tersedia.</div></section>
     @endforelse
 @endsection
