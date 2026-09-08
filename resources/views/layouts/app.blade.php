@@ -35,6 +35,8 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .brand {
@@ -102,6 +104,7 @@
         .main {
             margin-left: 230px;
             width: calc(100% - 230px);
+            min-height: 100vh;
         }
 
         .topbar {
@@ -112,6 +115,23 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 24px;
+            gap: 15px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            cursor: pointer;
+            color: #1f2937;
+            line-height: 1;
         }
 
         .search-box {
@@ -167,18 +187,75 @@
             margin-bottom: 20px;
         }
 
+        .sidebar-overlay {
+            display: none;
+        }
+
         @media (max-width: 900px) {
+
             .sidebar {
-                width: 190px;
+                width: 230px;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
             }
 
             .main {
-                margin-left: 190px;
-                width: calc(100% - 190px);
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.35);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .topbar {
+                padding: 0 18px;
             }
 
             .search-box {
                 width: 180px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 0 14px;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .content {
+                padding: 20px 16px;
+            }
+
+            .page-title {
+                font-size: 23px;
+            }
+
+            .profile-mini span {
+                display: none;
             }
         }
     </style>
@@ -192,7 +269,7 @@
 
 <div class="app">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
 
         <div class="brand">
             <div class="brand-title">📘 Jurnal Mengajar</div>
@@ -396,16 +473,32 @@
     </aside>
 
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
     <main class="main">
 
         <div class="topbar">
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="Cari jurnal..."
-                disabled
-            >
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="menu-toggle"
+                    id="menuToggle"
+                    aria-label="Buka menu"
+                >
+                    ☰
+                </button>
+
+                <input
+                    type="text"
+                    class="search-box"
+                    placeholder="Cari jurnal..."
+                    disabled
+                >
+
+            </div>
 
             <div class="topbar-right">
 
@@ -444,6 +537,67 @@
 
 
 @stack('scripts')
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (!menuToggle || !sidebar || !sidebarOverlay) {
+            return;
+        }
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+
+        menuToggle.addEventListener('click', function () {
+
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+
+        });
+
+        sidebarOverlay.addEventListener('click', function () {
+            closeSidebar();
+        });
+
+        const menuLinks = sidebar.querySelectorAll('.menu-link');
+
+        menuLinks.forEach(function (link) {
+
+            link.addEventListener('click', function () {
+
+                if (window.innerWidth <= 900) {
+                    closeSidebar();
+                }
+
+            });
+
+        });
+
+        window.addEventListener('resize', function () {
+
+            if (window.innerWidth > 900) {
+                closeSidebar();
+            }
+
+        });
+
+    });
+</script>
 
 </body>
 </html>
