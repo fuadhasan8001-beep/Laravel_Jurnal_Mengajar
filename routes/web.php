@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminDataController;
 use App\Http\Controllers\AdminReferenceController;
+use App\Http\Controllers\AdminRegistrationController;
 use App\Http\Controllers\DispensasiController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurnalController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegistrationController;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
@@ -26,6 +28,10 @@ Route::get('/', function () {
 Route::get('login', function () {
     return view('auth.login');
 })->name('login');
+
+Route::get('/register', [RegistrationController::class, 'create'])->name('register');
+Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
+Route::get('/register/success', [RegistrationController::class, 'success'])->name('register.success');
 
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -67,6 +73,13 @@ Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::get('/jam/{jam}/edit', [AdminReferenceController::class, 'editJam'])->name('admin.jam.edit');
     Route::put('/jam/{jam}', [AdminReferenceController::class, 'updateJam'])->name('admin.jam.update');
     Route::delete('/jam/{jam}', [AdminReferenceController::class, 'destroyJam'])->name('admin.jam.destroy');
+});
+
+Route::middleware('role:admin')->prefix('admin/registrations')->name('admin.registrations.')->group(function () {
+    Route::get('/', [AdminRegistrationController::class, 'index'])->name('index');
+    Route::get('/{registration}', [AdminRegistrationController::class, 'show'])->name('show');
+    Route::post('/{registration}/approve', [AdminRegistrationController::class, 'approve'])->name('approve');
+    Route::post('/{registration}/reject', [AdminRegistrationController::class, 'reject'])->name('reject');
 });
 
 Route::middleware('role:admin,guru,sekretaris,piket')->prefix('rekap')->group(function () {

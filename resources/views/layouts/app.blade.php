@@ -778,6 +778,10 @@
                         @endif
                         @if (auth()->user()->role === 'admin')
                             <a
+                                class="nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}"
+                                href="{{ route('admin.registrations.index') }}"
+                            >Pendaftaran</a>
+                            <a
                                 class="nav-link {{ request()->is('admin/data*') ? 'active' : '' }}"
                                 href="{{ route('admin.gurus.index') }}"
                             >

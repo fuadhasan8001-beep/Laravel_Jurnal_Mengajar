@@ -22,6 +22,22 @@ it('rejects inactive users during login', function () {
     expect(auth()->check())->toBeFalse();
 });
 
+it('allows active users to log in with their username', function () {
+    $user = User::factory()->create([
+        'username' => 'guru.contoh',
+        'password' => Hash::make('password'),
+        'role' => 'guru',
+        'is_active' => true,
+    ]);
+
+    $this->post('/login', [
+        'login' => $user->username,
+        'password' => 'password',
+    ])->assertRedirect('/guru');
+
+    expect(auth()->id())->toBe($user->id);
+});
+
 it('blocks a role from another role dashboard', function () {
     $user = User::factory()->create([
         'role' => 'guru',

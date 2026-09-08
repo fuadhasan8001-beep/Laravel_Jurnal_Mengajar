@@ -141,11 +141,11 @@
                         @csrf
 
 
-                        <!-- EMAIL -->
+                        <!-- USERNAME -->
                         <div class="form-group">
 
-                            <label for="email">
-                                Email
+                            <label for="login">
+                                Username atau email
                             </label>
 
                             <div class="input-container">
@@ -173,11 +173,11 @@
 
 
                                 <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value="{{ old('email') }}"
-                                    placeholder="contoh@sekolah.sch.id"
+                                    type="text"
+                                    id="login"
+                                    name="login"
+                                    value="{{ old('login', old('email')) }}"
+                                    placeholder="nama.guru atau email@sekolah.sch.id"
                                     required
                                     autofocus
                                 >
