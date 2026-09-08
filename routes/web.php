@@ -66,6 +66,10 @@ Route::get('/piket', function () {
     ]);
 })->middleware('role:piket');
 
+Route::get('/profile', function () {
+    return view('profile.index');
+})->middleware('auth')->name('profile');
+
 Route::get('/absensi', [AbsensiController::class, 'index'])
     ->middleware('role:admin,guru,piket')
     ->name('absensi.index');
