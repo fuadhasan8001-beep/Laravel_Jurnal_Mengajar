@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -121,6 +122,69 @@ class AdminDataController extends Controller
     public function createSiswa(): View
     {
         return view('admin.siswas.create', ['kelas' => Kelas::orderBy('nama_kelas')->get()]);
+    }
+
+    public function importSiswa(Request $request): RedirectResponse
+    {
+        $request->validate(['file' => ['required', 'file', 'mimes:csv,txt', 'max:2048']]);
+        $handle = fopen($request->file('file')->getRealPath(), 'r');
+        $headers = array_map(fn ($header) => trim((string) $header), fgetcsv($handle));
+        $required = ['nis', 'nama_siswa', 'jenis_kelamin', 'kelas_id'];
+
+        abort_unless(count(array_diff($required, $headers)) === 0, 422, 'Header CSV wajib: nis,nama_siswa,jenis_kelamin,kelas_id,email.');
+
+        $created = 0;
+        $failed = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count(array_filter($row, fn ($value) => trim((string) $value) !== '')) === 0) {
+                continue;
+            }
+
+            if (count($row) !== count($headers)) {
+                $failed++;
+
+                continue;
+            }
+
+            $data = array_combine($headers, array_map('trim', $row));
+            $validator = validator($data, [
+                'nis' => ['required', 'string', 'max:30', 'unique:siswas,nis'],
+                'nama_siswa' => ['required', 'string', 'max:100'],
+                'jenis_kelamin' => ['required', 'in:L,P'],
+                'kelas_id' => ['required', 'exists:kelas,id'],
+                'email' => ['nullable', 'email', 'unique:users,email'],
+            ]);
+
+            if ($validator->fails()) {
+                $failed++;
+
+                continue;
+            }
+
+            $email = $data['email'] ?: Str::lower(Str::slug($data['nis']).'@sekolah.local');
+            if (User::where('email', $email)->exists()) {
+                $failed++;
+
+                continue;
+            }
+
+            DB::transaction(function () use ($data, $email): void {
+                $user = User::create([
+                    'name' => $data['nama_siswa'],
+                    'email' => $email,
+                    'password' => Hash::make(Str::random(16)),
+                    'role' => 'siswa',
+                    'is_active' => true,
+                ]);
+                Siswa::create([...$data, 'user_id' => $user->id]);
+            });
+            $created++;
+        }
+
+        fclose($handle);
+
+        return redirect()->route('admin.siswas.index')->with('success', "Import selesai: {$created} berhasil, {$failed} dilewati.");
     }
 
     public function storeSiswa(Request $request): RedirectResponse

@@ -39,4 +39,20 @@
             </dl>
         </div>
     </section>
+
+    @if (auth()->user()->role === 'sekretaris' && $jurnal->status_verifikasi === 'Menunggu')
+        <section class="panel form-panel">
+            <div class="panel-head"><h2>Verifikasi jurnal</h2><span class="eyebrow">Periksa kelengkapan jurnal</span></div>
+            <div class="panel-body">
+                <form action="{{ route('jurnal.verify', $jurnal) }}" method="POST">
+                    @csrf
+                    <div class="form-grid">
+                        <div class="field"><label for="status">Keputusan</label><select id="status" name="status" required><option value="Disetujui">Disetujui</option><option value="Ditolak">Ditolak</option></select></div>
+                        <div class="field full"><label for="catatan">Catatan</label><textarea id="catatan" name="catatan" rows="3"></textarea></div>
+                    </div>
+                    <div class="form-actions"><button class="btn" type="submit">Simpan verifikasi</button></div>
+                </form>
+            </div>
+        </section>
+    @endif
 @endsection

@@ -9,6 +9,7 @@ use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
@@ -44,6 +45,7 @@ Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::get('/siswa', [AdminDataController::class, 'siswas'])->name('admin.siswas.index');
     Route::get('/siswa/create', [AdminDataController::class, 'createSiswa'])->name('admin.siswas.create');
     Route::post('/siswa', [AdminDataController::class, 'storeSiswa'])->name('admin.siswas.store');
+    Route::post('/siswa/import', [AdminDataController::class, 'importSiswa'])->name('admin.siswas.import');
     Route::get('/siswa/{siswa}/edit', [AdminDataController::class, 'editSiswa'])->name('admin.siswas.edit');
     Route::put('/siswa/{siswa}', [AdminDataController::class, 'updateSiswa'])->name('admin.siswas.update');
     Route::delete('/siswa/{siswa}', [AdminDataController::class, 'destroySiswa'])->name('admin.siswas.destroy');
@@ -82,6 +84,11 @@ Route::middleware('role:guru,admin,sekretaris')->group(function () {
         ->whereNumber('jurnal')
         ->name('jurnal.show');
 });
+
+Route::post('/jurnal/{jurnal}/verify', [JurnalController::class, 'verify'])
+    ->middleware('role:sekretaris')
+    ->whereNumber('jurnal')
+    ->name('jurnal.verify');
 
 Route::middleware('role:guru')->group(function () {
     Route::get('/jurnal/create', [JurnalController::class, 'create'])->name('jurnal.create');
@@ -177,6 +184,11 @@ Route::get('/sekretaris', function () {
         'jurnalLengkap' => Jurnal::whereNotNull('materi')->where('materi', '!=', '')->count(),
         'jurnalMenunggu' => Jurnal::where('status_verifikasi', 'Menunggu')->count(),
         'kelasAktif' => Jurnal::distinct('kelas_id')->count('kelas_id'),
+        'jurnalPerluVerifikasi' => Jurnal::with(['guru', 'kelas', 'mapel'])
+            ->where('status_verifikasi', 'Menunggu')
+            ->latest('tanggal')
+            ->limit(5)
+            ->get(),
     ]);
 })->middleware('role:sekretaris');
 
@@ -194,9 +206,11 @@ Route::get('/piket', function () {
     ]);
 })->middleware('role:piket');
 
-Route::get('/profile', function () {
-    return view('profile.index');
-})->middleware('auth')->name('profile');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
+});
 
 Route::get('/absensi', [AbsensiController::class, 'index'])
     ->middleware('role:admin,guru,piket')

@@ -18,7 +18,7 @@
                 id="tanggal"
                 type="date"
                 name="tanggal"
-                value="{{ old('tanggal', isset($jurnal) ? $jurnal->tanggal->format('Y-m-d') : now()->format('Y-m-d')) }}"
+                value="{{ old('tanggal', isset($jurnal) ? $jurnal->tanggal->format('Y-m-d') : request('tanggal', now()->format('Y-m-d'))) }}"
                 required
             >
         </div>
@@ -44,7 +44,7 @@
                 @foreach ($kelas as $item)
                     <option
                         value="{{ $item->id }}"
-                        @selected((string) old('kelas_id', $jurnal->kelas_id ?? '') === (string) $item->id)
+                        @selected((string) old('kelas_id', $jurnal->kelas_id ?? request('kelas_id', '')) === (string) $item->id)
                     >
                         {{ $item->nama_kelas }}
                     </option>
@@ -59,7 +59,7 @@
                 @foreach ($mapels as $mapel)
                     <option
                         value="{{ $mapel->id }}"
-                        @selected((string) old('mapel_id', $jurnal->mapel_id ?? '') === (string) $mapel->id)
+                        @selected((string) old('mapel_id', $jurnal->mapel_id ?? request('mapel_id', '')) === (string) $mapel->id)
                     >
                         {{ $mapel->nama_mapel }}
                     </option>
@@ -74,7 +74,7 @@
                 @foreach ($jamPelajarans as $jam)
                     <option
                         value="{{ $jam->id }}"
-                        @selected((string) old('jam_mulai_id', $jurnal->jam_mulai_id ?? '') === (string) $jam->id)
+                        @selected((string) old('jam_mulai_id', $jurnal->jam_mulai_id ?? request('jam_mulai_id', '')) === (string) $jam->id)
                     >
                         Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} - {{ $jam->jam_selesai }})
                     </option>
@@ -89,7 +89,7 @@
                 @foreach ($jamPelajarans as $jam)
                     <option
                         value="{{ $jam->id }}"
-                        @selected((string) old('jam_selesai_id', $jurnal->jam_selesai_id ?? '') === (string) $jam->id)
+                        @selected((string) old('jam_selesai_id', $jurnal->jam_selesai_id ?? request('jam_selesai_id', '')) === (string) $jam->id)
                     >
                         Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} - {{ $jam->jam_selesai }})
                     </option>

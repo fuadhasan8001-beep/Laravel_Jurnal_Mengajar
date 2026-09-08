@@ -65,6 +65,10 @@
         <div class="panel-head">
             <h2>Ringkasan pekerjaan</h2><span class="eyebrow">Pembaruan otomatis</span>
         </div>
-        <div class="empty">Belum ada pekerjaan yang perlu ditindaklanjuti.</div>
+        @if ($jurnalPerluVerifikasi->isNotEmpty())
+            <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Guru</th><th>Kelas</th><th>Mapel</th><th></th></tr></thead><tbody>@foreach ($jurnalPerluVerifikasi as $jurnal)<tr><td>{{ $jurnal->tanggal->format('d M Y') }}</td><td>{{ $jurnal->guru->nama_guru }}</td><td>{{ $jurnal->kelas->nama_kelas }}</td><td>{{ $jurnal->mapel->nama_mapel }}</td><td><a href="{{ route('jurnal.show', $jurnal) }}">Periksa</a></td></tr>@endforeach</tbody></table></div>
+        @else
+            <div class="empty">Belum ada jurnal yang perlu diverifikasi.</div>
+        @endif
     </section>
 @endsection

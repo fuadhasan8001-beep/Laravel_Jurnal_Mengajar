@@ -141,7 +141,7 @@
                                     @if ($jurnal)
                                         <a href="{{ route('jurnal.show', $jurnal) }}">Lihat jurnal</a>
                                     @else
-                                        <a href="{{ route('jurnal.create') }}">Buat jurnal</a>
+                                        <a href="{{ route('jurnal.create', ['kelas_id' => $jadwal->kelas_id, 'mapel_id' => $jadwal->mapel_id, 'jam_mulai_id' => $jadwal->jam_pelajaran_id, 'jam_selesai_id' => $jadwal->jam_pelajaran_id]) }}">Buat jurnal</a>
                                     @endif
                                     <a href="{{ route('absensi.index') }}">Absensi</a>
                                 </td>

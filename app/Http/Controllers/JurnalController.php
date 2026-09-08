@@ -107,6 +107,26 @@ class JurnalController extends Controller
             ->with('success', 'Jurnal berhasil dihapus.');
     }
 
+    public function verify(Request $request, Jurnal $jurnal): RedirectResponse
+    {
+        abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
+
+        $data = $request->validate([
+            'status' => ['required', 'in:Disetujui,Ditolak'],
+            'catatan' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $jurnal->update(['status_verifikasi' => $data['status']]);
+        $jurnal->verifikasiJurnals()->create([
+            'verifikator_id' => auth()->id(),
+            'status' => $data['status'],
+            'catatan' => $data['catatan'] ?? null,
+            'verified_at' => now(),
+        ]);
+
+        return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');
+    }
+
     private function currentGuru(): Guru
     {
         return Guru::where('user_id', auth()->id())->firstOrFail();
