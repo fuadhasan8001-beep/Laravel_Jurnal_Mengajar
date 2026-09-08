@@ -215,6 +215,53 @@
                 font-size: 13px;
             }
 
+            .notification-menu {
+                position: relative;
+            }
+
+            .notification-button {
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 8px 10px;
+                background: #fff;
+                color: var(--ink);
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .notification-list {
+                position: absolute;
+                z-index: 30;
+                top: calc(100% + 8px);
+                right: 0;
+                width: 300px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: #fff;
+                box-shadow: 0 12px 30px #203b6420;
+                padding: 8px;
+            }
+
+            .notification-item {
+                display: block;
+                border-radius: 7px;
+                padding: 10px;
+                color: var(--ink);
+                font-size: 12px;
+            }
+
+            .notification-item:hover {
+                background: var(--pale);
+                text-decoration: none;
+            }
+
+            .notification-empty {
+                padding: 12px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+
             .content {
                 max-width: 1320px;
                 margin: 0 auto;
@@ -796,7 +843,33 @@
                             <div class="eyebrow">Ruang kerja digital</div>
                             <div class="topbar-title">Jurnal Guru</div>
                         </div>
-                        <div class="date-chip"><svg
+                        <div class="date-chip">
+                            <div class="notification-menu">
+                                <details>
+                                    <summary class="notification-button">
+                                        Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})
+                                    </summary>
+                                    <div class="notification-list">
+                                        @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
+                                            <form action="{{ route('notifications.read', $notification->id) }}" method="POST">
+                                                @csrf
+                                                <button class="notification-item" type="submit">
+                                                    {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
+                                                </button>
+                                            </form>
+                                        @empty
+                                            <div class="notification-empty">Tidak ada notifikasi baru.</div>
+                                        @endforelse
+                                        @if (auth()->user()->unreadNotifications()->exists())
+                                            <form action="{{ route('notifications.read-all') }}" method="POST">
+                                                @csrf
+                                                <button class="notification-button" type="submit">Tandai semua dibaca</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </details>
+                            </div>
+                            <svg
                                 width="17"
                                 height="17"
                                 viewBox="0 0 24 24"
@@ -812,7 +885,8 @@
                                     rx="2"
                                 />
                                 <path d="M16 2v4M8 2v4M3 10h18" />
-                            </svg>{{ now()->translatedFormat('l, d F Y') }}</div>
+                            </svg>{{ now()->translatedFormat('l, d F Y') }}
+                        </div>
                     </header>
                     <main class="content">
                         @if (session('success'))

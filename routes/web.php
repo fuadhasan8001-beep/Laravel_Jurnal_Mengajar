@@ -8,6 +8,7 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\NotificationController;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
@@ -27,6 +28,11 @@ Route::get('login', function () {
 
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+});
 
 Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::get('/guru', [AdminDataController::class, 'gurus'])->name('admin.gurus.index');
