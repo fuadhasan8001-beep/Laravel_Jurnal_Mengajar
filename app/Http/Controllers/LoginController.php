@@ -8,46 +8,46 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
+        if (Auth::attempt([...$credentials, 'is_active' => true])) {
+            $request->session()->regenerate();
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        switch ($user->role) {
-            case 'admin':
-                return redirect('/admin');
+            switch ($user->role) {
+                case 'admin':
+                    return redirect('/admin');
 
-            case 'guru':
-                return redirect('/guru');
+                case 'guru':
+                    return redirect('/guru');
 
-            case 'siswa':
-                return redirect('/siswa');
+                case 'siswa':
+                    return redirect('/siswa');
 
-            case 'sekretaris':
-                return redirect('/sekretaris');
+                case 'sekretaris':
+                    return redirect('/sekretaris');
 
-            case 'piket':
-                return redirect('/piket');
+                case 'piket':
+                    return redirect('/piket');
 
-            default:
-                Auth::logout();
+                default:
+                    Auth::logout();
 
-                return back()->withErrors([
-                    'email' => 'Role akun tidak valid.',
-                ]);
+                    return back()->withErrors([
+                        'email' => 'Role akun tidak valid.',
+                    ]);
+            }
         }
-    }
 
-    return back()->withErrors([
-        'email' => 'Email atau password salah.',
-    ])->onlyInput('email');
-}
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
+    }
 
     public function logout(Request $request)
     {

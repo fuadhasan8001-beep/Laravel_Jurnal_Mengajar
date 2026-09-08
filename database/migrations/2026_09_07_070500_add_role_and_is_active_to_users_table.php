@@ -8,17 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->enum('role', [
-                'guru',
-                'siswa',
-                'sekretaris',
-                'piket',
-                'admin',
-            ])->after('password');
+        if (! Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table): void {
+                $table->enum('role', [
+                    'guru',
+                    'siswa',
+                    'sekretaris',
+                    'piket',
+                    'admin',
+                ])->after('password');
+            });
+        }
 
-            $table->boolean('is_active')->default(true)->after('role');
-        });
+        if (! Schema::hasColumn('users', 'is_active')) {
+            Schema::table('users', function (Blueprint $table): void {
+                $table->boolean('is_active')->default(true)->after('role');
+            });
+        }
     }
 
     public function down(): void
