@@ -1,4 +1,3 @@
-```blade
 <!DOCTYPE html>
 <html lang="id">
 
@@ -14,11 +13,13 @@
             --muted: #71819d;
             --blue: #2864e8;
             --navy: #14264a;
+            --navy-light: #223b6d;
             --pale: #f4f7fb;
             --line: #e5ebf3;
             --green: #11865b;
             --amber: #b16b00;
             --red: #c43b45;
+            --white: #ffffff;
         }
 
         * {
@@ -28,7 +29,12 @@
             font-family: "Trebuchet MS", Arial, sans-serif;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
+            min-height: 100vh;
             background: var(--pale);
             color: var(--ink);
         }
@@ -49,23 +55,26 @@
             font: inherit;
         }
 
-        /* =========================================
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
            APP
-        ========================================= */
+        ===================================================== */
 
         .app-shell {
             display: flex;
             min-height: 100vh;
         }
 
-        /* =========================================
+        /* =====================================================
            SIDEBAR
-        ========================================= */
+        ===================================================== */
 
         .sidebar {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0 auto 0 0;
             z-index: 1000;
 
             display: flex;
@@ -77,7 +86,7 @@
             padding: 28px 18px;
 
             background: var(--navy);
-            color: #fff;
+            color: var(--white);
 
             overflow-y: auto;
 
@@ -91,13 +100,13 @@
 
             padding: 0 12px 32px;
 
-            color: #fff;
+            color: var(--white);
             font-size: 20px;
             font-weight: 700;
         }
 
         .brand:hover {
-            color: #fff;
+            color: var(--white);
             text-decoration: none;
         }
 
@@ -109,6 +118,8 @@
             width: 39px;
             height: 39px;
 
+            flex: 0 0 auto;
+
             border-radius: 10px;
 
             background: var(--blue);
@@ -118,6 +129,7 @@
             padding: 0 12px 10px;
 
             color: #8fa4cc;
+
             font-size: 11px;
             font-weight: 700;
 
@@ -136,7 +148,9 @@
             align-items: center;
             gap: 12px;
 
-            padding: 12px;
+            min-height: 43px;
+
+            padding: 11px 12px;
 
             border-radius: 9px;
 
@@ -145,29 +159,36 @@
             font-size: 14px;
             font-weight: 600;
 
-            transition: .2s ease;
+            transition:
+                background .2s ease,
+                color .2s ease,
+                transform .2s ease;
         }
 
         .nav-link:hover,
         .nav-link.active {
-            background: #223b6d;
-            color: #fff;
+            background: var(--navy-light);
+            color: var(--white);
             text-decoration: none;
+        }
+
+        .nav-link:hover {
+            transform: translateX(2px);
         }
 
         .nav-link svg {
             width: 19px;
             height: 19px;
+
             flex: none;
         }
 
-        /* =========================================
+        /* =====================================================
            SIDEBAR FOOTER
-        ========================================= */
+        ===================================================== */
 
         .sidebar-footer {
             margin-top: auto;
-
             padding: 18px 10px 0;
 
             border-top: 1px solid #29416e;
@@ -177,6 +198,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+
+            min-width: 0;
 
             color: #dbe5f5;
         }
@@ -189,12 +212,18 @@
             width: 35px;
             height: 35px;
 
+            flex: 0 0 auto;
+
             border-radius: 50%;
 
             background: #dce9ff;
             color: var(--blue);
 
             font-weight: 700;
+        }
+
+        .user-info {
+            min-width: 0;
         }
 
         .user-mini strong {
@@ -211,7 +240,9 @@
 
         .user-mini small {
             color: #91a5c8;
+
             font-size: 11px;
+
             text-transform: capitalize;
         }
 
@@ -228,20 +259,21 @@
             background: transparent;
             color: #c7d3e9;
 
-            cursor: pointer;
-
             font-size: 12px;
             font-weight: 700;
+
+            transition: .2s ease;
         }
 
         .logout:hover {
             border-color: #6f91cc;
-            color: #fff;
+            background: #223b6d;
+            color: var(--white);
         }
 
-        /* =========================================
+        /* =====================================================
            MAIN
-        ========================================= */
+        ===================================================== */
 
         .main {
             width: calc(100% - 250px);
@@ -250,11 +282,15 @@
             margin-left: 250px;
         }
 
-        /* =========================================
+        /* =====================================================
            TOPBAR
-        ========================================= */
+        ===================================================== */
 
         .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -265,7 +301,9 @@
 
             border-bottom: 1px solid var(--line);
 
-            background: #fff;
+            background: rgba(255, 255, 255, .96);
+
+            backdrop-filter: blur(10px);
         }
 
         .topbar-left {
@@ -276,6 +314,7 @@
 
         .eyebrow {
             color: var(--muted);
+
             font-size: 12px;
         }
 
@@ -289,27 +328,34 @@
         .date-chip {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
 
             color: var(--muted);
+
             font-size: 13px;
         }
 
-        /* =========================================
+        /* =====================================================
            MOBILE MENU
-        ========================================= */
+        ===================================================== */
 
         .menu-toggle {
             display: none;
 
-            border: 0;
-            background: transparent;
+            width: 40px;
+            height: 40px;
 
+            border: 1px solid var(--line);
+            border-radius: 8px;
+
+            background: var(--white);
             color: var(--ink);
 
-            font-size: 25px;
+            font-size: 21px;
+        }
 
-            cursor: pointer;
+        .menu-toggle:hover {
+            background: #f7f9fc;
         }
 
         .sidebar-overlay {
@@ -325,7 +371,9 @@
             opacity: 0;
             visibility: hidden;
 
-            transition: opacity .3s ease;
+            transition:
+                opacity .3s ease,
+                visibility .3s ease;
         }
 
         .sidebar-overlay.show {
@@ -333,21 +381,38 @@
             visibility: visible;
         }
 
-        /* =========================================
+        /* =====================================================
            NOTIFICATION
-        ========================================= */
+        ===================================================== */
 
         .notification-menu {
             position: relative;
         }
 
+        .notification-menu details {
+            position: relative;
+        }
+
+        .notification-menu summary {
+            list-style: none;
+        }
+
+        .notification-menu summary::-webkit-details-marker {
+            display: none;
+        }
+
         .notification-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+
             border: 1px solid var(--line);
             border-radius: 8px;
 
             padding: 8px 10px;
 
-            background: #fff;
+            background: var(--white);
             color: var(--ink);
 
             cursor: pointer;
@@ -363,21 +428,21 @@
         .notification-list {
             position: absolute;
 
-            z-index: 30;
+            z-index: 200;
 
             top: calc(100% + 8px);
             right: 0;
 
-            width: 300px;
+            width: 320px;
 
             padding: 8px;
 
             border: 1px solid var(--line);
             border-radius: 10px;
 
-            background: #fff;
+            background: var(--white);
 
-            box-shadow: 0 12px 30px #203b6420;
+            box-shadow: 0 12px 30px rgba(32, 59, 100, .12);
         }
 
         .notification-item {
@@ -391,7 +456,6 @@
             padding: 10px;
 
             background: transparent;
-
             color: var(--ink);
 
             text-align: left;
@@ -399,6 +463,8 @@
             cursor: pointer;
 
             font-size: 12px;
+
+            transition: .2s ease;
         }
 
         .notification-item:hover {
@@ -410,14 +476,28 @@
 
             color: var(--muted);
 
+            text-align: center;
+
             font-size: 12px;
         }
 
-        /* =========================================
+        .notification-footer {
+            margin-top: 6px;
+            padding-top: 6px;
+
+            border-top: 1px solid var(--line);
+        }
+
+        .notification-footer .notification-button {
+            width: 100%;
+        }
+
+        /* =====================================================
            CONTENT
-        ========================================= */
+        ===================================================== */
 
         .content {
+            width: 100%;
             max-width: 1320px;
 
             margin: 0 auto;
@@ -451,9 +531,9 @@
             font-size: 14px;
         }
 
-        /* =========================================
+        /* =====================================================
            BUTTON
-        ========================================= */
+        ===================================================== */
 
         .btn {
             display: inline-flex;
@@ -467,27 +547,31 @@
             padding: 11px 16px;
 
             background: var(--blue);
-            color: #fff;
+            color: var(--white);
 
             cursor: pointer;
 
             font-size: 13px;
             font-weight: 700;
 
-            box-shadow: 0 5px 12px #2864e82b;
+            box-shadow: 0 5px 12px rgba(40, 100, 232, .17);
+
+            transition: .2s ease;
         }
 
         .btn:hover {
             background: #1f55cd;
-            color: #fff;
+            color: var(--white);
 
             text-decoration: none;
+
+            transform: translateY(-1px);
         }
 
         .btn-muted {
             border: 1px solid var(--line);
 
-            background: #fff;
+            background: var(--white);
             color: var(--ink);
 
             box-shadow: none;
@@ -498,9 +582,9 @@
             color: var(--ink);
         }
 
-        /* =========================================
+        /* =====================================================
            STATISTICS
-        ========================================= */
+        ===================================================== */
 
         .stats {
             display: grid;
@@ -517,9 +601,9 @@
             border: 1px solid var(--line);
             border-radius: 12px;
 
-            background: #fff;
+            background: var(--white);
 
-            box-shadow: 0 8px 24px #203b6410;
+            box-shadow: 0 8px 24px rgba(32, 59, 100, .06);
         }
 
         .stat-card {
@@ -537,6 +621,8 @@
 
             width: 42px;
             height: 42px;
+
+            flex: 0 0 auto;
 
             border-radius: 10px;
 
@@ -575,9 +661,13 @@
             font-size: 23px;
         }
 
-        /* =========================================
+        /* =====================================================
            PANEL
-        ========================================= */
+        ===================================================== */
+
+        .panel {
+            overflow: hidden;
+        }
 
         .panel-head {
             display: flex;
@@ -602,11 +692,13 @@
             padding: 20px;
         }
 
-        /* =========================================
+        /* =====================================================
            TABLE
-        ========================================= */
+        ===================================================== */
 
         .table-wrap {
+            width: 100%;
+
             overflow-x: auto;
         }
 
@@ -620,7 +712,6 @@
 
         th {
             background: #f8fafd;
-
             color: #71819d;
 
             font-size: 11px;
@@ -648,12 +739,13 @@
             background: #fbfcff;
         }
 
-        /* =========================================
+        /* =====================================================
            STATUS
-        ========================================= */
+        ===================================================== */
 
         .status {
             display: inline-flex;
+            align-items: center;
 
             border-radius: 99px;
 
@@ -678,9 +770,9 @@
             color: var(--red);
         }
 
-        /* =========================================
+        /* =====================================================
            ALERT
-        ========================================= */
+        ===================================================== */
 
         .alert {
             margin-bottom: 18px;
@@ -696,7 +788,6 @@
             border: 1px solid #b9e7d0;
 
             background: #edfbf4;
-
             color: #126b4c;
         }
 
@@ -704,13 +795,12 @@
             border: 1px solid #f4c5ca;
 
             background: #fff1f2;
-
             color: #a42e39;
         }
 
-        /* =========================================
+        /* =====================================================
            EMPTY
-        ========================================= */
+        ===================================================== */
 
         .empty {
             padding: 38px 20px;
@@ -720,9 +810,9 @@
             text-align: center;
         }
 
-        /* =========================================
+        /* =====================================================
            FORM
-        ========================================= */
+        ===================================================== */
 
         .form-panel {
             max-width: 820px;
@@ -766,10 +856,12 @@
 
             outline: 0;
 
-            background: #fff;
+            background: var(--white);
             color: var(--ink);
 
             font-size: 14px;
+
+            transition: .2s ease;
         }
 
         .field textarea {
@@ -795,9 +887,9 @@
             margin-top: 24px;
         }
 
-        /* =========================================
+        /* =====================================================
            DETAIL
-        ========================================= */
+        ===================================================== */
 
         .detail-grid {
             display: grid;
@@ -826,9 +918,9 @@
             font-weight: 600;
         }
 
-        /* =========================================
+        /* =====================================================
            QUICK CARD
-        ========================================= */
+        ===================================================== */
 
         .quick-grid {
             display: grid;
@@ -850,6 +942,8 @@
             padding: 18px;
 
             background: #fbfcff;
+
+            transition: .2s ease;
         }
 
         .quick-card:hover {
@@ -858,6 +952,8 @@
             background: #f5f8ff;
 
             text-decoration: none;
+
+            transform: translateY(-1px);
         }
 
         .quick-card strong {
@@ -872,9 +968,26 @@
             font-size: 12px;
         }
 
-        /* =========================================
+        /* =====================================================
            RESPONSIVE TABLET
-        ========================================= */
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .content {
+                padding-left: 28px;
+                padding-right: 28px;
+            }
+
+            .topbar {
+                padding-left: 28px;
+                padding-right: 28px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
         @media (max-width: 900px) {
 
@@ -895,7 +1008,9 @@
             }
 
             .menu-toggle {
-                display: block;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .sidebar-overlay {
@@ -909,15 +1024,11 @@
             .content {
                 padding: 28px 24px 40px;
             }
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
-        /* =========================================
+        /* =====================================================
            RESPONSIVE MOBILE
-        ========================================= */
+        ===================================================== */
 
         @media (max-width: 680px) {
 
@@ -931,7 +1042,12 @@
                 font-size: 16px;
             }
 
-            .date-chip {
+            .eyebrow {
+                font-size: 11px;
+            }
+
+            .date-chip > svg,
+            .date-text {
                 display: none;
             }
 
@@ -958,17 +1074,40 @@
             }
 
             .stat-card {
+                gap: 10px;
+
                 padding: 14px 12px;
+            }
+
+            .stat-icon {
+                width: 36px;
+                height: 36px;
             }
 
             .stat-card strong {
                 font-size: 20px;
             }
 
+            .stat-card small {
+                font-size: 11px;
+            }
+
             .form-grid,
             .detail-grid,
             .quick-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
             }
 
             .notification-list {
@@ -980,6 +1119,26 @@
 
                 width: auto;
             }
+
+            .notification-button {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 420px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-left {
+                gap: 9px;
+            }
+
+            .content {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
         }
     </style>
 </head>
@@ -990,9 +1149,9 @@
 
 <div class="app-shell">
 
-    {{-- =========================================
+    {{-- =====================================================
          SIDEBAR
-    ========================================== --}}
+    ====================================================== --}}
 
     <aside class="sidebar" id="sidebar">
 
@@ -1023,12 +1182,17 @@
 
         <nav class="nav-list">
 
-            {{-- Dashboard --}}
+            {{-- DASHBOARD --}}
             <a
                 class="nav-link {{ request()->is(auth()->user()->role) ? 'active' : '' }}"
                 href="{{ url('/' . auth()->user()->role) }}"
             >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
                     <path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9Z"/>
                     <path d="M9 21v-6h6v6"/>
                 </svg>
@@ -1044,8 +1208,19 @@
                     class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                     href="{{ route('absensi.index') }}"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <rect x="4" y="3" width="16" height="18" rx="2"/>
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <rect
+                            x="4"
+                            y="3"
+                            width="16"
+                            height="18"
+                            rx="2"
+                        />
                         <path d="M8 8h8M8 12h8M8 16h5"/>
                     </svg>
 
@@ -1062,7 +1237,12 @@
                     class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
                     href="{{ route('jurnal.index') }}"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
                         <path d="M5 4h14v16H5z"/>
                         <path d="M8 8h8M8 12h8M8 16h5"/>
                     </svg>
@@ -1073,14 +1253,19 @@
             @endif
 
 
-            {{-- REKAP --}}
+            {{-- REKAP LAPORAN --}}
             @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris', 'piket'], true))
 
                 <a
-                    class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}"
                     href="{{ route('laporan.jurnal') }}"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
                         <path d="M4 5h16v14H4z"/>
                         <path d="M8 9h8M8 13h5M8 17h4"/>
                     </svg>
@@ -1091,46 +1276,129 @@
             @endif
 
 
-            {{-- DATA MASTER --}}
+            {{-- =================================================
+                 ADMIN
+            ================================================== --}}
+
             @if (auth()->user()->role === 'admin')
 
+                {{-- PENDAFTARAN --}}
+                @if (Route::has('admin.registrations.index'))
+
+                    <a
+                        class="nav-link {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}"
+                        href="{{ route('admin.registrations.index') }}"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <circle cx="9" cy="8" r="3"/>
+                            <path d="M3 20a6 6 0 0 1 12 0"/>
+                            <path d="M17 8v6M14 11h6"/>
+                        </svg>
+
+                        Pendaftaran
+                    </a>
+
+                @endif
+
+
+                {{-- GURU --}}
                 <a
-                    class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('admin.gurus.*') ? 'active' : '' }}"
                     href="{{ route('admin.gurus.index') }}"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
                         <circle cx="9" cy="8" r="3"/>
-                        <path d="M3 20a6 6 0 0 1 12 0M17 11v6M14 14h6"/>
+                        <path d="M3 20a6 6 0 0 1 12 0"/>
+                        <path d="M17 11v6M14 14h6"/>
                     </svg>
 
                     Guru
                 </a>
 
+
+                {{-- SISWA --}}
                 <a
-                    class="nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('admin.siswas.*') ? 'active' : '' }}"
                     href="{{ route('admin.siswas.index') }}"
                 >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <circle cx="9" cy="8" r="3"/>
+                        <path d="M3 20a6 6 0 0 1 12 0"/>
+                        <path d="M16 7h5M18.5 4.5v5"/>
+                    </svg>
+
                     Siswa
                 </a>
 
+
+                {{-- KELAS --}}
                 <a
-                    class="nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}"
                     href="{{ route('admin.kelas.index') }}"
                 >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <path d="M4 5h16v14H4z"/>
+                        <path d="M8 9h8M8 13h5"/>
+                    </svg>
+
                     Kelas
                 </a>
 
+
+                {{-- MATA PELAJARAN --}}
                 <a
-                    class="nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('admin.mapel.*') ? 'active' : '' }}"
                     href="{{ route('admin.mapel.index') }}"
                 >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <path d="M4 5h16v14H4z"/>
+                        <path d="M8 9h8M8 13h8M8 17h5"/>
+                    </svg>
+
                     Mata pelajaran
                 </a>
 
+
+                {{-- JAM PELAJARAN --}}
                 <a
-                    class="nav-link {{ request()->is('admin/data/jam*') ? 'active' : '' }}"
+                    class="nav-link {{ request()->routeIs('admin.jam.*') ? 'active' : '' }}"
                     href="{{ route('admin.jam.index') }}"
                 >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
+                        <circle cx="12" cy="12" r="8"/>
+                        <path d="M12 7v5l3 2"/>
+                    </svg>
+
                     Jam pelajaran
                 </a>
 
@@ -1144,7 +1412,12 @@
                     class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}"
                     href="{{ route('dispensasi.index') }}"
                 >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    >
                         <path d="M6 3h12a2 2 0 0 1 2 2v16l-8-4-8 4V5a2 2 0 0 1 2-2Z"/>
                         <path d="M8 8h8M8 12h5"/>
                     </svg>
@@ -1157,7 +1430,10 @@
         </nav>
 
 
-        {{-- USER --}}
+        {{-- =====================================================
+             USER FOOTER
+        ====================================================== --}}
+
         <div class="sidebar-footer">
 
             <div class="user-mini">
@@ -1166,7 +1442,8 @@
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </span>
 
-                <span>
+                <span class="user-info">
+
                     <strong>
                         {{ auth()->user()->name }}
                     </strong>
@@ -1174,6 +1451,7 @@
                     <small>
                         {{ auth()->user()->role }}
                     </small>
+
                 </span>
 
             </div>
@@ -1200,20 +1478,26 @@
     </aside>
 
 
-    {{-- OVERLAY MOBILE --}}
+    {{-- =====================================================
+         MOBILE OVERLAY
+    ====================================================== --}}
+
     <div
         class="sidebar-overlay"
         id="sidebarOverlay"
     ></div>
 
 
-    {{-- =========================================
+    {{-- =====================================================
          MAIN
-    ========================================== --}}
+    ====================================================== --}}
 
     <div class="main">
 
-        {{-- TOPBAR --}}
+        {{-- =================================================
+             TOPBAR
+        ================================================== --}}
+
         <header class="topbar">
 
             <div class="topbar-left">
@@ -1223,6 +1507,7 @@
                     class="menu-toggle"
                     id="menuToggle"
                     aria-label="Buka menu"
+                    aria-expanded="false"
                 >
                     ☰
                 </button>
@@ -1242,7 +1527,10 @@
             </div>
 
 
-            {{-- DATE + NOTIFICATION --}}
+            {{-- =================================================
+                 NOTIFICATION + DATE
+            ================================================== --}}
+
             <div class="date-chip">
 
                 <div class="notification-menu">
@@ -1291,20 +1579,24 @@
 
                             @if (auth()->user()->unreadNotifications()->exists())
 
-                                <form
-                                    action="{{ route('notifications.read-all') }}"
-                                    method="POST"
-                                >
-                                    @csrf
+                                <div class="notification-footer">
 
-                                    <button
-                                        class="notification-button"
-                                        type="submit"
+                                    <form
+                                        action="{{ route('notifications.read-all') }}"
+                                        method="POST"
                                     >
-                                        Tandai semua dibaca
-                                    </button>
+                                        @csrf
 
-                                </form>
+                                        <button
+                                            class="notification-button"
+                                            type="submit"
+                                        >
+                                            Tandai semua dibaca
+                                        </button>
+
+                                    </form>
+
+                                </div>
 
                             @endif
 
@@ -1323,18 +1615,30 @@
                     stroke="currentColor"
                     stroke-width="1.8"
                 >
-                    <rect x="3" y="4" width="18" height="17" rx="2"/>
+                    <rect
+                        x="3"
+                        y="4"
+                        width="18"
+                        height="17"
+                        rx="2"
+                    />
+
                     <path d="M16 2v4M8 2v4M3 10h18"/>
                 </svg>
 
-                {{ now()->translatedFormat('l, d F Y') }}
+                <span class="date-text">
+                    {{ now()->translatedFormat('l, d F Y') }}
+                </span>
 
             </div>
 
         </header>
 
 
-        {{-- CONTENT --}}
+        {{-- =================================================
+             CONTENT
+        ================================================== --}}
+
         <main class="content">
 
             {{-- SUCCESS --}}
@@ -1351,7 +1655,9 @@
             @if ($errors->any())
 
                 <div class="alert error">
+
                     {{ $errors->first() }}
+
                 </div>
 
             @endif
@@ -1367,11 +1673,18 @@
 
 @else
 
-    {{-- HALAMAN LOGIN / GUEST --}}
+    {{-- =====================================================
+         GUEST / LOGIN / REGISTER
+    ====================================================== --}}
+
     @yield('content')
 
 @endauth
 
+
+{{-- =========================================================
+     SIDEBAR JAVASCRIPT
+========================================================= --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -1387,11 +1700,17 @@
         function openSidebar() {
             sidebar.classList.add('open');
             sidebarOverlay.classList.add('show');
+
+            menuToggle.setAttribute('aria-expanded', 'true');
+            menuToggle.setAttribute('aria-label', 'Tutup menu');
         }
 
         function closeSidebar() {
             sidebar.classList.remove('open');
             sidebarOverlay.classList.remove('show');
+
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.setAttribute('aria-label', 'Buka menu');
         }
 
         menuToggle.addEventListener('click', function () {
@@ -1432,9 +1751,17 @@
 
         });
 
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === 'Escape') {
+                closeSidebar();
+            }
+
+        });
+
     });
 </script>
 
 </body>
 </html>
-```

@@ -49,6 +49,7 @@ class AdminDataController extends Controller
         DB::transaction(function () use ($data): void {
             $user = User::create([
                 'name' => $data['nama_guru'],
+                'username' => $this->teacherUsername($data['nama_guru']),
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'role' => 'guru',
@@ -85,6 +86,7 @@ class AdminDataController extends Controller
             $guru->update($data);
             $guru->user->update([
                 'name' => $data['nama_guru'],
+                'username' => $this->teacherUsername($data['nama_guru']),
                 'email' => $data['email'],
                 'is_active' => $data['is_active'],
                 ...($data['password'] ? ['password' => Hash::make($data['password'])] : []),
@@ -92,6 +94,16 @@ class AdminDataController extends Controller
         });
 
         return redirect()->route('admin.gurus.index')->with('success', 'Data guru berhasil diperbarui.');
+    }
+
+    private function teacherUsername(string $name): string
+    {
+        return Str::of($name)
+            ->lower()
+            ->ascii()
+            ->replaceMatches('/[^a-z0-9]+/', '.')
+            ->trim('.')
+            ->toString();
     }
 
     public function destroyGuru(Guru $guru): RedirectResponse
