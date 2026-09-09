@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -55,6 +57,27 @@ class LoginController extends Controller
         return back()->withErrors([
             $field => 'Username/email atau password salah.',
         ])->onlyInput($field);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'login' => ['required', 'string'],
+        ]);
+
+        $identity = trim($request->input('login'));
+        $user = User::query()
+            ->where('username', $identity)
+            ->orWhere('email', $identity)
+            ->first();
+
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'login' => 'Akun tidak ditemukan. Masukkan NIS siswa atau email yang benar.',
+            ]);
+        }
+
+        return back()->with('status', 'Silakan hubungi admin untuk menyiapkan ulang password akun Anda.');
     }
 
     public function logout(Request $request)

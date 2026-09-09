@@ -243,7 +243,7 @@
                         <!-- LUPA PASSWORD -->
                         <div class="forgot-password">
 
-                            <a href="#">
+                            <a href="{{ route('password.request') }}">
                                 Lupa Password?
                             </a>
 

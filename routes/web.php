@@ -29,6 +29,12 @@ Route::get('login', function () {
     return view('auth.login');
 })->name('login');
 
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+Route::post('/forgot-password', [LoginController::class, 'forgotPassword'])->name('password.email');
+
 Route::get('/register', [RegistrationController::class, 'create'])->name('register');
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/success', [RegistrationController::class, 'success'])->name('register.success');
