@@ -63,6 +63,29 @@
 
         </div>
 
+        <div class="account-card">
+            <h3>Edit profil</h3>
+            <form action="{{ route('profile.update') }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="field"><label for="name">Nama</label><input id="name" name="name" value="{{ old('name', auth()->user()->name) }}" required></div>
+                <div class="field"><label for="email">Email</label><input id="email" type="email" name="email" value="{{ old('email', auth()->user()->email) }}" required></div>
+                <div class="form-actions"><button class="btn" type="submit">Simpan profil</button></div>
+            </form>
+        </div>
+
+        <div class="account-card">
+            <h3>Ganti password</h3>
+            <form action="{{ route('profile.password') }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="field"><label for="current_password">Password saat ini</label><input id="current_password" type="password" name="current_password" required></div>
+                <div class="field"><label for="password">Password baru</label><input id="password" type="password" name="password" required></div>
+                <div class="field"><label for="password_confirmation">Konfirmasi password</label><input id="password_confirmation" type="password" name="password_confirmation" required></div>
+                <div class="form-actions"><button class="btn" type="submit">Ganti password</button></div>
+            </form>
+        </div>
+
 
         <div class="account-card">
 

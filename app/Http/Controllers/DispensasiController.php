@@ -7,6 +7,8 @@ use App\Models\Dispensasi;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Siswa;
+use App\Models\User;
+use App\Notifications\DispensasiNotification;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +70,9 @@ class DispensasiController extends Controller
 
         $dispensasi->save();
 
+        User::whereIn('role', ['piket'])->where('is_active', true)->get()
+            ->each->notify(new DispensasiNotification($dispensasi, 'submitted'));
+
         return redirect()->route('dispensasi.index')
             ->with('success', 'Pengajuan dispensasi berhasil dikirim.');
     }
@@ -125,6 +130,15 @@ class DispensasiController extends Controller
         $dispensasi->catatan_verifikasi = $data['catatan_verifikasi'] ?? null;
         $dispensasi->status_akhir = $this->finalStatus($dispensasi);
         $dispensasi->save();
+
+        if ($isPiket) {
+            $event = $data['status'] === 'Disetujui' ? 'piket_approved' : 'piket_rejected';
+            User::where('role', 'admin')->where('is_active', true)->get()
+                ->each->notify(new DispensasiNotification($dispensasi, $event));
+        } else {
+            $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
+            $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
+        }
 
         if ($dispensasi->status_akhir === 'Disetujui') {
             $this->markAttendanceAsDispensed($dispensasi);

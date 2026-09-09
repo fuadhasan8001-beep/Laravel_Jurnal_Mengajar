@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Siswa extends Model
 {
+    protected $fillable = [
+        'user_id',
+        'kelas_id',
+        'nis',
+        'nama_siswa',
+        'jenis_kelamin',
+    ];
+
     public function absensis(): HasMany
     {
         return $this->hasMany(Absensi::class);
