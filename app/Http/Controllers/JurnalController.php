@@ -22,10 +22,10 @@ class JurnalController extends Controller
     {
         $query = Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai'])
             ->latest('tanggal');
-
-        if (auth()->user()->role === 'guru') {
-            $query->where('guru_id', $this->currentGuru()->id);
-        }
+        
+ if (auth()->user()->role === 'guru') {
+     $query->where('guru_id', $this->currentGuru()->id);
+ }
 
         $query
             ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))

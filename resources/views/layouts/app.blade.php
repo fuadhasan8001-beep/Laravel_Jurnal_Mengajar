@@ -263,10 +263,11 @@
             }
 
             .content {
-                max-width: 1320px;
-                margin: 0 auto;
-                padding: 38px 42px 56px;
-            }
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 38px 42px 56px;
+}
 
             .page-head {
                 display: flex;
@@ -484,8 +485,9 @@
             }
 
             .form-panel {
-                max-width: 820px;
-            }
+    width: 100%;
+    max-width: none;
+}
 
             .form-grid {
                 display: grid;
@@ -764,6 +766,494 @@
                     grid-template-columns: 1fr;
                 }
             }
+/* =========================================================
+   JOURNAL - RESPONSIVE FIX
+   ========================================================= */
+
+.journal-layout {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.journal-main {
+    min-width: 0;
+}
+
+.journal-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.journal-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.journal-card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5eaf1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.journal-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.journal-card-header p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #8290a5;
+}
+
+.journal-main > .journal-card:first-child {
+    padding-bottom: 22px;
+}
+
+.journal-main > .journal-card:first-child .form-grid,
+.journal-main > .journal-card:first-child > .field {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.journal-main > .journal-card:first-child .form-grid {
+    margin-top: 20px;
+}
+
+.journal-main > .journal-card:first-child > .field {
+    margin-top: 16px;
+}
+
+.form-grid {
+    width: 100%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.field {
+    min-width: 0;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+
+/* =========================================================
+   ABSENSI
+   ========================================================= */
+
+.attendance-card {
+    margin-top: 24px;
+}
+
+.attendance-card .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.attendance-card table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+.attendance-card th,
+.attendance-card td {
+    padding: 12px 16px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.attendance-card input,
+.attendance-card select {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.attendance-card td:last-child {
+    width: 35%;
+}
+
+
+/* =========================================================
+   SIDEBAR / INFO
+   ========================================================= */
+
+.journal-info {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.journal-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.journal-info span {
+    font-size: 11px;
+    color: #8794a8;
+}
+
+.journal-info strong {
+    font-size: 14px;
+    color: #172033;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   TANDA TANGAN
+   ========================================================= */
+
+.signature-card {
+    overflow: hidden;
+}
+
+.signature-space {
+    padding: 24px 20px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.signature-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.signature-info strong {
+    font-size: 14px;
+}
+
+.signature-info span {
+    font-size: 11px;
+    color: #8794a8;
+}
+
+.signature-box {
+    min-height: 90px;
+    border: 1px dashed #cbd6e5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+    font-size: 11px;
+    color: #8794a8;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.form-actions {
+    width: 100%;
+    max-width: 1200px;
+    margin: 24px auto 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .journal-layout {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 800px;
+    }
+
+    .journal-side {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .form-actions {
+        max-width: 800px;
+    }
+}
+
+
+/* =========================================================
+   HP
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+    .journal-layout {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: none;
+        gap: 16px;
+    }
+
+    .journal-main,
+    .journal-side {
+        width: 100%;
+    }
+
+    .journal-side {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .journal-card-header {
+        padding: 15px;
+    }
+
+    .journal-card-header h3 {
+        font-size: 14px;
+    }
+
+    .journal-card-header p {
+        font-size: 11px;
+    }
+
+    .journal-main > .journal-card:first-child .form-grid,
+    .journal-main > .journal-card:first-child > .field {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .field label {
+        font-size: 12px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+        font-size: 13px;
+    }
+
+    .attendance-card {
+        margin-top: 16px;
+    }
+
+    .attendance-card .journal-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .attendance-card .journal-card-header .btn {
+        width: 100%;
+    }
+
+    .form-actions {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        margin-top: 16px;
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .signature-space {
+        min-height: 130px;
+    }
+}
+
+
+/* =========================================================
+   HP KECIL
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .journal-card-header {
+        padding: 13px;
+    }
+
+    .journal-main > .journal-card:first-child .form-grid,
+    .journal-main > .journal-card:first-child > .field {
+        margin-left: 13px;
+        margin-right: 13px;
+    }
+
+    .journal-info,
+    .signature-space {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .attendance-card th,
+    .attendance-card td {
+        padding: 9px 10px;
+    }
+
+    /* =========================================================
+   JOURNAL - FULL WIDTH DESKTOP + RESPONSIVE
+========================================================= */
+
+.form-panel:has(.journal-layout) {
+    width: 100%;
+    max-width: none;
+}
+
+.journal-layout {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.journal-main {
+    min-width: 0;
+}
+
+.journal-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* tombol bawah juga full area */
+.form-actions {
+    width: 100%;
+    max-width: none;
+    margin: 24px 0 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .journal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .journal-side {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   HP
+========================================================= */
+
+@media (max-width: 680px) {
+
+    .form-panel:has(.journal-layout) {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .journal-layout {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .journal-main,
+    .journal-side {
+        width: 100%;
+    }
+
+    .journal-side {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   HP KECIL
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+}
+
+}
 
         </style>
     </head>
