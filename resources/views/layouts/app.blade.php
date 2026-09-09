@@ -307,7 +307,7 @@
                     ✓ Verifikasi Dispensasi
                 </a>
 
-                <a href="#" class="menu-link">
+                <a href="/rekap/harian" class="menu-link">
                     ▤ Rekapitulasi
                 </a>
 

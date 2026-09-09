@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\DispensasiController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RekapController;
 use App\Models\Dispensasi;
 use App\Models\Jurnal;
 use App\Models\Siswa;
@@ -96,3 +97,19 @@ Route::middleware('role:siswa')->group(function () {
 Route::post('/dispensasi/{dispensasi}/verify', [DispensasiController::class, 'verify'])
     ->middleware('role:piket,admin')
     ->name('dispensasi.verify');
+
+Route::get('/rekap/harian', [RekapController::class, 'harian'])
+    ->middleware('role:admin')
+    ->name('rekap.harian');
+
+Route::get('/rekap/mingguan', [RekapController::class, 'mingguan'])
+    ->middleware('role:admin')
+    ->name('rekap.mingguan');
+
+Route::get('/rekap/bulanan', [RekapController::class, 'bulanan'])
+    ->middleware('role:admin')
+    ->name('rekap.bulanan');
+
+Route::get('/rekap/tahunan', [RekapController::class, 'tahunan'])
+    ->middleware('role:admin')
+    ->name('rekap.tahunan');
