@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,12 @@ class LoginController extends Controller
         ]);
 
         $login = $credentials[$field];
+        $studentUserId = Siswa::query()
+            ->where('nis', $login)
+            ->value('user_id');
+
         $authCredentials = [
-            str_contains($login, '@') ? 'email' : 'username' => $login,
+            $studentUserId !== null ? 'id' : (str_contains($login, '@') ? 'email' : 'username') => $studentUserId ?? $login,
             'password' => $credentials['password'],
             'is_active' => true,
         ];
@@ -55,7 +60,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            $field => 'Username/email atau password salah.',
+            $field => 'NISN, username, atau password salah.',
         ])->onlyInput($field);
     }
 

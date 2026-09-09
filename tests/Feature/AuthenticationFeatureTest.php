@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Kelas;
+use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +36,30 @@ it('allows active users to log in with their username', function () {
         'login' => $user->username,
         'password' => 'password',
     ])->assertRedirect('/guru');
+
+    expect(auth()->id())->toBe($user->id);
+});
+
+it('allows active students to log in with their NISN', function () {
+    $user = User::factory()->create([
+        'username' => 'student.username',
+        'password' => Hash::make('password'),
+        'role' => 'siswa',
+        'is_active' => true,
+    ]);
+    $kelas = Kelas::create(['nama_kelas' => 'X TKI 1', 'tingkat' => 'X']);
+    $siswa = Siswa::create([
+        'user_id' => $user->id,
+        'kelas_id' => $kelas->id,
+        'nis' => '0105292765',
+        'nama_siswa' => 'Siswa Contoh',
+        'jenis_kelamin' => 'P',
+    ]);
+
+    $this->post('/login', [
+        'login' => $siswa->nis,
+        'password' => 'password',
+    ])->assertRedirect('/siswa');
 
     expect(auth()->id())->toBe($user->id);
 });

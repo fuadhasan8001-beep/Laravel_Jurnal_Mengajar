@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreJurnalRequest;
 use App\Http\Requests\UpdateJurnalRequest;
+use App\Models\Absensi;
 use App\Models\Guru;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\Siswa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class JurnalController extends Controller
@@ -46,12 +49,19 @@ class JurnalController extends Controller
     public function store(StoreJurnalRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $absensis = $data['absensi'] ?? [];
+        unset($data['absensi']);
         $this->validatePeriodOrder($data);
 
-        $jurnal = Jurnal::create([
-            ...$data,
-            'guru_id' => $this->currentGuru()->id,
-        ]);
+        $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
+            $jurnal = Jurnal::create([
+                ...$data,
+                'guru_id' => $this->currentGuru()->id,
+            ]);
+            $this->syncAbsensis($jurnal, $absensis);
+
+            return $jurnal;
+        });
 
         return redirect()->route('jurnal.show', $jurnal)
             ->with('success', 'Jurnal berhasil disimpan.');
@@ -76,9 +86,10 @@ class JurnalController extends Controller
     public function edit(Jurnal $jurnal): View
     {
         $this->authorizeJournal($jurnal, true);
+        $jurnal->load('absensis');
 
         return view('jurnal.edit', [
-            ...$this->formData(),
+            ...$this->formData($jurnal),
             'jurnal' => $jurnal,
         ]);
     }
@@ -89,8 +100,14 @@ class JurnalController extends Controller
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
+        $absensis = $data['absensi'] ?? [];
+        unset($data['absensi']);
+        unset($data['tanggal']);
         $this->validatePeriodOrder($data);
-        $jurnal->update($data);
+        DB::transaction(function () use ($data, $absensis, $jurnal): void {
+            $jurnal->update($data);
+            $this->syncAbsensis($jurnal, $absensis);
+        });
 
         return redirect()->route('jurnal.show', $jurnal)
             ->with('success', 'Jurnal berhasil diperbarui.');
@@ -150,14 +167,54 @@ class JurnalController extends Controller
     }
 
     /**
+     * @param  array<int, array{siswa_id: int, status: string, catatan?: string|null}>  $absensis
+     */
+    private function syncAbsensis(Jurnal $jurnal, array $absensis): void
+    {
+        $students = Siswa::query()
+            ->where('kelas_id', $jurnal->kelas_id)
+            ->orderBy('nama_siswa')
+            ->get(['id']);
+        $studentIds = $students->pluck('id');
+        $submittedAbsensis = collect($absensis)->keyBy('siswa_id');
+
+        abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
+
+        $timestamp = now();
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp): array {
+            $absensi = $submittedAbsensis->get($student->id, []);
+
+            return [
+                'jurnal_id' => $jurnal->id,
+                'siswa_id' => $student->id,
+                'status' => $absensi['status'] ?? 'H',
+                'catatan' => $absensi['catatan'] ?? null,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ];
+        })->all();
+
+        Absensi::where('jurnal_id', $jurnal->id)
+            ->whereNotIn('siswa_id', $studentIds)
+            ->delete();
+
+        if ($records !== []) {
+            Absensi::upsert($records, ['jurnal_id', 'siswa_id'], ['status', 'catatan', 'updated_at']);
+        }
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    private function formData(): array
+    private function formData(?Jurnal $jurnal = null): array
     {
+        $kelasId = old('kelas_id', $jurnal?->kelas_id ?? request()->integer('kelas_id'));
+
         return [
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
             'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
+            'selectedKelas' => $kelasId ? Kelas::with(['siswas' => fn ($query) => $query->orderBy('nama_siswa')])->find($kelasId) : null,
         ];
     }
 }

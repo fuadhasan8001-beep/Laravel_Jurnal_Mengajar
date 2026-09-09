@@ -7,6 +7,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreJurnalRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['tanggal' => today()->toDateString()]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -37,8 +42,12 @@ class StoreJurnalRequest extends FormRequest
             'materi' => ['required', 'string', 'max:200'],
             'tujuan_pembelajaran' => ['nullable', 'string', 'max:5000'],
             'kegiatan' => ['nullable', 'string', 'max:5000'],
-            'tugas' => ['nullable', 'string', 'max:5000'],
+            'tugas' => ['nullable', 'string', 'max:5000', 'required_unless:status_guru,Hadir'],
             'catatan' => ['nullable', 'string', 'max:5000'],
+            'absensi' => ['nullable', 'array'],
+            'absensi.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
+            'absensi.*.status' => ['required', 'in:H,S,I,A'],
+            'absensi.*.catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

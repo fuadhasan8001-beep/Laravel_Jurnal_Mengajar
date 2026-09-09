@@ -145,7 +145,7 @@
                         <div class="form-group">
 
                             <label for="login">
-                                Username atau email
+                                NISN, username, atau email
                             </label>
 
                             <div class="input-container">
@@ -177,7 +177,7 @@
                                     id="login"
                                     name="login"
                                     value="{{ old('login', old('email')) }}"
-                                    placeholder="nama.guru atau email@sekolah.sch.id"
+                                    placeholder="NISN siswa, username guru, atau email"
                                     required
                                     autofocus
                                 >

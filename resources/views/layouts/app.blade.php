@@ -534,6 +534,84 @@
                 box-shadow: 0 0 0 4px #dceaff;
             }
 
+            .field-readonly {
+                border: 1px solid #dce4ef;
+                border-radius: 8px;
+                padding: 11px 12px;
+                background: #f7f9fc;
+                color: var(--ink);
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .field-help {
+                color: var(--muted);
+                font-size: 11px;
+                font-weight: 400;
+            }
+
+            .attendance-section {
+                margin-top: 28px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .attendance-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                padding: 16px;
+                background: #f7f9fc;
+            }
+
+            .attendance-head h3,
+            .attendance-head p {
+                margin: 0;
+            }
+
+            .attendance-head h3 {
+                font-size: 15px;
+            }
+
+            .attendance-head p {
+                margin-top: 4px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            .attendance-section select,
+            .attendance-section input {
+                min-width: 120px;
+            }
+
+            .attendance-empty {
+                margin-top: 28px;
+            }
+
+            .signature-space {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 32px;
+            }
+
+            .signature-space > div {
+                display: flex;
+                width: 230px;
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .signature-line {
+                min-height: 92px;
+                justify-content: flex-end;
+                border-bottom: 1px solid var(--ink);
+                color: var(--muted);
+            }
+
             .form-actions {
                 display: flex;
                 justify-content: flex-end;

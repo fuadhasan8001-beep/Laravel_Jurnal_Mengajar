@@ -116,7 +116,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Jam</th>
+                            <th>Jam ke</th>
                             <th>Kelas</th>
                             <th>Mata pelajaran</th>
                             <th>Status jurnal</th>
@@ -129,7 +129,7 @@
                                 $jurnal = $jurnalHariIni->first(fn ($item) => (int) $item->kelas_id === (int) $jadwal->kelas_id && (int) $item->mapel_id === (int) $jadwal->mapel_id && (int) $item->jam_mulai_id === (int) $jadwal->jam_pelajaran_id);
                             @endphp
                             <tr>
-                                <td>{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</td>
+                                <td>Jam {{ $jadwal->jamPelajaran->jam_ke }}<br><span class="eyebrow">{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</span></td>
                                 <td>{{ $jadwal->kelas->nama_kelas }}</td>
                                 <td>{{ $jadwal->mapel->nama_mapel }}</td>
                                 <td>

@@ -69,7 +69,7 @@
                                 </svg>
                             </span>
 
-                            <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="Masukkan NIS atau email" required autofocus>
+                            <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="Masukkan NISN atau email" required autofocus>
                         </div>
                     </div>
 

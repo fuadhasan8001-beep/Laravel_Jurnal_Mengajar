@@ -32,8 +32,12 @@ class UpdateJurnalRequest extends FormRequest
             'materi' => ['required', 'string', 'max:200'],
             'tujuan_pembelajaran' => ['nullable', 'string', 'max:5000'],
             'kegiatan' => ['nullable', 'string', 'max:5000'],
-            'tugas' => ['nullable', 'string', 'max:5000'],
+            'tugas' => ['nullable', 'string', 'max:5000', 'required_unless:status_guru,Hadir'],
             'catatan' => ['nullable', 'string', 'max:5000'],
+            'absensi' => ['nullable', 'array'],
+            'absensi.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
+            'absensi.*.status' => ['required', 'in:H,S,I,A,D'],
+            'absensi.*.catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }
