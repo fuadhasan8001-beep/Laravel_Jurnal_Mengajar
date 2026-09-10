@@ -1,0 +1,129 @@
+@extends('layouts.app')
+
+@section('title', 'Dashboard Piket')
+
+@section('content')
+    <div class="page-head">
+        <div>
+            <h1>Meja verifikasi</h1>
+            <p>Tinjau bukti dan validasi dispensasi siswa yang masuk.</p>
+        </div><a
+            class="btn"
+            href="{{ route('dispensasi.index') }}"
+        >Lihat pengajuan</a>
+    </div>
+    <div class="stats">
+        <div class="stat-card"><span class="stat-icon amber"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                    />
+                    <path d="M12 7v5l3 2" />
+                </svg></span><span><small>Antrian
+                    baru</small><strong>{{ $antrianBaru }}</strong></span></div>
+        <div class="stat-card"><span class="stat-icon green"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="m5 12 4 4L19 6" />
+                </svg></span><span><small>Diverifikasi hari
+                    ini</small><strong>{{ $diverifikasiHariIni }}</strong></span></div>
+        <div class="stat-card"><span class="stat-icon"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M6 3h12a2 2 0 0 1 2 2v16l-8-4-8 4V5a2 2 0 0 1 2-2Z" />
+                </svg></span><span><small>Total bulan
+                    ini</small><strong>{{ $totalBulanIni }}</strong></span></div>
+        <div class="stat-card"><span class="stat-icon red"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M12 8v5M12 17h.01" />
+                    <path
+                        d="M10.3 3.8 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z"
+                    />
+                </svg></span><span><small>Perlu
+                    perhatian</small><strong>{{ $perluPerhatian }}</strong></span></div>
+    </div>
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Alur kerja piket</h2><span class="eyebrow">Verifikasi tahap pertama</span>
+        </div>
+        <div class="panel-body">
+            <p style="margin:0;color:var(--muted);font-size:14px">Periksa tanggal, rentang jam, alasan,
+                dan bukti sebelum menyetujui pengajuan.</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Tugas yang perlu dikerjakan</h2>
+            <a href="{{ route('dispensasi.index') }}">Lihat semua</a>
+        </div>
+
+        @if ($pengajuanMenunggu->isNotEmpty())
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Siswa</th>
+                            <th>Tanggal</th>
+                            <th>Jam</th>
+                            <th>Bukti</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pengajuanMenunggu as $pengajuan)
+                            <tr>
+                                <td>
+                                    <strong>{{ $pengajuan->siswa->nama_siswa }}</strong>
+                                </td>
+                                <td>{{ $pengajuan->tanggal->format('d M Y') }}</td>
+                                <td>
+                                    {{ $pengajuan->jamMulai->jam_ke }} -
+                                    {{ $pengajuan->jamSelesai->jam_ke }}
+                                </td>
+                                <td>
+                                    <span class="status {{ $pengajuan->bukti ? 'approved' : 'pending' }}">
+                                        {{ $pengajuan->bukti ? 'Tersedia' : 'Tidak ada' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('dispensasi.show', $pengajuan) }}">
+                                        Periksa
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="empty">
+                Tidak ada pengajuan yang menunggu verifikasi.
+            </div>
+        @endif
+    </section>
+@endsection

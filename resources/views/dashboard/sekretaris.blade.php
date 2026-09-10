@@ -1,0 +1,74 @@
+@extends('layouts.app')
+
+@section('title', 'Dashboard Sekretaris')
+
+@section('content')
+    <div class="page-head">
+        <div>
+            <h1>Dashboard sekretaris</h1>
+            <p>Ringkasan aktivitas pencatatan kelas dan jurnal mengajar.</p>
+        </div>
+    </div>
+    <div class="stats">
+        <div class="stat-card"><span class="stat-icon"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M4 19V5M4 19h16M8 16V9M12 16V6M16 16v-4" />
+                </svg></span><span><small>Jurnal
+                    tercatat</small><strong>{{ $jurnalTercatat }}</strong></span></div>
+        <div class="stat-card"><span class="stat-icon green"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="m5 12 4 4L19 6" />
+                </svg></span><span><small>Lengkap</small><strong>{{ $jurnalLengkap }}</strong></span>
+        </div>
+        <div class="stat-card"><span class="stat-icon amber"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                    />
+                    <path d="M12 7v5l3 2" />
+                </svg></span><span><small>Menunggu</small><strong>{{ $jurnalMenunggu }}</strong></span>
+        </div>
+        <div class="stat-card"><span class="stat-icon"><svg
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M4 5h16v14H4z" />
+                    <path d="M8 9h8M8 13h5" />
+                </svg></span><span><small>Kelas aktif</small><strong>{{ $kelasAktif }}</strong></span>
+        </div>
+    </div>
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Ringkasan pekerjaan</h2><span class="eyebrow">Pembaruan otomatis</span>
+        </div>
+        @if ($jurnalPerluVerifikasi->isNotEmpty())
+            <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Guru</th><th>Kelas</th><th>Mapel</th><th></th></tr></thead><tbody>@foreach ($jurnalPerluVerifikasi as $jurnal)<tr><td>{{ $jurnal->tanggal->format('d M Y') }}</td><td>{{ $jurnal->guru->nama_guru }}</td><td>{{ $jurnal->kelas->nama_kelas }}</td><td>{{ $jurnal->mapel->nama_mapel }}</td><td><a href="{{ route('jurnal.show', $jurnal) }}">Periksa</a></td></tr>@endforeach</tbody></table></div>
+        @else
+            <div class="empty">Belum ada jurnal yang perlu diverifikasi.</div>
+        @endif
+    </section>
+@endsection
