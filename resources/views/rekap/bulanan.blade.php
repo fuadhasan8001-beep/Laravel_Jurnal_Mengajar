@@ -3,7 +3,6 @@
 @section('content')
     <h2>Rekap Jurnal Bulanan</h2>
 
-    {{-- Filter bulan --}}
     <form method="GET" action="{{ route('rekap.bulanan') }}">
         <input type="month" name="bulan" value="{{ $bulan }}">
         <button type="submit">Tampilkan</button>
