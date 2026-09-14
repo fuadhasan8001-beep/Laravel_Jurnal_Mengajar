@@ -1,0 +1,8735 @@
+{
+  "source": "JADWAL KELAS SEMESTER GANJIL 2026-2027 FIX.pdf",
+  "schedules": [
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endang Ary Handayani S.T., M.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Dasar TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Lutfia Marsalina, S.Pd.I M.Pd."
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Dasar TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 5,
+      "mapel": "BK",
+      "guru": "Yuni Jiastuti S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Informatika",
+      "guru": "Lutfia Marsalina, S.Pd.I M.Pd."
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 1,
+      "kelas": "X TKI 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 1,
+      "mapel": "BK",
+      "guru": "Yuni Jiastuti S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Selasa",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Dasar TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Informatika",
+      "guru": "Lutfia Marsalina, S.Pd.I M.Pd."
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endang Ary Handayani S.T., M.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Informatika",
+      "guru": "Lutfia Marsalina, S.Pd.I M.Pd."
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Dasar TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 2,
+      "kelas": "X TKI 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 13,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 4,
+      "mapel": "BK",
+      "guru": "Widodo S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Informatika",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar PPLG",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar PPLG",
+      "guru": "Ruly Dwi Setyaningrum, S.Kom"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Dasar PPLG",
+      "guru": "Ruly Dwi Setyaningrum, S.Kom"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Elyana Frisca Monica S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Informatika",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 3,
+      "kelas": "X RPL 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Dasar PPLG",
+      "guru": "Ruly Dwi Setyaningrum, S.Kom"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Informatika",
+      "guru": "Elyana Frisca Monica, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Elyana Frisca Monica S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar PPLG",
+      "guru": "Ruly Dwi Setyaningrum, S.Kom"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar PPLG",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 4,
+      "mapel": "BK",
+      "guru": "Widodo S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Jawa",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 4,
+      "kelas": "X RPL 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Listyana Hartati, S.Kom. M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Dasar TJKT",
+      "guru": "Listyana Hartati, S.Kom. M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Informatika",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Selasa",
+      "mulai": 10,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Nishfu Laili S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Dasar TJKT",
+      "guru": "Endang Ary Handayani S.T., M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar TJKT",
+      "guru": "Siti Munawaroh, S.Kom.,M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar TJKT",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 5,
+      "kelas": "X TKJ 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 13,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Dasar TJKT",
+      "guru": "Siti Munawaroh, S.Kom.,M.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Dasar TJKT",
+      "guru": "Endang Ary Handayani S.T., M.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 3,
+      "mapel": "BK",
+      "guru": "Nishfu Laili, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Dasar TJKT",
+      "guru": "Listyana Hartati, S.Kom. M.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Informatika",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Dasar TJKT",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 6,
+      "kelas": "X TKJ 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Listyana Hartati, S.Kom. M.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Dasar PM",
+      "guru": "Ratih Dian Irawati, SE"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Senin",
+      "mulai": 10,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Dian Mawarti S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Siti Munawaroh, S.Kom. M.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Dasar PM",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Informatika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 11,
+      "mapel": "Dasar PM",
+      "guru": "Retno Widyastuti, S.Pd., M.Pd"
+    },
+    {
+      "page": 7,
+      "kelas": "X BD 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Dasar PM",
+      "guru": "Retno Widyastuti, S.Pd., M.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jawa",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Siti Munawaroh, S.Kom. M.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar PM",
+      "guru": "Ratih Dian Irawati, SE"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar PM",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Dian Mawarti S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 8,
+      "kelas": "X BD 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Dasar PM",
+      "guru": "Retno Widyastuti, S.Pd., M.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar PM",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Kamis",
+      "mulai": 10,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Niken Hari Pratiwi, S.Psi.,M.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Dasar PM",
+      "guru": "Ratih Dian Irawati, SE"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 9,
+      "mapel": "Informatika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 9,
+      "kelas": "X BD 3",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Siti Munawaroh, S.Kom. M.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar MPLB",
+      "guru": "Dwi Kuswanto, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 8,
+      "mapel": "BK",
+      "guru": "Veronica Damay Rulitasari S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar MPLB",
+      "guru": "Dwi Kuswanto, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Dasar MPLB",
+      "guru": "Dwi Kuswanto, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 11,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 10,
+      "kelas": "X MP 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Informatika",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Nishfu Laili S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Senin",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Dasar MPLB",
+      "guru": "Peni Wulandari, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Kurnila Putri Islamawati S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Informatika",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar MPLB",
+      "guru": "Peni Wulandari, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 11,
+      "kelas": "X MP 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 13,
+      "mapel": "Dasar MPLB",
+      "guru": "Peni Wulandari, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar MPLB",
+      "guru": "Lilik Suratmi, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar MPLB",
+      "guru": "Lilik Suratmi, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 11,
+      "mapel": "Dasar MPLB",
+      "guru": "Lilik Suratmi, S.Pd"
+    },
+    {
+      "page": 12,
+      "kelas": "X MP 3",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Dasar MPLB",
+      "guru": "Rindang Rejeki, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Dasar MPLB",
+      "guru": "Rindang Rejeki, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 3,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan S.Pd.,M.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Informatika",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari S.Pd"
+    },
+    {
+      "page": 13,
+      "kelas": "X MP 4",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 13,
+      "mapel": "Dasar MPLB",
+      "guru": "Rindang Rejeki, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I M.Pd."
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan, S.Pd.,M.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Dasar AKL",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar AKL",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jawa",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Dasar AKL",
+      "guru": "Atih Wilupi, S.E, M.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 9,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 14,
+      "kelas": "X AK 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 13,
+      "mapel": "Dasar AKL",
+      "guru": "Agustina Mardika Rini, S.Pd.,M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Dasar AKL",
+      "guru": "Indayah, S.Pd., M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Informatika",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Informatika",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Selasa",
+      "mulai": 10,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar AKL",
+      "guru": "Agustina Mardika Rini, S.Pd.,M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Dasar AKL",
+      "guru": "Indayah, S.Pd., M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "IPAS",
+      "guru": "Sri Subekti, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Jawa",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan, S.Pd.,M.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Dasar AKL",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 15,
+      "kelas": "X AK 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Dasar AKL",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Ruly Dwi Setyaningrum S.Kom"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Informatika",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Informatika",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan, S.Pd.,M.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Astra Bella Flamboyan, S.Psi"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar AKL",
+      "guru": "Titin Sukmasari, S.Pd., M.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Dasar AKL",
+      "guru": "Setiyo Winarko, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 9,
+      "mapel": "Dasar AKL",
+      "guru": "Setiyo Winarko, S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari S.Pd"
+    },
+    {
+      "page": 16,
+      "kelas": "X AK 3",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan, S.Pd.,M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 4,
+      "mapel": "BK",
+      "guru": "Astra Bella Flamboyan, S.Psi"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Informatika",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Dasar AKL",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Dasar AKL",
+      "guru": "Septiani, S.Pd.,M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Dasar AKL",
+      "guru": "Septiani, S.Pd.,M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Informatika",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Ruly Dwi Setyaningrum, S.Kom"
+    },
+    {
+      "page": 17,
+      "kelas": "X AK 4",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 13,
+      "mapel": "Dasar AKL",
+      "guru": "Titin Sukmasari, S.Pd., M.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Informatika",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Dasar ULP",
+      "guru": "Risqi Nur Imama S.Tr.Par"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Dasar ULP",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Dasar ULP",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Fajar Luthfianto, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Niken Hari Pratiwi, S.Psi.,M.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Dasar ULP",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Seni Budaya",
+      "guru": "Angga Widhy Wirawan, S.Pd.,M.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 11,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 18,
+      "kelas": "X ULW",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 1,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Selasa",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Dasar DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jawa",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Dasar DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Informatika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Dasar DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 9,
+      "mapel": "IPAS",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Informatika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 19,
+      "kelas": "X DKV 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Dasar DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Informatika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 3,
+      "mapel": "BK",
+      "guru": "Yuni Jiastuti, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Dasar DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Informatika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Jawa",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Dasar DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 20,
+      "kelas": "X DKV 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 13,
+      "mapel": "IPAS",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar BP",
+      "guru": "Benny Mamora, S.Kom"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar BP",
+      "guru": "Benny Mamora, S.Kom"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Elyana Frisca Monica, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Informatika",
+      "guru": "Elyana Frisca Monica, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jawa",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 9,
+      "mapel": "BK",
+      "guru": "Winarsih, S.Pd, M.Pd"
+    },
+    {
+      "page": 21,
+      "kelas": "X PSPT 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 13,
+      "mapel": "Dasar BP",
+      "guru": "Benny Mamora, S.Kom"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Informatika",
+      "guru": "Elyana Frisca Monica, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Ista Nofasari, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Winarsih, S.Pd, M.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Dasar BP",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Dasar BP",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Elyana Frisca Monica S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Dasar BP",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 22,
+      "kelas": "X PSPT 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Informatika",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Dasar AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 9,
+      "mapel": "Dasar AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 11,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 23,
+      "kelas": "X AN 1",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Informatika",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Koding dan Kecerdasan Artifisial",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Selasa",
+      "mulai": 10,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Seni Budaya",
+      "guru": "Anang Prasetyo, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Dasar AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Dasar AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Informatika",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "IPAS",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 11,
+      "mapel": "Dasar AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 24,
+      "kelas": "X AN 2",
+      "hari": "Jumat",
+      "mulai": 12,
+      "selesai": 13,
+      "mapel": "Informatika",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Ayu Puspitorini, ST"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Diana Hartanti, S.T., M.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jepang",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jawa",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Mapel Pilihan TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Ayu Puspitorini, ST"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Diana Hartanti, S.T., M.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 25,
+      "kelas": "XI TKI 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "BK",
+      "guru": "Yuni Jiastuti, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jepang",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Rifkotin Na'imah, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Mapel Pilihan TKI",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Sri Kusumastuti, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Yani, S.Pd."
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Ayu Puspitorini, ST"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Diana Hartanti, S.T., M.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Diana Hartanti, S.T., M.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKI",
+      "guru": "Ayu Puspitorini, ST"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Yuni Jiastuti, S.Pd"
+    },
+    {
+      "page": 26,
+      "kelas": "XI TKI 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Jawa",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Widodo, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Kurnila Putri Islamawati, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Kurnila Putri Islamawati, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Shinta Indyar Shanty Susanto, S.Kom"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Mapel Pilihan RPL",
+      "guru": "Hendro Suwignyo, ST"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 27,
+      "kelas": "XI RPL 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 12,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Kurnila Putri Islamawati, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Mapel Pilihan RPL",
+      "guru": "Hendro Suwignyo, ST"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "BK",
+      "guru": "Widodo, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Jawa",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Kurnila Putri Islamawati, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Mufatiroh, S.Ag"
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi RPL",
+      "guru": "Badrus Sulaiman, S.Pd."
+    },
+    {
+      "page": 28,
+      "kelas": "XI RPL 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Siti Munawaroh, S.Kom.,M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Mapel Pilihan TKJ",
+      "guru": "Listyana Hartati, S.Kom., M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Endang Ary Handayani, S.T., M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "BK",
+      "guru": "Nishfu Laili,S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Listyana Hartati, S.Kom.,M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Lutfia Marsalina, S.Pd.I, M.Pd."
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 29,
+      "kelas": "XI TKJ 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Jawa",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Endang Ary Handayani, S.T., M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Listyana Hartati, S.Kom.,M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Mapel Pilihan TKJ",
+      "guru": "Listyana Hartati, S.Kom., M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Nishfu Laili,S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Ary Sunaryo, ST.,M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Baskoro, S.Si"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Isti Mufadah, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Siswanti Purwaningsih, S.T., M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Sri Rahayu, S.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi TKJ",
+      "guru": "Siti Munawaroh, S.Kom.,M.Pd"
+    },
+    {
+      "page": 30,
+      "kelas": "XI TKJ 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Mapel Pilihan BD",
+      "guru": "Andri Krisdianto, SE.,M.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Konsentrasi BD",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi BD",
+      "guru": "Andri Krisdianto, SE., M.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi BD",
+      "guru": "Agung Yulianto, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Konsentrasi BD",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Konsentrasi BD",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 31,
+      "kelas": "XI BD 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Konsentrasi BD",
+      "guru": "Agung Yulianto, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Erna Rinawati, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Mapel Pilihan BD",
+      "guru": "Andri Krisdianto, SE.,M.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi BD",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi BD",
+      "guru": "Andri Krisdianto, SE., M.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Konsentrasi BD",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Dian Mawarti, S.Pd"
+    },
+    {
+      "page": 32,
+      "kelas": "XI BD 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Konsentrasi BD",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Mapel Pilihan BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Dian Mawarti, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi BD",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi BD",
+      "guru": "Agung Yulianto, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi BD",
+      "guru": "Niken Dewi Hastika, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Konsentrasi BD",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi BD",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Dwi Rini Manfaati, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi BD",
+      "guru": "Anisa Kusumawati, S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi BD",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 33,
+      "kelas": "XI BD 3",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Nurul Azizah, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Mapel Pilihan MP",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi MP",
+      "guru": "Martiin, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "BK",
+      "guru": "Veronica Damay Rulitasari, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 34,
+      "kelas": "XI MP 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Laili Ermawati, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Mapel Pilihan MP",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Komariyah, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Sunarti, S.Pd"
+    },
+    {
+      "page": 35,
+      "kelas": "XI MP 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Fitria Diah Ayu Hartati, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "BK",
+      "guru": "Veronica Damay Rulitasari, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Mapel Pilihan MP",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Titik Samsistini, S.Pd"
+    },
+    {
+      "page": 36,
+      "kelas": "XI MP 3",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "BK",
+      "guru": "Veronica Damay Rulitasari, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Senin",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Rulik Indrawati, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Zainul Arifin,S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Mapel Pilihan MP",
+      "guru": "Tutut Sriatin, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Dra. Susakti Yuharini"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 37,
+      "kelas": "XI MP 4",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Konsentrasi MP",
+      "guru": "Mega Mahardika, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Konsentrasi AK",
+      "guru": "Kasmi, S.Pd., M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "BK",
+      "guru": "Astra Bella Flamboyan, S.Psi"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Indayah, S.Pd., M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Septiani, S.Pd.,M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Konsentrasi AK",
+      "guru": "Agustina Mardika Rini, S.Pd.,M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Kasmi, S.Pd., M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Konsentrasi AK",
+      "guru": "Dyah Esti Rahayu, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 38,
+      "kelas": "XI AK 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Mapel Pilihan AK",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Konsentrasi AK",
+      "guru": "Dyah Esti Rahayu, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Senin",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Mapel Pilihan AK",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 6,
+      "mapel": "Konsentrasi AK",
+      "guru": "Pipit Ambarwati, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Muhammad Fajar Assidiqi, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Kasmi, S.Pd., M.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Setiyo Winarko, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Kasmi, S.Pd., M.Pd"
+    },
+    {
+      "page": 39,
+      "kelas": "XI AK 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "BK",
+      "guru": "Winarsih, S.Pd, M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Alfinu Farikh Abdillah, S.Pd.I"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Atih Wilupi, S.E, M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Winartin, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 8,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Ninik Sriwidayati, S.Pd.,M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Setiyo Winarko, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 6,
+      "mapel": "Konsentrasi AK",
+      "guru": "Atih Wilupi, S.E, M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Mapel Pilihan AK",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi AK",
+      "guru": "Dyah Esti Rahayu, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Arvia Rienetasary, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Konsentrasi AK",
+      "guru": "Indayah, S.Pd., M.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 40,
+      "kelas": "XI AK 3",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Ninik Sriwidayati, S.Pd.,M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Mapel Pilihan AK",
+      "guru": "Yuli Ratnasari, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "BK",
+      "guru": "Nur Eko Wahyuningsih, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Atih Wilupi, S.E, M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jawa",
+      "guru": "Rizki Putri Wulandari, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Inggris",
+      "guru": "Andri Retno Yuli Astuti, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi AK",
+      "guru": "Ninik Sriwidayati, S.Pd., M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi AK",
+      "guru": "Indayah, S.Pd., M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi AK",
+      "guru": "Titin Sukmasari, S.Pd., M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Siti Khoiriyah, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Basuki Sarjono, S.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Agus Fahruddy, S.Pd., M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 9,
+      "mapel": "Konsentrasi AK",
+      "guru": "Septiani, S.Pd.,M.Pd"
+    },
+    {
+      "page": 41,
+      "kelas": "XI AK 4",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 12,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Purwati,S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi ULW",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fitria Renytasari, S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 6,
+      "mapel": "Konsentrasi ULW",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Nur Nastutisari, S.ST.Par."
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Nur Nastutisari, S.ST.Par."
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Konsentrasi ULW",
+      "guru": "Nur Nastutisari, S.ST.Par."
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jawa",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Konsentrasi ULW",
+      "guru": "Nur Nastutisari, S.ST.Par."
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Jepang",
+      "guru": "Sulistyowati, SS"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi ULW",
+      "guru": "Risqi Nur Imama, S.Tr.Par"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Niken Hari Pratiwi, S.Psi., M.Pd"
+    },
+    {
+      "page": 42,
+      "kelas": "XI ULW",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Istiana Suhartati, S.T"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Mas'an Widodo, S.Pd. M.T"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Astra Bella Flamboyan, S.Psi"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Mas'an Widodo, S.Pd. M.T"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Bahasa Jawa",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 5,
+      "mapel": "Mapel Pilihan DKV",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 43,
+      "kelas": "XI DKV 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "BK",
+      "guru": "Astra Bella Flamboyan, S.Psi"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Senin",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Bahasa Jawa",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Abdul Rohman, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Khoyrotun Hisani, S.Sn"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Istiana Suhartati, S.T"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Danang Anjar Hymawanto, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Endang Safitri, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Rabu",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Ilham Sungeidi, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Elysa Yuli Nur'aini, S.Si"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Mas'an Widodo, S.Pd. M.T"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Indriati, S.Pd"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Sinta Lestari, S.Pd.I"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Mas'an Widodo, S.Pd. M.T"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 9,
+      "mapel": "Mapel Pilihan DKV",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 44,
+      "kelas": "XI DKV 2",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 12,
+      "mapel": "Konsentrasi DKV",
+      "guru": "Agus Pramono, S.Sn"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Benny Mamora, S.Kom"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Selasa",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Selasa",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Winarsih, S.Pd, M.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Fitri Amaliyah, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Siti Umiharsih, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Mapel Pilihan PSPT",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Kamis",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Matematika",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Bahasa Inggris",
+      "guru": "Fajar Wahyu Pratiwi, S.S"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Jumat",
+      "mulai": 8,
+      "selesai": 9,
+      "mapel": "Bahasa Jawa",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 45,
+      "kelas": "XI PSPT 1",
+      "hari": "Jumat",
+      "mulai": 10,
+      "selesai": 12,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Siti Umiharsih, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Matematika",
+      "guru": "Eko Saputro, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Siti Umiharsih, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 10,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Dra. Hanik Pangestuti"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Siti Umiharsih, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Selasa",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Dra. Anik Indriani"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Selasa",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 4,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Mapel Pilihan PSPT",
+      "guru": "Tuhu Eries Kudori, S.Sn"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Joko Priyanto, S.Kom"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Kamis",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Kamis",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Sa'ad Wazis Hiedayat, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi PSPT",
+      "guru": "Benny Mamora, S.Kom"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "BK",
+      "guru": "Winarsih, S.Pd, M.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Umi Kulsum, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Muto'atul Khosi'ah, S.Pd"
+    },
+    {
+      "page": 46,
+      "kelas": "XI PSPT 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Jawa",
+      "guru": "Erna Qoriah, S.E."
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Senin",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Konsentrasi AN",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Mapel Pilihan AN",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi AN",
+      "guru": "Erwan Septiyono, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 7,
+      "mapel": "Konsentrasi AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi AN",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Rabu",
+      "mulai": 4,
+      "selesai": 6,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Rabu",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Rabu",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Khuriyatul Kamila, S.Si"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Konsentrasi AN",
+      "guru": "Erwan Septiyono, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Kamis",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 3,
+      "mapel": "Mapel Pilihan AN",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Jumat",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Jumat",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh, S.Pd"
+    },
+    {
+      "page": 47,
+      "kelas": "XI AN 1",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Jawa",
+      "guru": "Ajeng Okvitasari, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Senin",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Konsentrasi AN",
+      "guru": "Dhuana Putri Puspitasary, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Senin",
+      "mulai": 5,
+      "selesai": 8,
+      "mapel": "Konsentrasi AN",
+      "guru": "Rika Okta Maulida, S.Ds."
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Senin",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Konsentrasi AN",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Selasa",
+      "mulai": 1,
+      "selesai": 3,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Selasa",
+      "mulai": 4,
+      "selesai": 5,
+      "mapel": "Mapel Pilihan AN",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Selasa",
+      "mulai": 6,
+      "selesai": 7,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Selasa",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Bahasa Indonesia",
+      "guru": "Arif Setyobudi, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Rabu",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "Bahasa Jawa",
+      "guru": "Luluk Munfarida,S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Rabu",
+      "mulai": 3,
+      "selesai": 4,
+      "mapel": "PJOK",
+      "guru": "Bella Prakoso, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Rabu",
+      "mulai": 5,
+      "selesai": 7,
+      "mapel": "Konsentrasi AN",
+      "guru": "Endik Kuswantoro, S.Kom.,M.T"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Rabu",
+      "mulai": 8,
+      "selesai": 10,
+      "mapel": "Konsentrasi AN",
+      "guru": "Erwan Septiyono, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Kamis",
+      "mulai": 1,
+      "selesai": 2,
+      "mapel": "BK",
+      "guru": "Siti Maisaroh, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Kamis",
+      "mulai": 3,
+      "selesai": 5,
+      "mapel": "Pendidikan Agama Islam dan Budi Pekerti",
+      "guru": "Muashofah, M.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Kamis",
+      "mulai": 6,
+      "selesai": 8,
+      "mapel": "Matematika",
+      "guru": "Dwi Nova Setyandari, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Kamis",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Sejarah",
+      "guru": "Yustin Febrini, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Jumat",
+      "mulai": 2,
+      "selesai": 4,
+      "mapel": "Konsentrasi AN",
+      "guru": "Erwan Septiyono, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Jumat",
+      "mulai": 5,
+      "selesai": 6,
+      "mapel": "Mapel Pilihan AN",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Jumat",
+      "mulai": 7,
+      "selesai": 8,
+      "mapel": "Kreativitas, Inovasi, dan Kewirausahaan",
+      "guru": "Andika Christian Sasmita, S.ST"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Jumat",
+      "mulai": 9,
+      "selesai": 10,
+      "mapel": "Pendidikan Pancasila",
+      "guru": "Wiwik Yuniarsih, S.Pd"
+    },
+    {
+      "page": 48,
+      "kelas": "XI AN 2",
+      "hari": "Jumat",
+      "mulai": 11,
+      "selesai": 12,
+      "mapel": "Bahasa Inggris",
+      "guru": "Agus Muharyanto, M.Pd"
+    }
+  ]
+}

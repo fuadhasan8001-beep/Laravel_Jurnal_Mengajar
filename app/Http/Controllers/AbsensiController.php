@@ -7,7 +7,6 @@ use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jurnal;
 use App\Models\Siswa;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -44,29 +43,9 @@ class AbsensiController extends Controller
             'Siswa tidak termasuk dalam kelas jurnal ini.'
         );
 
-        $hasApprovedDispensasi = Dispensasi::with(['jamMulai', 'jamSelesai'])
-            ->where('siswa_id', $data['siswa_id'])
-            ->where('status_akhir', 'Disetujui')
-            ->whereDate('tanggal', $jurnal->tanggal)
-            ->get()
-            ->contains(function (Dispensasi $dispensasi) use ($jurnal): bool {
-                if (! $jurnal->jamMulai || ! $jurnal->jamSelesai) {
-                    return false;
-                }
-
-                $dispensasiStart = Carbon::parse($dispensasi->jamMulai->jam_mulai);
-                $dispensasiEnd = Carbon::parse($dispensasi->jamSelesai->jam_selesai);
-                $jurnalStart = Carbon::parse($jurnal->jamMulai->jam_mulai);
-                $jurnalEnd = Carbon::parse($jurnal->jamSelesai->jam_selesai);
-
-                return $jurnalStart < $dispensasiEnd && $jurnalEnd > $dispensasiStart;
-            });
-
-        $existingAbsensi = Absensi::where('jurnal_id', $data['jurnal_id'])
-            ->where('siswa_id', $data['siswa_id'])
-            ->first();
-
-        if ($hasApprovedDispensasi || $existingAbsensi?->status === 'D') {
+        $hasApprovedDispensasi = Dispensasi::approvedForJournal($jurnal)->contains('siswa_id', $data['siswa_id']);
+        abort_if($data['status'] === 'D' && ! $hasApprovedDispensasi, 422, 'Status dispensasi memerlukan persetujuan admin.');
+        if ($hasApprovedDispensasi) {
             $data['status'] = 'D';
             $data['catatan'] = 'Dispensasi disetujui.';
         }

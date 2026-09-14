@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreJurnalRequest;
 use App\Http\Requests\UpdateJurnalRequest;
 use App\Models\Absensi;
+use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
@@ -22,10 +24,10 @@ class JurnalController extends Controller
     {
         $query = Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai'])
             ->latest('tanggal');
-        
- if (auth()->user()->role === 'guru') {
-     $query->where('guru_id', $this->currentGuru()->id);
- }
+
+        if (auth()->user()->role === 'guru') {
+            $query->where('guru_id', $this->currentGuru()->id);
+        }
 
         $query
             ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
@@ -50,7 +52,7 @@ class JurnalController extends Controller
     {
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        unset($data['absensi']);
+        unset($data['absensi'], $data['jadwal_id']);
         $this->validatePeriodOrder($data);
 
         $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
@@ -101,7 +103,7 @@ class JurnalController extends Controller
 
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        unset($data['absensi']);
+        unset($data['absensi'], $data['jadwal_id']);
         unset($data['tanggal']);
         $this->validatePeriodOrder($data);
         DB::transaction(function () use ($data, $absensis, $jurnal): void {
@@ -180,15 +182,17 @@ class JurnalController extends Controller
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
 
+        $dispensedIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
+        abort_if($submittedAbsensis->contains(fn (array $item): bool => $item['status'] === 'D' && ! $dispensedIds->contains($item['siswa_id'])), 422, 'Status dispensasi memerlukan persetujuan admin.');
         $timestamp = now();
-        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp): array {
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedIds): array {
             $absensi = $submittedAbsensis->get($student->id, []);
 
             return [
                 'jurnal_id' => $jurnal->id,
                 'siswa_id' => $student->id,
-                'status' => $absensi['status'] ?? 'H',
-                'catatan' => $absensi['catatan'] ?? null,
+                'status' => $dispensedIds->contains($student->id) ? 'D' : ($absensi['status'] ?? 'H'),
+                'catatan' => $dispensedIds->contains($student->id) ? 'Dispensasi disetujui.' : ($absensi['catatan'] ?? null),
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
@@ -208,13 +212,25 @@ class JurnalController extends Controller
      */
     private function formData(?Jurnal $jurnal = null): array
     {
-        $kelasId = old('kelas_id', $jurnal?->kelas_id ?? request()->integer('kelas_id'));
+        $sessions = Jadwal::sessionsForGuru($this->currentGuru(), now());
+        $active = $sessions->where('active', true);
+        $requestedSession = request()->integer('jadwal_id');
+        $session = $requestedSession
+            && $active->count() > 1
+            ? $active->firstWhere('id', $requestedSession)
+            : ($active->count() === 1 ? $active->first() : $active->first());
+        $kelasId = $jurnal?->kelas_id ?? $session['kelas_id'] ?? null;
+        $date = $jurnal?->tanggal ?? today();
 
         return [
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
-            'mapels' => Mapel::orderBy('nama_mapel')->get(),
+            'sessions' => $sessions,
+            'activeSession' => $jurnal ? null : $session,
+            'scheduleConflict' => $active->count() > 1,
+            'approvedDispensasis' => Dispensasi::with(['jamMulai', 'jamSelesai'])->whereDate('tanggal', $date)
+                ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $kelasId))
+                ->where('status_akhir', 'Disetujui')->get(['id', 'siswa_id', 'jam_mulai_id', 'jam_selesai_id']),
+            'kelas' => Kelas::with(['siswas' => fn ($query) => $query->select(['id', 'kelas_id', 'nama_siswa', 'nis'])->orderBy('nama_siswa')])->where('id', $kelasId)->get(),
             'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
-            'selectedKelas' => $kelasId ? Kelas::with(['siswas' => fn ($query) => $query->orderBy('nama_siswa')])->find($kelasId) : null,
         ];
     }
 }

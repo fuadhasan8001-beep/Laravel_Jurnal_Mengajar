@@ -9,11 +9,11 @@
             <p>{{ auth()->user()->role === 'siswa' ? 'Pantau seluruh pengajuan dan keputusan dispensasi Anda.' : 'Tinjau pengajuan dispensasi yang membutuhkan tindakan.' }}
             </p>
         </div>
-        @if (auth()->user()->role === 'siswa')
+        @if (auth()->user()->role === 'piket')
             <a
                 class="btn"
                 href="{{ route('dispensasi.create') }}"
-            >+ Ajukan dispensasi</a>
+            >{{ auth()->user()->role === 'piket' ? '+ Buat pernyataan dispensasi' : '+ Ajukan dispensasi' }}</a>
         @endif
     </div>
     <section class="panel">

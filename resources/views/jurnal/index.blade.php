@@ -14,6 +14,7 @@
     </div>
 
     <section class="panel">
+        <div class="panel-head"><h2>Filter riwayat jurnal</h2></div>
         <div class="panel-body">
             <form method="GET" action="{{ route('jurnal.index') }}">
                 <div class="form-grid">

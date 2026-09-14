@@ -187,6 +187,18 @@
                 margin-left: 250px;
             }
 
+            .menu-toggle {
+                display: none;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 8px 10px;
+                background: #fff;
+                color: var(--ink);
+                cursor: pointer;
+                font-size: 20px;
+                line-height: 1;
+            }
+
             .topbar {
                 display: flex;
                 min-height: 78px;
@@ -699,7 +711,8 @@
 
             @media (max-width:680px) {
                 .sidebar {
-                    position: static;
+                    position: fixed;
+                    z-index: 40;
                     width: 100%;
                     height: auto;
                     padding: 16px;
@@ -717,6 +730,21 @@
                 .nav-list,
                 .sidebar-footer {
                     display: none;
+                }
+
+                .sidebar.is-open {
+                    height: 100vh;
+                    overflow-y: auto;
+                }
+
+                .sidebar.is-open .nav-label,
+                .sidebar.is-open .nav-list,
+                .sidebar.is-open .sidebar-footer {
+                    display: block;
+                }
+
+                .menu-toggle {
+                    display: inline-flex;
                 }
 
                 .main {
@@ -1412,6 +1440,7 @@
                 <div class="main">
                     <header class="topbar">
                         <div>
+                            <button class="menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false" id="menu-toggle">&#9776;</button>
                             <div class="eyebrow">Ruang kerja digital</div>
                             <div class="topbar-title">Jurnal Guru</div>
                         </div>
@@ -1472,6 +1501,17 @@
             </div>
         @else
             @yield('content')
+        @endauth
+        @auth
+            <script>
+                const menuToggle = document.getElementById('menu-toggle');
+                const sidebar = document.querySelector('.sidebar');
+                menuToggle?.addEventListener('click', () => {
+                    const open = sidebar.classList.toggle('is-open');
+                    menuToggle.setAttribute('aria-expanded', String(open));
+                    menuToggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+                });
+            </script>
         @endauth
 </body>
 

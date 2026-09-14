@@ -36,7 +36,7 @@ class LoginController extends Controller
 
             switch ($user->role) {
                 case 'admin':
-                    return redirect('/admin');
+                    return redirect()->intended('/admin');
 
                 case 'guru':
                     return redirect('/guru');

@@ -29,7 +29,7 @@
         <div class="panel-body">
             <dl class="detail-grid">
                 <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnal->guru->nama_guru }}</dd></div>
-                <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_mulai }} - {{ $jurnal->jamSelesai->jam_selesai }}</dd></div>
+                <div class="detail-item"><dt>Jam</dt><dd>{{ substr($jurnal->jamMulai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[0], 0, 5) }} - {{ substr($jurnal->jamSelesai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[1], 0, 5) }}</dd></div>
                 <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnal->status_guru }}</dd></div>
                 <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
                 <div class="detail-item" style="grid-column:1/-1"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
@@ -38,6 +38,24 @@
                 <div class="detail-item" style="grid-column:1/-1"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
             </dl>
         </div>
+    </section>
+
+    <section class="panel" style="margin-top:24px">
+        <div class="panel-head"><h2>Absensi siswa</h2><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa</span></div>
+        <div class="table-wrap"><table>
+            <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
+            <tbody>
+                @forelse ($jurnal->absensis as $absensi)
+                    <tr>
+                        <td>{{ $absensi->siswa->nama_siswa }}</td>
+                        <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
+                        <td>{{ $absensi->catatan ?: '-' }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="3">Belum ada absensi siswa.</td></tr>
+                @endforelse
+            </tbody>
+        </table></div>
     </section>
 
     @if (auth()->user()->role === 'sekretaris' && $jurnal->status_verifikasi === 'Menunggu')

@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Ajukan dispensasi</h1>
+            <h1>{{ auth()->user()->role === 'piket' ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
             <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
         </div><a
             class="btn btn-muted"
@@ -23,12 +23,23 @@
                 enctype="multipart/form-data"
             >
                 @csrf
+                @if (auth()->user()->role === 'piket')
+                    <div class="field">
+                        <label for="student-search">Cari siswa berdasarkan nama, NIS, atau kelas</label>
+                        <input id="student-search" type="search" autocomplete="off" placeholder="Cari siswa">
+                        <label for="student-picker">Siswa</label><select id="student-picker"></select>
+                        <button type="button" class="btn btn-muted" id="add-student">+ Tambahkan siswa</button>
+                        <p>Siswa meminta dispensasi kepada piket. Tambahkan siswa satu per satu, lalu kirim pernyataan untuk diverifikasi admin.</p>
+                        <ul id="selected-students"></ul><p id="student-count" aria-live="polite"></p>
+                        @error('siswa_ids')<small class="error">{{ $message }}</small>@enderror
+                    </div>
+                @endif
                 <div class="form-grid">
                     <div class="field"><label for="tanggal">Tanggal dispensasi</label><input
                             id="tanggal"
                             type="date"
                             name="tanggal"
-                            value="{{ old('tanggal') }}"
+                            value="{{ old('tanggal', today()->toDateString()) }}"
                             required
                         ></div>
                     <div class="field"><label for="jam_mulai_id">Jam mulai</label><select
@@ -90,4 +101,34 @@
             </form>
         </div>
     </section>
+    @if (auth()->user()->role === 'piket')
+    <script>
+    (() => {
+        const students = {{ Illuminate\Support\Js::from($siswas) }};
+        const selected = new Set({{ Illuminate\Support\Js::from(old('siswa_ids', [])) }}.map(String));
+        const picker = document.getElementById('student-picker');
+        const search = document.getElementById('student-search');
+        const list = document.getElementById('selected-students');
+        const label = student => `${student.nama_siswa} · ${student.nis} · ${student.kelas?.nama_kelas ?? ''}`;
+        function render() {
+            picker.replaceChildren(new Option('Pilih siswa', ''));
+            students.filter(student => !selected.has(String(student.id)) && label(student).toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+                .forEach(student => picker.add(new Option(label(student), student.id)));
+            list.replaceChildren();
+            students.filter(student => selected.has(String(student.id))).forEach(student => {
+                const row = document.createElement('li');
+                const text = document.createElement('span'); text.textContent = label(student) + ' ';
+                const input = document.createElement('input'); input.type = 'hidden'; input.name = 'siswa_ids[]'; input.value = student.id;
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-muted'; remove.textContent = 'Hapus'; remove.setAttribute('aria-label', 'Hapus ' + student.nama_siswa);
+                remove.addEventListener('click', () => { selected.delete(String(student.id)); render(); });
+                row.append(text, input, remove); list.append(row);
+            });
+            document.getElementById('student-count').textContent = selected.size + ' siswa ditambahkan';
+        }
+        search.addEventListener('input', render);
+        document.getElementById('add-student').addEventListener('click', () => { if (picker.value) { selected.add(picker.value); render(); } });
+        render();
+    })();
+    </script>
+    @endif
 @endsection

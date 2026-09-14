@@ -9,10 +9,10 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RekapController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\RekapController;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
@@ -241,17 +241,17 @@ Route::post('/absensi', [AbsensiController::class, 'store'])
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])
-    ->middleware('role:siswa')
+    ->middleware('role:piket')
     ->name('dispensasi.create');
 
-Route::middleware('role:siswa,piket,admin')->group(function () {
+Route::middleware(['auth', 'role:siswa,piket,admin'])->group(function () {
     Route::get('/dispensasi', [DispensasiController::class, 'index'])->name('dispensasi.index');
     Route::get('/dispensasi/{dispensasi}/bukti', [DispensasiController::class, 'downloadEvidence'])
         ->name('dispensasi.evidence');
     Route::get('/dispensasi/{dispensasi}', [DispensasiController::class, 'show'])->name('dispensasi.show');
 });
 
-Route::middleware('role:siswa')->group(function () {
+Route::middleware('role:piket')->group(function () {
     Route::post('/dispensasi', [DispensasiController::class, 'store'])->name('dispensasi.store');
 });
 
