@@ -13,6 +13,7 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,10 @@ class JurnalController extends Controller
             $query->where('guru_id', $this->currentGuru()->id);
         }
 
+        if (auth()->user()->role === 'sekretaris') {
+            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
+        }
+
         $query
             ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($builder) => $builder->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
@@ -38,7 +43,8 @@ class JurnalController extends Controller
 
         return view('jurnal.index', [
             'jurnals' => $query->paginate(15)->withQueryString(),
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
+            'kelas' => Kelas::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('id', auth()->user()->kelasSekretaris()->select('kelas.id')))
+                ->orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
         ]);
     }
@@ -56,17 +62,26 @@ class JurnalController extends Controller
         $this->validatePeriodOrder($data);
 
         $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
+            // Serialize submissions for this teacher, including two tabs saving at once.
+            $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
+            $existing = $this->journalForSession($guru->id, $data)->lockForUpdate()->first();
+            if ($existing) {
+                return $existing;
+            }
+
             $jurnal = Jurnal::create([
                 ...$data,
-                'guru_id' => $this->currentGuru()->id,
+                'guru_id' => $guru->id,
             ]);
             $this->syncAbsensis($jurnal, $absensis);
 
             return $jurnal;
-        });
+        }, 5);
 
         return redirect()->route('jurnal.show', $jurnal)
-            ->with('success', 'Jurnal berhasil disimpan.');
+            ->with('success', $jurnal->wasRecentlyCreated
+                ? 'Jurnal berhasil disimpan.'
+                : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
     }
 
     public function show(Jurnal $jurnal): View
@@ -128,6 +143,7 @@ class JurnalController extends Controller
 
     public function verify(Request $request, Jurnal $jurnal): RedirectResponse
     {
+        $this->authorizeJournal($jurnal);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
 
         $data = $request->validate([
@@ -151,9 +167,25 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
+    /** @param array<string, mixed> $session */
+    private function journalForSession(int $guruId, array $session): Builder
+    {
+        return Jurnal::where('guru_id', $guruId)
+            ->whereDate('tanggal', $session['tanggal'])
+            ->where('kelas_id', $session['kelas_id'])
+            ->where('mapel_id', $session['mapel_id'])
+            ->where('jam_mulai_id', $session['jam_mulai_id'])
+            ->where('jam_selesai_id', $session['jam_selesai_id'])
+            ->orderBy('id');
+    }
+
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
     {
         abort_unless(in_array(auth()->user()->role, ['guru', 'admin', 'sekretaris'], true), 403);
+
+        if (auth()->user()->role === 'sekretaris') {
+            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jurnal->kelas_id)->exists(), 403);
+        }
 
         if ($mustOwn || auth()->user()->role === 'guru') {
             abort_unless($jurnal->guru_id === $this->currentGuru()->id, 403);
@@ -224,6 +256,9 @@ class JurnalController extends Controller
 
         return [
             'sessions' => $sessions,
+            'existingJournal' => ! $jurnal && $session
+                ? $this->journalForSession($this->currentGuru()->id, [...$session, 'tanggal' => $date->toDateString()])->first()
+                : null,
             'activeSession' => $jurnal ? null : $session,
             'scheduleConflict' => $active->count() > 1,
             'approvedDispensasis' => Dispensasi::with(['jamMulai', 'jamSelesai'])->whereDate('tanggal', $date)

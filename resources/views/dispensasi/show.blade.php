@@ -12,10 +12,7 @@
             href="{{ route('dispensasi.index') }}"
         >Kembali ke riwayat</a>
     </div>
-    <section
-        class="panel"
-        style="margin-bottom:18px"
-    >
+    <section class="panel panel-spaced">
         <div class="panel-head">
             <h2>Informasi pengajuan</h2><span
                 class="status {{ $dispensasi->status_akhir === 'Disetujui' ? 'approved' : ($dispensasi->status_akhir === 'Ditolak' ? 'rejected' : 'pending') }}"
@@ -54,10 +51,7 @@
                         @endif
                     </dd>
                 </div>
-                <div
-                    class="detail-item"
-                    style="grid-column:1/-1"
-                >
+                <div class="detail-item detail-item-full">
                     <dt>Alasan/kegiatan</dt>
                     <dd>{{ $dispensasi->alasan }}</dd>
                 </div>
@@ -72,10 +66,7 @@
                     </dd>
                 </div>
                 @if ($dispensasi->catatan_verifikasi)
-                    <div
-                        class="detail-item"
-                        style="grid-column:1/-1"
-                    >
+                    <div class="detail-item detail-item-full">
                         <dt>Catatan verifikasi</dt>
                         <dd>{{ $dispensasi->catatan_verifikasi }}</dd>
                     </div>

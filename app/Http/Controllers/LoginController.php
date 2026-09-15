@@ -71,9 +71,11 @@ class LoginController extends Controller
         ]);
 
         $identity = trim($request->input('login'));
+        $studentUserId = Siswa::query()->where('nis', $identity)->value('user_id');
         $user = User::query()
-            ->where('username', $identity)
-            ->orWhere('email', $identity)
+            ->when($studentUserId !== null, fn ($query) => $query->whereKey($studentUserId), fn ($query) => $query
+                ->where('username', $identity)
+                ->orWhere('email', $identity))
             ->first();
 
         if (! $user) {

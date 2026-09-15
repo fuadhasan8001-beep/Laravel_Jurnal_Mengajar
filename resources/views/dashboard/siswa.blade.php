@@ -9,8 +9,8 @@
             <p>Kelola pengajuan dispensasi dan lihat riwayat status Anda.</p>
         </div><a
             class="btn"
-            href="{{ route('dispensasi.create') }}"
-        >Ajukan dispensasi</a>
+            href="{{ route('dispensasi.index') }}"
+        >Lihat dispensasi</a>
     </div>
     <div class="stats">
         <div class="stat-card"><span class="stat-icon amber"><svg
@@ -68,7 +68,7 @@
             <h2>Aktivitas dispensasi</h2><a href="{{ route('dispensasi.index') }}">Lihat semua</a>
         </div>
         <div class="panel-body">
-            <p style="margin:0;color:var(--muted);font-size:14px">Ajukan dispensasi lebih awal agar
+            <p class="dashboard-note">Ajukan dispensasi lebih awal agar
                 proses verifikasi berjalan lancar.</p>
         </div>
     </section>

@@ -39,8 +39,9 @@
                             id="tanggal"
                             type="date"
                             name="tanggal"
-                            value="{{ old('tanggal', today()->toDateString()) }}"
-                            required
+                            value="{{ today()->toDateString() }}"
+                            class="field-readonly"
+                            readonly
                         ></div>
                     <div class="field"><label for="jam_mulai_id">Jam mulai</label><select
                             id="jam_mulai_id"
@@ -82,9 +83,7 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
-                    <div class="field full"><label for="bukti">Bukti atau surat <span
-                                style="font-weight:400;color:var(--muted)"
-                            >(PDF/JPG/PNG, maksimal 5 MB)</span></label><input
+                    <div class="field full"><label for="bukti">Bukti atau surat <span class="field-help">(PDF/JPG/PNG, maksimal 5 MB)</span></label><input
                             id="bukti"
                             type="file"
                             name="bukti"

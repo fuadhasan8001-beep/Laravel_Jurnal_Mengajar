@@ -227,6 +227,8 @@
                                     type="button"
                                     id="toggle-password"
                                     class="password-toggle"
+                                    aria-label="Tampilkan password"
+                                    title="Tampilkan password"
                                 >
                                     <span id="eye-open">👁</span>
                                     <span
@@ -301,6 +303,15 @@
                 eyeClosed.classList.toggle(
                     'hidden',
                     !isPassword
+                );
+
+                togglePassword.setAttribute(
+                    'aria-label',
+                    isPassword ? 'Sembunyikan password' : 'Tampilkan password'
+                );
+                togglePassword.setAttribute(
+                    'title',
+                    isPassword ? 'Sembunyikan password' : 'Tampilkan password'
                 );
 
             });

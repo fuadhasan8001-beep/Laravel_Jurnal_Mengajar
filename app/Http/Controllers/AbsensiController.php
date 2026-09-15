@@ -22,6 +22,10 @@ class AbsensiController extends Controller
             $query->where('guru_id', $this->currentGuru()->id);
         }
 
+        if (auth()->user()->role === 'sekretaris') {
+            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
+        }
+
         return view('absensi.index', ['jurnals' => $query->get()]);
     }
 
@@ -68,6 +72,10 @@ class AbsensiController extends Controller
     {
         if (auth()->user()->role === 'guru') {
             abort_unless($jurnal->guru_id === $this->currentGuru()->id, 403);
+        }
+
+        if (auth()->user()->role === 'sekretaris') {
+            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jurnal->kelas_id)->exists(), 403);
         }
     }
 

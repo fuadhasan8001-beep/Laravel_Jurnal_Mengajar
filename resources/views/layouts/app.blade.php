@@ -60,6 +60,7 @@
                 width: 250px;
                 height: 100vh;
                 flex-direction: column;
+                overflow-y: auto;
                 padding: 28px 18px;
                 background: var(--navy);
                 color: #fff;
@@ -199,6 +200,10 @@
                 line-height: 1;
             }
 
+            .mobile-nav {
+                display: none;
+            }
+
             .topbar {
                 display: flex;
                 min-height: 78px;
@@ -248,6 +253,8 @@
                 top: calc(100% + 8px);
                 right: 0;
                 width: 300px;
+                max-height: 360px;
+                overflow-y: auto;
                 border: 1px solid var(--line);
                 border-radius: 10px;
                 background: #fff;
@@ -257,6 +264,11 @@
 
             .notification-item {
                 display: block;
+                width: 100%;
+                text-align: left;
+                border: 0;
+                background: transparent;
+                cursor: pointer;
                 border-radius: 7px;
                 padding: 10px;
                 color: var(--ink);
@@ -299,6 +311,18 @@
                 margin: 7px 0 0;
                 color: var(--muted);
                 font-size: 14px;
+            }
+
+            .page-head .form-actions {
+                width: auto;
+                max-width: none;
+                margin: 0;
+            }
+
+            .page-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
             }
 
             .btn {
@@ -412,6 +436,89 @@
 
             .panel-body {
                 padding: 20px;
+            }
+
+            .panel-spaced {
+                margin-bottom: 18px;
+            }
+
+            .panel-top-spaced {
+                margin-top: 24px;
+            }
+
+            .detail-item-full {
+                grid-column: 1 / -1;
+            }
+
+            .dashboard-note {
+                margin: 0;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .field-readonly {
+                background: #f3f4f6;
+                color: #6b7280;
+            }
+
+            .field-help {
+                color: var(--muted);
+                font-weight: 400;
+            }
+
+            .inline-form {
+                display: inline;
+            }
+
+            .assignment-panel {
+                margin-bottom: 24px;
+            }
+
+            .assignment-list,
+            .credential-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .class-chip {
+                border: 1px solid #c9d9f7;
+                border-radius: 999px;
+                padding: 7px 11px;
+                background: #f2f6ff;
+                color: var(--blue);
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            .empty-inline {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .credential-panel {
+                margin-bottom: 24px;
+                border-color: #c9d9f7;
+            }
+
+            .credential-grid > div {
+                display: grid;
+                min-width: 220px;
+                gap: 5px;
+            }
+
+            .credential-grid code {
+                border-radius: 6px;
+                padding: 8px 10px;
+                background: #f4f7fb;
+                color: var(--ink);
+                font-size: 13px;
+            }
+
+            .credential-warning {
+                border-top: 1px solid var(--line);
+                color: var(--muted);
+                font-size: 12px;
             }
 
             .table-wrap {
@@ -714,8 +821,11 @@
                     position: fixed;
                     z-index: 40;
                     width: 100%;
-                    height: auto;
-                    padding: 16px;
+                    height: 0;
+                    overflow: hidden;
+                    padding: 0;
+                    visibility: hidden;
+                    pointer-events: none;
                 }
 
                 .app-shell {
@@ -732,19 +842,8 @@
                     display: none;
                 }
 
-                .sidebar.is-open {
-                    height: 100vh;
-                    overflow-y: auto;
-                }
-
-                .sidebar.is-open .nav-label,
-                .sidebar.is-open .nav-list,
-                .sidebar.is-open .sidebar-footer {
-                    display: block;
-                }
-
                 .menu-toggle {
-                    display: inline-flex;
+                    display: none;
                 }
 
                 .main {
@@ -753,6 +852,8 @@
                 }
 
                 .topbar {
+                    position: relative;
+                    z-index: 50;
                     min-height: 70px;
                     padding: 0 18px;
                 }
@@ -762,13 +863,63 @@
                 }
 
                 .content {
-                    padding: 26px 16px 40px;
+                    padding: 26px 16px 104px;
+                }
+
+                .mobile-nav {
+                    position: fixed;
+                    z-index: 60;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    display: flex;
+                    gap: 4px;
+                    overflow-x: auto;
+                    border-top: 1px solid var(--line);
+                    background: #fff;
+                    box-shadow: 0 -8px 24px #203b6414;
+                    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+                    scrollbar-width: none;
+                }
+
+                .mobile-nav::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .mobile-nav-link {
+                    display: flex;
+                    min-width: 78px;
+                    flex: 0 0 auto;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 9px;
+                    padding: 8px 7px;
+                    color: var(--muted);
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-align: center;
+                    white-space: nowrap;
+                }
+
+                .mobile-nav-link.active,
+                .mobile-nav-link:focus-visible {
+                    background: #eaf1ff;
+                    color: var(--blue);
+                    text-decoration: none;
                 }
 
                 .page-head {
                     align-items: flex-start;
                     flex-direction: column;
                     margin-bottom: 22px;
+                }
+
+                .page-actions {
+                    width: 100%;
+                }
+
+                .page-actions .btn {
+                    flex: 1;
                 }
 
                 .page-head h1 {
@@ -1164,123 +1315,6 @@
         padding: 9px 10px;
     }
 
-    /* =========================================================
-   JOURNAL - FULL WIDTH DESKTOP + RESPONSIVE
-========================================================= */
-
-.form-panel:has(.journal-layout) {
-    width: 100%;
-    max-width: none;
-}
-
-.journal-layout {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 24px;
-    align-items: start;
-}
-
-.journal-main {
-    min-width: 0;
-}
-
-.journal-side {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* tombol bawah juga full area */
-.form-actions {
-    width: 100%;
-    max-width: none;
-    margin: 24px 0 0;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (max-width: 1000px) {
-
-    .journal-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .journal-side {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-}
-
-
-/* =========================================================
-   HP
-========================================================= */
-
-@media (max-width: 680px) {
-
-    .form-panel:has(.journal-layout) {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .journal-layout {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .journal-main,
-    .journal-side {
-        width: 100%;
-    }
-
-    .journal-side {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-actions {
-        flex-direction: column-reverse;
-    }
-
-    .form-actions .btn {
-        width: 100%;
-    }
-
-}
-
-
-/* =========================================================
-   HP KECIL
-========================================================= */
-
-@media (max-width: 400px) {
-
-    .content {
-        padding-left: 14px;
-        padding-right: 14px;
-    }
-
-
-}
-
 }
 
         </style>
@@ -1321,7 +1355,7 @@
                                 <path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9Z" />
                                 <path d="M9 21v-6h6v6" />
                             </svg>Dashboard</a>
-                        @if (in_array(auth()->user()->role, ['admin', 'guru', 'piket'], true))
+                        @if (in_array(auth()->user()->role, ['admin', 'guru', 'piket', 'sekretaris'], true))
                             <a
                                 class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                                 href="{{ route('absensi.index') }}"
@@ -1401,6 +1435,10 @@
                                 href="{{ route('admin.kelas.index') }}"
                             >Kelas</a>
                             <a
+                                class="nav-link {{ request()->is('admin/data/pengurus-kelas*') ? 'active' : '' }}"
+                                href="{{ route('admin.secretaries.index') }}"
+                            >Pengurus kelas</a>
+                            <a
                                 class="nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}"
                                 href="{{ route('admin.mapel.index') }}"
                             >Mata pelajaran</a>
@@ -1451,15 +1489,16 @@
                                         Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})
                                     </summary>
                                     <div class="notification-list">
-                                        @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
+                                        @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
                                             <form action="{{ route('notifications.read', $notification->id) }}" method="POST">
                                                 @csrf
                                                 <button class="notification-item" type="submit">
                                                     {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
+                                                    <br><small>{{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }} · {{ $notification->created_at->format('d/m H:i') }}</small>
                                                 </button>
                                             </form>
                                         @empty
-                                            <div class="notification-empty">Tidak ada notifikasi baru.</div>
+                                            <div class="notification-empty">Belum ada notifikasi.</div>
                                         @endforelse
                                         @if (auth()->user()->unreadNotifications()->exists())
                                             <form action="{{ route('notifications.read-all') }}" method="POST">
@@ -1489,6 +1528,30 @@
                             </svg>{{ now()->translatedFormat('l, d F Y') }}
                         </div>
                     </header>
+                    <nav class="mobile-nav" aria-label="Navigasi utama">
+                        <a class="mobile-nav-link {{ request()->is(auth()->user()->role) ? 'active' : '' }}" href="{{ url('/' . auth()->user()->role) }}">Beranda</a>
+                        @if (in_array(auth()->user()->role, ['admin', 'guru', 'piket', 'sekretaris'], true))
+                            <a class="mobile-nav-link {{ request()->is('absensi*') ? 'active' : '' }}" href="{{ route('absensi.index') }}">Absensi</a>
+                        @endif
+                        @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
+                            <a class="mobile-nav-link {{ request()->is('jurnal*') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Jurnal</a>
+                        @endif
+                        @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris', 'piket'], true))
+                            <a class="mobile-nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Laporan</a>
+                        @endif
+                        @if (in_array(auth()->user()->role, ['siswa', 'piket', 'admin'], true))
+                            <a class="mobile-nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
+                        @endif
+                        @if (auth()->user()->role === 'admin')
+                            <a class="mobile-nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}" href="{{ route('admin.registrations.index') }}">Pendaftaran</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}" href="{{ route('admin.gurus.index') }}">Guru</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}" href="{{ route('admin.siswas.index') }}">Siswa</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}" href="{{ route('admin.kelas.index') }}">Kelas</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/pengurus-kelas*') ? 'active' : '' }}" href="{{ route('admin.secretaries.index') }}">Pengurus</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}" href="{{ route('admin.mapel.index') }}">Mapel</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/data/jam*') ? 'active' : '' }}" href="{{ route('admin.jam.index') }}">Jam</a>
+                        @endif
+                    </nav>
                     <main class="content">
                         @if (session('success'))
                             <div class="alert success">{{ session('success') }}</div>
@@ -1510,6 +1573,24 @@
                     const open = sidebar.classList.toggle('is-open');
                     menuToggle.setAttribute('aria-expanded', String(open));
                     menuToggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+                });
+
+                document.querySelectorAll('[data-confirm]').forEach((form) => {
+                    form.addEventListener('submit', (event) => {
+                        if (! window.confirm(form.dataset.confirm)) {
+                            event.preventDefault();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('[data-mark-present]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        button.closest('section').querySelectorAll('select[data-absence-status]').forEach((select) => {
+                            if (! select.disabled) {
+                                select.value = 'H';
+                            }
+                        });
+                    });
                 });
             </script>
         @endauth

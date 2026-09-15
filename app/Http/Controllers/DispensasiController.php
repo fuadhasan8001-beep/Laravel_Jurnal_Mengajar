@@ -54,6 +54,8 @@ class DispensasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $request->merge(['tanggal' => today()->toDateString()]);
+
         $data = $request->validate([
             'siswa_ids' => [auth()->user()->role === 'piket' ? 'required' : 'exclude', 'array', 'min:1', 'max:100'],
             'siswa_ids.*' => ['integer', 'distinct', 'exists:siswas,id'],

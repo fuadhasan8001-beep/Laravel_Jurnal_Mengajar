@@ -126,7 +126,10 @@
                     <tbody>
                         @foreach ($jadwalHariIni as $jadwal)
                             @php
-                                $jurnal = $jurnalHariIni->first(fn ($item) => (int) $item->kelas_id === (int) $jadwal->kelas_id && (int) $item->mapel_id === (int) $jadwal->mapel_id && (int) $item->jam_mulai_id === (int) $jadwal->jam_pelajaran_id);
+                                $jurnal = $jurnalHariIni->first(fn ($item) => (int) $item->kelas_id === (int) $jadwal->kelas_id
+                                    && (int) $item->mapel_id === (int) $jadwal->mapel_id
+                                    && $item->jamMulai->jam_ke <= $jadwal->jamPelajaran->jam_ke
+                                    && $item->jamSelesai->jam_ke >= $jadwal->jamPelajaran->jam_ke);
                             @endphp
                             <tr>
                                 <td>Jam {{ $jadwal->jamPelajaran->jam_ke }}<br><span class="eyebrow">{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</span></td>
@@ -140,8 +143,10 @@
                                 <td>
                                     @if ($jurnal)
                                         <a href="{{ route('jurnal.show', $jurnal) }}">Lihat jurnal</a>
+                                    @elseif ($activeJadwalIds->contains($jadwal->id))
+                                        <a href="{{ route('jurnal.create', ['jadwal_id' => $jadwal->id]) }}">Buat jurnal</a>
                                     @else
-                                        <a href="{{ route('jurnal.create', ['kelas_id' => $jadwal->kelas_id, 'mapel_id' => $jadwal->mapel_id, 'jam_mulai_id' => $jadwal->jam_pelajaran_id, 'jam_selesai_id' => $jadwal->jam_pelajaran_id]) }}">Buat jurnal</a>
+                                        <span class="eyebrow">Belum aktif</span>
                                     @endif
                                     <a href="{{ route('absensi.index') }}">Absensi</a>
                                 </td>

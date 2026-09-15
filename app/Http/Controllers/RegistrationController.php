@@ -24,7 +24,7 @@ class RegistrationController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:guru,siswa,sekretaris,piket'],
+            'role' => ['required', 'in:guru,siswa,piket'],
         ]);
 
         if (User::where('email', $data['email'])->exists() || RegistrationRequest::where('email', $data['email'])->where('status', 'pending')->exists()) {

@@ -11,7 +11,7 @@
         <div class="form-actions">
             @if (auth()->user()->role === 'guru' && $jurnal->status_verifikasi === 'Menunggu')
                 <a class="btn btn-muted" href="{{ route('jurnal.edit', $jurnal) }}">Edit</a>
-                <form action="{{ route('jurnal.destroy', $jurnal) }}" method="POST" onsubmit="return confirm('Hapus jurnal ini?')">
+                <form action="{{ route('jurnal.destroy', $jurnal) }}" method="POST" data-confirm="Hapus jurnal ini?">
                     @csrf
                     @method('DELETE')
                     <button class="btn" type="submit">Hapus</button>
@@ -32,15 +32,15 @@
                 <div class="detail-item"><dt>Jam</dt><dd>{{ substr($jurnal->jamMulai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[0], 0, 5) }} - {{ substr($jurnal->jamSelesai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[1], 0, 5) }}</dd></div>
                 <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnal->status_guru }}</dd></div>
                 <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
-                <div class="detail-item" style="grid-column:1/-1"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
-                <div class="detail-item" style="grid-column:1/-1"><dt>Kegiatan</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
-                <div class="detail-item" style="grid-column:1/-1"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
-                <div class="detail-item" style="grid-column:1/-1"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
+                <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
+                <div class="detail-item detail-item-full"><dt>Kegiatan</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
+                <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
+                <div class="detail-item detail-item-full"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
             </dl>
         </div>
     </section>
 
-    <section class="panel" style="margin-top:24px">
+    <section class="panel panel-top-spaced">
         <div class="panel-head"><h2>Absensi siswa</h2><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa</span></div>
         <div class="table-wrap"><table>
             <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>

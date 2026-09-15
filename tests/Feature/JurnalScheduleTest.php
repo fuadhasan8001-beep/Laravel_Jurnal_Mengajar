@@ -6,12 +6,95 @@ use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\Siswa;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\JadwalSemesterSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+it('does not duplicate a saved lesson or overwrite its attendance on resubmission', function (string $verification) {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+    $student = Siswa::create(['user_id' => User::factory()->create(['role' => 'siswa'])->id,
+        'kelas_id' => $data['kelas']->id, 'nis' => 'DUPLICATE-1', 'nama_siswa' => 'Siswa Uji', 'jenis_kelamin' => 'L']);
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'status_guru' => 'Hadir', 'materi' => 'Materi pertama',
+        'absensi' => [['siswa_id' => $student->id, 'status' => 'S', 'catatan' => 'Demam']],
+    ])->assertSessionHasNoErrors();
+    $journal = Jurnal::firstOrFail();
+    $journal->update(['status_verifikasi' => $verification]);
+
+    $this->post(route('jurnal.store'), ['status_guru' => 'Izin', 'materi' => 'Materi kedua',
+        'absensi' => [['siswa_id' => $student->id, 'status' => 'H']],
+    ])->assertRedirect(route('jurnal.show', $journal))
+        ->assertSessionHas('success', 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
+
+    $this->assertDatabaseCount('jurnals', 1);
+    $this->assertDatabaseHas('jurnals', ['id' => $journal->id, 'materi' => 'Materi pertama', 'status_guru' => 'Hadir', 'status_verifikasi' => $verification]);
+    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'S', 'catatan' => 'Demam']);
+})->with(['Menunggu', 'Disetujui', 'Ditolak']);
+
+it('replaces the creation form with links to the saved lesson', function (string $verification) {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+    $journal = Jurnal::firstOrFail();
+    $journal->update(['status_verifikasi' => $verification]);
+
+    $response = $this->get(route('jurnal.create'));
+
+    $response->assertSee('Jurnal untuk sesi ini sudah diisi.')->assertSee(route('jurnal.show', $journal))
+        ->assertDontSee('id="journal-form"', false);
+    if ($verification === 'Menunggu') {
+        $response->assertSee(route('jurnal.edit', $journal));
+    } else {
+        $response->assertDontSee(route('jurnal.edit', $journal));
+    }
+})->with(['Menunggu', 'Disetujui', 'Ditolak']);
+
+it('allows the same lesson on another date', function () {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+    $this->travelTo(Carbon::parse('2026-09-21 11:20:00', 'Asia/Jakarta'));
+
+    $this->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+
+    $this->assertDatabaseCount('jurnals', 2);
+});
+
+it('allows another session in the same class on the same date', function () {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+    $period = JamPelajaran::create(['jam_ke' => 10, 'jam_mulai' => '14:25:00', 'jam_selesai' => '15:00:00', 'is_active' => true]);
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $period->id, 'hari' => 'Senin', 'is_active' => true]);
+    $this->travelTo(Carbon::parse('2026-09-14 14:30:00', 'Asia/Jakarta'));
+
+    $this->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+
+    $this->assertDatabaseCount('jurnals', 2);
+    $this->assertDatabaseHas('jurnals', ['jam_mulai_id' => $period->id, 'jam_selesai_id' => $period->id]);
+});
+
+it('keeps another active class accessible after the first class has been filled', function () {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+    $kelas = Kelas::create(['nama_kelas' => 'X TKI 2', 'tingkat' => 'X']);
+    $schedule = Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $kelas->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $data['periods'][0]->id, 'hari' => 'Senin', 'is_active' => true]);
+
+    $this->get(route('jurnal.create'))->assertSee(route('jurnal.create', ['jadwal_id' => $schedule->id]));
+    $this->get(route('jurnal.create', ['jadwal_id' => $schedule->id]))->assertSee('id="journal-form"', false);
+    $this->post(route('jurnal.store'), ['jadwal_id' => $schedule->id, 'status_guru' => 'Hadir'])->assertSessionHasNoErrors();
+
+    $this->assertDatabaseCount('jurnals', 2);
+    $this->assertDatabaseHas('jurnals', ['kelas_id' => $kelas->id]);
+});
 
 function activeJournalSchedule(): array
 {

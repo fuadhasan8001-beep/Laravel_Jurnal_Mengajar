@@ -5,12 +5,12 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Meja verifikasi</h1>
-            <p>Tinjau bukti dan validasi dispensasi siswa yang masuk.</p>
+            <h1>Meja piket</h1>
+            <p>Pengajuan dispensasi siswa.</p>
         </div><a
             class="btn"
-            href="{{ route('dispensasi.index') }}"
-        >Lihat pengajuan</a>
+            href="{{ route('dispensasi.create') }}"
+        >Buat pengajuan</a>
     </div>
     <div class="stats">
         <div class="stat-card"><span class="stat-icon amber"><svg
@@ -68,17 +68,16 @@
     </div>
     <section class="panel">
         <div class="panel-head">
-            <h2>Alur kerja piket</h2><span class="eyebrow">Verifikasi tahap pertama</span>
+            <h2>Pengajuan dispensasi</h2><span class="eyebrow">Persetujuan admin</span>
         </div>
         <div class="panel-body">
-            <p style="margin:0;color:var(--muted);font-size:14px">Periksa tanggal, rentang jam, alasan,
-                dan bukti sebelum menyetujui pengajuan.</p>
+            <p class="dashboard-note">Siswa datang ke meja piket. Piket mencatat siswa, alasan, dan bukti, lalu mengirim pengajuan kepada admin.</p>
         </div>
     </section>
 
     <section class="panel">
         <div class="panel-head">
-            <h2>Tugas yang perlu dikerjakan</h2>
+            <h2>Menunggu keputusan admin</h2>
             <a href="{{ route('dispensasi.index') }}">Lihat semua</a>
         </div>
 
@@ -112,7 +111,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('dispensasi.show', $pengajuan) }}">
-                                        Periksa
+                                        Lihat detail
                                     </a>
                                 </td>
                             </tr>

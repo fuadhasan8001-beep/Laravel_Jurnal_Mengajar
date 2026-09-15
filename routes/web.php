@@ -23,7 +23,14 @@ use App\Models\Siswa;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $user = auth()->user();
+    if (! $user) {
+        return redirect()->route('login');
+    }
+
+    abort_unless($user->is_active && in_array($user->role, ['admin', 'guru', 'piket', 'siswa', 'sekretaris'], true), 403);
+
+    return redirect('/'.$user->role);
 });
 
 Route::get('login', function () {
@@ -62,6 +69,8 @@ Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::get('/siswa/{siswa}/edit', [AdminDataController::class, 'editSiswa'])->name('admin.siswas.edit');
     Route::put('/siswa/{siswa}', [AdminDataController::class, 'updateSiswa'])->name('admin.siswas.update');
     Route::delete('/siswa/{siswa}', [AdminDataController::class, 'destroySiswa'])->name('admin.siswas.destroy');
+    Route::get('/pengurus-kelas', [AdminDataController::class, 'secretaries'])->name('admin.secretaries.index');
+    Route::post('/pengurus-kelas/{kelas}/reset', [AdminDataController::class, 'resetSecretary'])->name('admin.secretaries.reset');
     Route::get('/kelas', [AdminReferenceController::class, 'kelas'])->name('admin.kelas.index');
     Route::post('/kelas', [AdminReferenceController::class, 'storeKelas'])->name('admin.kelas.store');
     Route::get('/kelas/create', fn () => view('admin.reference.form', ['type' => 'kelas', 'title' => 'Tambah Kelas']))->name('admin.kelas.create');
@@ -154,9 +163,8 @@ Route::get('/admin', function () {
         'totalJurnal' => Jurnal::count(),
         'jurnalHariIni' => Jurnal::whereDate('tanggal', today())->count(),
         'jurnalBulanIni' => Jurnal::whereMonth('tanggal', now()->month)->whereYear('tanggal', now()->year)->count(),
-        'jurnalBelumLengkap' => Jurnal::where(function ($query): void {
-            $query->whereNull('tujuan_pembelajaran')->orWhere('tujuan_pembelajaran', '');
-        })->count(),
+        'jurnalMenunggu' => Jurnal::where('status_verifikasi', 'Menunggu')->count(),
+        'totalJadwal' => Jadwal::where('is_active', true)->count(),
         'menungguVerifikasi' => Dispensasi::where('status_akhir', 'Menunggu')->count(),
         'disetujuiBulanIni' => Dispensasi::where('status_akhir', 'Disetujui')->whereMonth('updated_at', now()->month)->count(),
         'perluPerhatian' => Dispensasi::where('status_akhir', 'Ditolak')->whereMonth('updated_at', now()->month)->count(),
@@ -174,13 +182,20 @@ Route::get('/guru', function () {
         'kelasAktif' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
             ->distinct('kelas_id')
             ->count('kelas_id'),
-        'siswaTerpantau' => Siswa::count(),
+        'siswaTerpantau' => Siswa::whereIn('kelas_id', Jadwal::where('guru_id', $guru?->id)
+            ->where('is_active', true)
+            ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
+            ->select('kelas_id'))->count(),
         'jadwalHariIni' => Jadwal::with(['kelas', 'mapel', 'jamPelajaran'])
             ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
             ->where('hari', $hariIni)
             ->where('is_active', true)
             ->get(),
-        'jurnalHariIni' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        'activeJadwalIds' => $guru
+            ? Jadwal::sessionsForGuru($guru, now())->where('active', true)->pluck('id')
+            : collect(),
+        'jurnalHariIni' => Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
             ->whereDate('tanggal', today())
             ->get(),
     ]);
@@ -199,12 +214,16 @@ Route::get('/siswa', function () {
 })->middleware('role:siswa');
 
 Route::get('/sekretaris', function () {
+    $classIds = auth()->user()->kelasSekretaris()->select('kelas.id');
+
     return view('dashboard.sekretaris', [
-        'jurnalTercatat' => Jurnal::count(),
-        'jurnalLengkap' => Jurnal::whereNotNull('materi')->where('materi', '!=', '')->count(),
-        'jurnalMenunggu' => Jurnal::where('status_verifikasi', 'Menunggu')->count(),
-        'kelasAktif' => Jurnal::distinct('kelas_id')->count('kelas_id'),
+        'kelasSekretaris' => auth()->user()->kelasSekretaris()->orderBy('nama_kelas')->get(),
+        'jurnalTercatat' => Jurnal::whereIn('kelas_id', $classIds)->count(),
+        'jurnalLengkap' => Jurnal::whereIn('kelas_id', $classIds)->whereNotNull('materi')->where('materi', '!=', '')->count(),
+        'jurnalMenunggu' => Jurnal::whereIn('kelas_id', $classIds)->where('status_verifikasi', 'Menunggu')->count(),
+        'kelasAktif' => Jurnal::whereIn('kelas_id', $classIds)->distinct('kelas_id')->count('kelas_id'),
         'jurnalPerluVerifikasi' => Jurnal::with(['guru', 'kelas', 'mapel'])
+            ->whereIn('kelas_id', $classIds)
             ->where('status_verifikasi', 'Menunggu')
             ->latest('tanggal')
             ->limit(5)
@@ -233,11 +252,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/absensi', [AbsensiController::class, 'index'])
-    ->middleware('role:admin,guru,piket')
+    ->middleware('role:admin,guru,piket,sekretaris')
     ->name('absensi.index');
 
 Route::post('/absensi', [AbsensiController::class, 'store'])
-    ->middleware('role:admin,guru,piket')
+    ->middleware('role:admin,guru,piket,sekretaris')
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])

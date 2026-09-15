@@ -90,8 +90,8 @@
         <div class="panel-body">
             <div class="quick-grid">
                 <a class="quick-card" href="{{ route('jurnal.index') }}"><strong>Jurnal hari ini</strong><span>{{ $jurnalHariIni }} jurnal tercatat</span></a>
-                <a class="quick-card" href="{{ route('jurnal.index', ['status_verifikasi' => 'Menunggu']) }}"><strong>Jurnal menunggu</strong><span>{{ $jurnalBelumLengkap }} jurnal belum lengkap</span></a>
-                <a class="quick-card" href="{{ route('jadwal.index') }}"><strong>Kelola jadwal</strong><span>{{ $jurnalBulanIni }} jurnal bulan ini</span></a>
+                <a class="quick-card" href="{{ route('jurnal.index', ['status_verifikasi' => 'Menunggu']) }}"><strong>Jurnal menunggu</strong><span>{{ $jurnalMenunggu }} jurnal menunggu verifikasi</span></a>
+                <a class="quick-card" href="{{ route('jadwal.index') }}"><strong>Kelola jadwal</strong><span>{{ $totalJadwal }} jadwal aktif</span></a>
             </div>
         </div>
     </section>

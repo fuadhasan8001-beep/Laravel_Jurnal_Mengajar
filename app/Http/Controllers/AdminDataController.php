@@ -267,4 +267,51 @@ class AdminDataController extends Controller
 
         return redirect()->route('admin.siswas.index')->with('success', 'Akun siswa dinonaktifkan.');
     }
+
+    public function secretaries(Request $request): View
+    {
+        $classes = Kelas::with('sekretarisUsers')
+            ->withCount('jadwals')
+            ->whereHas('jadwals')
+            ->when($request->filled('q'), fn ($query) => $query->where('nama_kelas', 'like', '%'.$request->string('q').'%'))
+            ->orderBy('nama_kelas')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.secretaries.index', ['classes' => $classes]);
+    }
+
+    public function resetSecretary(Kelas $kelas): RedirectResponse
+    {
+        abort_unless($kelas->jadwals()->exists(), 422, 'Kelas ini belum memiliki jadwal.');
+
+        $secretary = $kelas->sekretarisUsers()->first();
+        $password = $this->classSecretaryPassword($kelas->nama_kelas);
+
+        if (! $secretary) {
+            $slug = Str::slug($kelas->nama_kelas);
+            $secretary = User::create([
+                'name' => 'Pengurus '.$kelas->nama_kelas,
+                'username' => "pengurus.{$slug}.{$kelas->id}",
+                'email' => "pengurus.{$slug}.{$kelas->id}@sekolah.local",
+                'password' => Hash::make($password),
+                'role' => 'sekretaris',
+                'is_active' => true,
+            ]);
+            $kelas->sekretarisUsers()->attach($secretary);
+        } else {
+            $secretary->update(['password' => Hash::make($password), 'is_active' => true]);
+        }
+
+        return redirect()->route('admin.secretaries.index')->with('secretary_credentials', [
+            'class' => $kelas->nama_kelas,
+            'username' => $secretary->username,
+            'password' => $password,
+        ]);
+    }
+
+    private function classSecretaryPassword(string $className): string
+    {
+        return 'Jurnal-'.Str::upper(Str::slug($className, '')).'-'.now()->year;
+    }
 }

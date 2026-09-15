@@ -17,6 +17,35 @@ use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class);
 
+it('always dates a new dispensation today regardless of submitted date', function (mixed $submittedDate) {
+    $data = dispensasiSetup();
+    $this->travelTo(Carbon::parse('2026-09-15 00:05:00', 'Asia/Jakarta'));
+    Notification::fake();
+
+    $this->actingAs($data['piket'])->post(route('dispensasi.store'), [
+        ...$data['payload'], 'tanggal' => $submittedDate,
+        'siswa_ids' => $data['students']->pluck('id')->all(),
+    ])->assertSessionHasNoErrors()->assertRedirect(route('dispensasi.index'));
+
+    expect(Dispensasi::all()->map(fn ($item) => $item->tanggal->toDateString())->unique()->all())->toBe(['2026-09-15']);
+    $this->assertDatabaseCount('dispensasis', 2);
+})->with(['yesterday' => '2026-09-14', 'future' => '2026-10-01', 'invalid' => 'tanggal-bebas', 'empty' => null]);
+
+it('shows todays date as readonly even after validation fails with old input', function () {
+    $data = dispensasiSetup();
+    $this->travelTo(Carbon::parse('2026-09-15 07:00:00', 'Asia/Jakarta'));
+
+    $response = $this->actingAs($data['piket'])->withSession(['_old_input' => ['tanggal' => '2026-09-14']])
+        ->get(route('dispensasi.create'));
+
+    $response->assertOk();
+    $document = new DOMDocument;
+    @$document->loadHTML($response->getContent());
+    $field = $document->getElementById('tanggal');
+    expect($field->getAttribute('value'))->toBe('2026-09-15');
+    expect($field->hasAttribute('readonly'))->toBeTrue();
+});
+
 function dispensasiSetup(): array
 {
     test()->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
@@ -196,7 +225,7 @@ it('rejects a schedule belonging to another teacher or an inactive schedule', fu
 
 it('renders the journal and piket forms with automatic data and student selection', function () {
     $data = dispensasiSetup();
-    Jurnal::create([...$data['journal'], 'materi' => 'Materi sebelumnya']);
+    Jurnal::create([...$data['journal'], 'tanggal' => today()->subDay()->toDateString(), 'materi' => 'Materi sebelumnya']);
 
     $this->actingAs($data['teacher'])->get(route('jurnal.create'))->assertOk()->assertSee('Kehadiran guru')->assertDontSee('Cari kelas')->assertViewHas('activeSession', fn ($session) => $session['id'] === $data['schedule']->id);
     $this->actingAs($data['piket'])->get(route('dispensasi.create'))->assertOk()->assertSee('Tambahkan siswa');

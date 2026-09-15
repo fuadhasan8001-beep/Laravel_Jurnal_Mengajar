@@ -8,7 +8,7 @@
         @if (auth()->user()->role === 'admin')
             <div class="form-actions">
                 <a class="btn btn-muted" href="{{ route('jadwal.edit', $jadwal) }}">Edit</a>
-                <form action="{{ route('jadwal.destroy', $jadwal) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?')">
+                <form action="{{ route('jadwal.destroy', $jadwal) }}" method="POST" data-confirm="Hapus jadwal ini?">
                     @csrf
                     @method('DELETE')
                     <button class="btn" type="submit">Hapus</button>

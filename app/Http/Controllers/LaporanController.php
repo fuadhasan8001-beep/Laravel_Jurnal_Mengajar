@@ -123,6 +123,7 @@ class LaporanController extends Controller
 
         return Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai'])
             ->when(auth()->user()->role === 'guru', fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
+            ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id')))
             ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
             ->when($request->filled('guru_id'), fn ($query) => $query->where('guru_id', $request->integer('guru_id')))
@@ -145,6 +146,7 @@ class LaporanController extends Controller
 
         return Absensi::with(['siswa', 'jurnal.guru', 'jurnal.kelas', 'jurnal.mapel'])
             ->when(auth()->user()->role === 'guru', fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->where('guru_id', $this->currentGuru()->id)))
+            ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'))))
             ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereDate('tanggal', '>=', $request->date('tanggal_mulai'))))
             ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereDate('tanggal', '<=', $request->date('tanggal_selesai'))))
             ->when($request->filled('guru_id'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->where('guru_id', $request->integer('guru_id'))))
@@ -178,7 +180,8 @@ class LaporanController extends Controller
     {
         return [
             'gurus' => Guru::orderBy('nama_guru')->get(),
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
+            'kelas' => Kelas::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('id', auth()->user()->kelasSekretaris()->select('kelas.id')))
+                ->orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
         ];
     }

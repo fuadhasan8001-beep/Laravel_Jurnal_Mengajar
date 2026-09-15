@@ -8,7 +8,21 @@
             <h1>Dashboard sekretaris</h1>
             <p>Ringkasan aktivitas pencatatan kelas dan jurnal mengajar.</p>
         </div>
+        <div class="page-actions">
+            <a class="btn btn-muted" href="{{ route('absensi.index') }}">Kelola absensi</a>
+            <a class="btn" href="{{ route('jurnal.index') }}">Lihat jurnal</a>
+        </div>
     </div>
+    <section class="panel assignment-panel">
+        <div class="panel-head"><h2>Kelas yang ditugaskan</h2><span class="eyebrow">{{ $kelasSekretaris->count() }} kelas</span></div>
+        <div class="panel-body assignment-list">
+            @forelse ($kelasSekretaris as $kelas)
+                <span class="class-chip">{{ $kelas->nama_kelas }}</span>
+            @empty
+                <span class="empty-inline">Belum ada kelas yang ditugaskan.</span>
+            @endforelse
+        </div>
+    </section>
     <div class="stats">
         <div class="stat-card"><span class="stat-icon"><svg
                     width="21"
