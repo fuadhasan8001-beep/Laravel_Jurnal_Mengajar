@@ -247,6 +247,11 @@
                 font-weight: 700;
             }
 
+            .mobile-top-actions,
+            .mobile-logout-button {
+                display: none;
+            }
+
             .notification-list {
                 position: absolute;
                 z-index: 30;
@@ -826,6 +831,15 @@
                     padding: 0;
                     visibility: hidden;
                     pointer-events: none;
+                    transition: height .2s ease, padding .2s ease, visibility .2s ease;
+                }
+
+                .sidebar.is-open {
+                    height: auto;
+                    overflow: visible;
+                    padding: 16px;
+                    visibility: visible;
+                    pointer-events: auto;
                 }
 
                 .app-shell {
@@ -842,8 +856,26 @@
                     display: none;
                 }
 
+                .sidebar.is-open .nav-label,
+                .sidebar.is-open .nav-list,
+                .sidebar.is-open .sidebar-footer {
+                    display: flex;
+                }
+
+                .sidebar.is-open .nav-list,
+                .sidebar.is-open .sidebar-footer {
+                    flex-direction: column;
+                }
+
+                .sidebar.is-open .sidebar-footer {
+                    margin-top: 18px;
+                    padding-top: 16px;
+                }
+
                 .menu-toggle {
-                    display: none;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .main {
@@ -860,6 +892,35 @@
 
                 .date-chip {
                     display: none;
+                }
+
+                .mobile-top-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .mobile-logout-button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid var(--line);
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                    background: #fff;
+                    color: var(--ink);
+                    cursor: pointer;
+                    font-size: 11px;
+                    font-weight: 700;
+                }
+
+                .mobile-top-actions .notification-menu {
+                    position: relative;
+                }
+
+                .mobile-top-actions .notification-list {
+                    right: 0;
+                    width: min(86vw, 300px);
                 }
 
                 .content {
@@ -1526,6 +1587,38 @@
                                 />
                                 <path d="M16 2v4M8 2v4M3 10h18" />
                             </svg>{{ now()->translatedFormat('l, d F Y') }}
+                        </div>
+                        <div class="mobile-top-actions">
+                            <div class="notification-menu mobile-notification-menu">
+                                <details>
+                                    <summary class="notification-button mobile-notification-button">
+                                        Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})
+                                    </summary>
+                                    <div class="notification-list">
+                                        @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
+                                            <form action="{{ route('notifications.read', $notification->id) }}" method="POST">
+                                                @csrf
+                                                <button class="notification-item" type="submit">
+                                                    {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
+                                                    <br><small>{{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }} · {{ $notification->created_at->format('d/m H:i') }}</small>
+                                                </button>
+                                            </form>
+                                        @empty
+                                            <div class="notification-empty">Belum ada notifikasi.</div>
+                                        @endforelse
+                                        @if (auth()->user()->unreadNotifications()->exists())
+                                            <form action="{{ route('notifications.read-all') }}" method="POST">
+                                                @csrf
+                                                <button class="notification-button" type="submit">Tandai semua dibaca</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </details>
+                            </div>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button class="mobile-logout-button" type="submit" id="mobile-logout-button">Keluar</button>
+                            </form>
                         </div>
                     </header>
                     <nav class="mobile-nav" aria-label="Navigasi utama">

@@ -174,6 +174,10 @@ Route::get('/admin', function () {
 Route::get('/guru', function () {
     $hariIni = now()->locale('id')->translatedFormat('l');
     $guru = Guru::where('user_id', auth()->id())->first();
+    $jurnalTerbaru = Jurnal::with(['kelas', 'mapel', 'absensis.siswa'])
+        ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        ->latest('tanggal')
+        ->first();
 
     return view('dashboard.guru', [
         'jurnalMingguIni' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
@@ -198,6 +202,7 @@ Route::get('/guru', function () {
             ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
             ->whereDate('tanggal', today())
             ->get(),
+        'jurnalTerbaru' => $jurnalTerbaru,
     ]);
 })->middleware('role:guru');
 

@@ -32,6 +32,39 @@ it('opens the dashboard belonging to the logged in role', function (string $role
     $this->actingAs($user)->get('/')->assertRedirect('/'.$role);
 })->with(['admin', 'guru', 'piket', 'siswa', 'sekretaris']);
 
+it('shows mobile notification and logout controls in the app shell', function () {
+    $user = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+
+    $this->actingAs($user)
+        ->get('/guru')
+        ->assertSee('mobile-notification-button')
+        ->assertSee('mobile-logout-button');
+});
+
+it('shows teaching detail and attendance summary on the teacher dashboard', function () {
+    $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $guru = Guru::create(['user_id' => $teacher->id, 'nip' => 'DASH-1', 'nama_guru' => 'Guru Dashboard', 'status_kepegawaian' => 'Honorer']);
+    $kelas = Kelas::create(['nama_kelas' => 'XI IPA', 'tingkat' => 'XI']);
+    $mapel = Mapel::create(['kode_mapel' => 'DASH', 'nama_mapel' => 'Biologi']);
+    $period = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '08:00', 'jam_selesai' => '08:40', 'is_active' => true]);
+    $jadwal = Jadwal::create(['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
+        'jam_pelajaran_id' => $period->id, 'hari' => 'Senin', 'is_active' => true]);
+    $jurnal = Jurnal::create(['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
+        'jam_mulai_id' => $period->id, 'jam_selesai_id' => $period->id, 'tanggal' => '2026-09-15',
+        'materi' => 'Pengukuran dan data', 'status_guru' => 'Hadir']);
+
+    Siswa::create(['user_id' => User::factory()->create(['role' => 'siswa'])->id, 'kelas_id' => $kelas->id,
+        'nis' => 'DASH-1', 'nama_siswa' => 'Siswa Dashboard', 'jenis_kelamin' => 'P']);
+
+    $jurnal->absensis()->create(['siswa_id' => Siswa::first()->id, 'status' => 'H', 'catatan' => 'Hadir tepat waktu']);
+
+    $this->actingAs($teacher)
+        ->get('/guru')
+        ->assertSee('Detail pembelajaran')
+        ->assertSee('Absensi siswa')
+        ->assertSee('Pengukuran dan data');
+});
+
 it('does not redirect an inactive account into a dashboard', function () {
     $user = User::factory()->create(['role' => 'guru', 'is_active' => false]);
     $this->actingAs($user)->get('/')->assertForbidden();

@@ -105,6 +105,53 @@
         </div>
     </div>
 
+    @if ($jurnalTerbaru)
+        <section class="panel panel-top-spaced">
+            <div class="panel-head">
+                <h2>Detail pembelajaran</h2>
+                <span class="eyebrow">{{ $jurnalTerbaru->kelas->nama_kelas }} · {{ $jurnalTerbaru->mapel->nama_mapel }}</span>
+            </div>
+            <div class="panel-body">
+                <dl class="detail-grid">
+                    <div class="detail-item"><dt>Materi</dt><dd>{{ $jurnalTerbaru->materi ?: '-' }}</dd></div>
+                    <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnalTerbaru->status_guru ?: '-' }}</dd></div>
+                    <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnalTerbaru->tujuan_pembelajaran ?: '-' }}</dd></div>
+                    <div class="detail-item detail-item-full"><dt>Kegiatan</dt><dd>{{ $jurnalTerbaru->kegiatan ?: '-' }}</dd></div>
+                </dl>
+                <div class="attendance-section attendance-card">
+                    <div class="journal-card-header">
+                        <div>
+                            <h3>Absensi siswa</h3>
+                            <p>{{ $jurnalTerbaru->absensis->count() }} siswa tercatat</p>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Siswa</th>
+                                    <th>Status</th>
+                                    <th>Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($jurnalTerbaru->absensis as $absensi)
+                                    <tr>
+                                        <td>{{ $absensi->siswa->nama_siswa }}</td>
+                                        <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
+                                        <td>{{ $absensi->catatan ?: '-' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="3">Belum ada absensi siswa.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     <section class="panel">
         <div class="panel-head">
             <h2>Jadwal mengajar hari ini</h2>
