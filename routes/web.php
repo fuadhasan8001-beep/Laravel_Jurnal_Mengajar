@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 });
 
+Route::middleware('role:admin')->group(function () {
+    Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
+});
+
 Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::get('/guru', [AdminDataController::class, 'gurus'])->name('admin.gurus.index');
     Route::get('/guru/create', [AdminDataController::class, 'createGuru'])->name('admin.gurus.create');

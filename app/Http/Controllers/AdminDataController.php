@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Siswa;
@@ -49,7 +50,7 @@ class AdminDataController extends Controller
         DB::transaction(function () use ($data): void {
             $user = User::create([
                 'name' => $data['nama_guru'],
-                'username' => $this->teacherUsername($data['nama_guru']),
+                'username' => $this->generateUniqueUsername($data['nama_guru']),
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'role' => 'guru',
@@ -59,6 +60,12 @@ class AdminDataController extends Controller
             Guru::create([
                 ...$data,
                 'user_id' => $user->id,
+            ]);
+
+            ActivityLog::record('guru.created', 'Menambah guru baru: '.$data['nama_guru'], $user, [
+                'nip' => $data['nip'],
+                'status_kepegawaian' => $data['status_kepegawaian'],
+                'email' => $data['email'],
             ]);
         });
 
@@ -86,31 +93,61 @@ class AdminDataController extends Controller
             $guru->update($data);
             $guru->user->update([
                 'name' => $data['nama_guru'],
-                'username' => $this->teacherUsername($data['nama_guru']),
+                'username' => $this->generateUniqueUsername($data['nama_guru'], $guru->user_id),
                 'email' => $data['email'],
                 'is_active' => $data['is_active'],
                 ...($data['password'] ? ['password' => Hash::make($data['password'])] : []),
+            ]);
+
+            ActivityLog::record('guru.updated', 'Memperbarui data guru: '.$data['nama_guru'], $guru->user, [
+                'nip' => $data['nip'],
+                'status_kepegawaian' => $data['status_kepegawaian'],
+                'is_active' => $data['is_active'],
             ]);
         });
 
         return redirect()->route('admin.gurus.index')->with('success', 'Data guru berhasil diperbarui.');
     }
 
-    private function teacherUsername(string $name): string
+    private function generateUniqueUsername(string $name, ?int $ignoreUserId = null): string
     {
-        return Str::of($name)
+        $base = Str::of($name)
             ->lower()
             ->ascii()
             ->replaceMatches('/[^a-z0-9]+/', '.')
             ->trim('.')
             ->toString();
+
+        $base = $base !== '' ? $base : 'user';
+        $username = $base;
+        $suffix = 1;
+
+        while (User::query()
+            ->where('username', $username)
+            ->when($ignoreUserId !== null, fn ($query) => $query->whereKeyNot($ignoreUserId))
+            ->exists()) {
+            $username = $base.'.'.$suffix++;
+        }
+
+        return $username;
     }
 
     public function destroyGuru(Guru $guru): RedirectResponse
     {
         $guru->user->update(['is_active' => false]);
 
+        ActivityLog::record('guru.disabled', 'Menonaktifkan akun guru: '.$guru->nama_guru, $guru->user, [
+            'nip' => $guru->nip,
+        ]);
+
         return redirect()->route('admin.gurus.index')->with('success', 'Akun guru dinonaktifkan.');
+    }
+
+    public function activityLogs(): View
+    {
+        return view('admin.activity-logs.index', [
+            'logs' => ActivityLog::with('user')->latest()->paginate(20),
+        ]);
     }
 
     public function siswas(Request $request): View

@@ -1473,6 +1473,10 @@
                                 href="{{ route('admin.registrations.index') }}"
                             >Pendaftaran</a>
                             <a
+                                class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}"
+                                href="{{ route('admin.activity-logs') }}"
+                            >Riwayat aktivitas</a>
+                            <a
                                 class="nav-link {{ request()->is('admin/data*') ? 'active' : '' }}"
                                 href="{{ route('admin.gurus.index') }}"
                             >
@@ -1637,6 +1641,7 @@
                         @endif
                         @if (auth()->user()->role === 'admin')
                             <a class="mobile-nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}" href="{{ route('admin.registrations.index') }}">Pendaftaran</a>
+                            <a class="mobile-nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Aktivitas</a>
                             <a class="mobile-nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}" href="{{ route('admin.gurus.index') }}">Guru</a>
                             <a class="mobile-nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}" href="{{ route('admin.siswas.index') }}">Siswa</a>
                             <a class="mobile-nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}" href="{{ route('admin.kelas.index') }}">Kelas</a>

@@ -41,6 +41,23 @@ it('shows mobile notification and logout controls in the app shell', function ()
         ->assertSee('mobile-logout-button');
 });
 
+it('creates unique teacher usernames and retains an activity log entry', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+    User::factory()->create(['role' => 'guru', 'username' => 'siti.aminah', 'is_active' => true]);
+
+    $this->actingAs($admin)
+        ->post(route('admin.gurus.store'), [
+            'nama_guru' => 'Siti Aminah',
+            'nip' => 'UNQ-1',
+            'status_kepegawaian' => 'Honorer',
+            'email' => 'siti.aminah.2@example.com',
+            'password' => 'password123',
+        ])->assertRedirect(route('admin.gurus.index'));
+
+    $this->assertDatabaseHas('users', ['username' => 'siti.aminah.1']);
+    $this->get(route('admin.activity-logs'))->assertOk();
+});
+
 it('shows teaching detail and attendance summary on the teacher dashboard', function () {
     $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
     $guru = Guru::create(['user_id' => $teacher->id, 'nip' => 'DASH-1', 'nama_guru' => 'Guru Dashboard', 'status_kepegawaian' => 'Honorer']);
