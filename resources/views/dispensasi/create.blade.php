@@ -35,9 +35,6 @@
                     </div>
                 @endif
                 <div class="form-grid">
-                    @if (auth()->user()->role === 'piket')
-                        <div class="field full"><label for="siswa_id">Siswa</label><select id="siswa_id" name="siswa_id" required><option value="">Pilih siswa</option>@foreach ($siswas as $siswa)<option value="{{ $siswa->id }}" @selected(old('siswa_id') == $siswa->id)>{{ $siswa->nama_siswa }} — {{ $siswa->kelas->nama_kelas }}</option>@endforeach</select></div>
-                    @endif
                     <div class="field"><label for="tanggal">Tanggal dispensasi</label><input
                             id="tanggal"
                             type="date"

@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\Dispensasi;
+use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Siswa;
 use App\Models\User;
+use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -34,6 +38,8 @@ class DispensasiController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->role === 'piket', 403);
+
         $hari = today()->locale('id')->translatedFormat('l');
         $waktuSekarang = now()->format('H:i:s');
         $jamPelajarans = JamPelajaran::query()
@@ -53,10 +59,13 @@ class DispensasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $isPiket = auth()->user()->role === 'piket';
+        abort_if(! $isPiket && $request->filled('siswa_ids'), 403);
         $request->merge(['tanggal' => today()->toDateString()]);
 
         $data = $request->validate([
-            'siswa_id' => ['nullable', 'exists:siswas,id'],
+            'siswa_ids' => $isPiket ? ['required', 'array', 'min:1'] : ['prohibited'],
+            'siswa_ids.*' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
             'tanggal' => ['required', 'date'],
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
@@ -74,26 +83,43 @@ class DispensasiController extends Controller
         }
 
         $hari = today()->locale('id')->translatedFormat('l');
-        if ($jamMulai->timesForDay($hari)[1] <= now()->format('H:i:s')) {
+        $lessonEnd = Carbon::parse(today()->toDateString().' '.$jamMulai->timesForDay($hari)[1]);
+        if ($lessonEnd->lessThanOrEqualTo(now())) {
             return back()->withInput()->withErrors([
-                'jam_mulai_id' => 'Jam dispensasi harus jam saat ini atau jam berikutnya.',
+                'jam_mulai_id' => 'Jam dispensasi harus untuk pelajaran yang belum berakhir.',
             ]);
         }
 
-        $dispensasi = new Dispensasi($data);
-        $dispensasi->siswa_id = auth()->user()->role === 'piket'
-            ? $request->integer('siswa_id')
-            : $this->student()->id;
-        abort_unless($dispensasi->siswa_id, 422, 'Siswa wajib dipilih.');
-
+        $evidencePath = null;
         if ($request->hasFile('bukti')) {
-            $dispensasi->bukti = $request->file('bukti')->store('dispensasi/bukti');
+            $evidencePath = $request->file('bukti')->store('dispensasi/bukti');
         }
 
-        $dispensasi->save();
+        $groupKey = (string) Str::uuid();
+        $studentIds = $isPiket ? $data['siswa_ids'] : [$this->student()->id];
+        $dispensasis = DB::transaction(function () use ($data, $evidencePath, $groupKey, $studentIds, $isPiket): array {
+            return collect($studentIds)->map(function (int $siswaId) use ($data, $evidencePath, $groupKey, $isPiket): Dispensasi {
+                return Dispensasi::create([
+                    ...collect($data)->except('siswa_ids')->all(),
+                    'siswa_id' => $siswaId,
+                    'bukti' => $evidencePath,
+                    'group_key' => $groupKey,
+                    ...($isPiket ? [
+                        'piket_id' => auth()->id(),
+                        'status_piket' => 'Disetujui',
+                        'verified_piket_at' => now(),
+                    ] : []),
+                ]);
+            })->all();
+        });
 
-        User::whereIn('role', ['piket'])->where('is_active', true)->get()
-            ->each->notify(new DispensasiNotification($dispensasi, 'submitted'));
+        if ($isPiket) {
+            User::where('role', 'admin')->where('is_active', true)->get()
+                ->each->notify(new DispensasiApprovalMail($dispensasis[0]));
+        } else {
+            User::where('role', 'piket')->where('is_active', true)->get()
+                ->each->notify(new DispensasiNotification($dispensasis[0], 'submitted'));
+        }
 
         return redirect()->route('dispensasi.index')
             ->with('success', 'Pengajuan dispensasi berhasil dikirim.');
@@ -156,7 +182,7 @@ class DispensasiController extends Controller
         if ($isPiket) {
             $event = $data['status'] === 'Disetujui' ? 'piket_approved' : 'piket_rejected';
             User::where('role', 'admin')->where('is_active', true)->get()
-                ->each->notify(new DispensasiNotification($dispensasi, $event));
+                ->each->notify(new DispensasiApprovalMail($dispensasi));
         } else {
             $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
             $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
@@ -164,6 +190,7 @@ class DispensasiController extends Controller
 
         if ($dispensasi->status_akhir === 'Disetujui') {
             $this->markAttendanceAsDispensed($dispensasi);
+            $this->notifyScheduledTeachers($dispensasi);
         }
 
         return redirect()->route('dispensasi.show', $dispensasi)
@@ -199,23 +226,12 @@ class DispensasiController extends Controller
     {
         $dispensasi->loadMissing(['siswa', 'jamMulai', 'jamSelesai']);
 
-        $start = Carbon::parse($dispensasi->jamMulai->jam_mulai);
-        $end = Carbon::parse($dispensasi->jamSelesai->jam_selesai);
-
-        $jurnals = Jurnal::with(['jamMulai', 'jamSelesai'])
-            ->where('tanggal', Carbon::parse($dispensasi->getRawOriginal('tanggal'))->toDateString())
+        $jurnals = Jurnal::query()
+            ->whereDate('tanggal', $dispensasi->tanggal)
             ->where('kelas_id', $dispensasi->siswa->kelas_id)
-            ->get()
-            ->filter(function (Jurnal $jurnal) use ($start, $end): bool {
-                if (! $jurnal->jamMulai || ! $jurnal->jamSelesai) {
-                    return false;
-                }
-
-                $jurnalStart = Carbon::parse($jurnal->jamMulai->jam_mulai);
-                $jurnalEnd = Carbon::parse($jurnal->jamSelesai->jam_selesai);
-
-                return $jurnalStart < $end && $jurnalEnd > $start;
-            });
+            ->where('jam_mulai_id', '<=', $dispensasi->jam_selesai_id)
+            ->where('jam_selesai_id', '>=', $dispensasi->jam_mulai_id)
+            ->get();
 
         foreach ($jurnals as $jurnal) {
             Absensi::updateOrCreate(
@@ -226,5 +242,22 @@ class DispensasiController extends Controller
                 ]
             );
         }
+    }
+
+    private function notifyScheduledTeachers(Dispensasi $dispensasi): void
+    {
+        $dispensasi->loadMissing('siswa');
+        $hari = $dispensasi->tanggal->copy()->locale('id')->translatedFormat('l');
+
+        Jadwal::query()
+            ->with('guru.user')
+            ->where('kelas_id', $dispensasi->siswa->kelas_id)
+            ->where('hari', $hari)
+            ->where('is_active', true)
+            ->get()
+            ->pluck('guru.user')
+            ->filter()
+            ->unique('id')
+            ->each->notify(new DispensasiNotification($dispensasi, 'teacher_approved'));
     }
 }

@@ -1669,10 +1669,7 @@
 
                             <details>
 
-                                <summary class="notification-button">
-                                    Notifikasi
-                                    ({{ auth()->user()->unreadNotifications()->count() }})
-                                </summary>
+                                <summary class="notification-button">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</summary>
 
                                 <div class="notification-list">
 
@@ -1754,10 +1751,7 @@
 
                             <details>
 
-                                <summary class="notification-button">
-                                    Notifikasi
-                                    ({{ auth()->user()->unreadNotifications()->count() }})
-                                </summary>
+                                <summary class="notification-button mobile-notification-button">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</summary>
 
                                 <div class="notification-list">
 
