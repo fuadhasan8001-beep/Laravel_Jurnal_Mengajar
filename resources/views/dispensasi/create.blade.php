@@ -35,6 +35,9 @@
                     </div>
                 @endif
                 <div class="form-grid">
+                    @if (auth()->user()->role === 'piket')
+                        <div class="field full"><label for="siswa_id">Siswa</label><select id="siswa_id" name="siswa_id" required><option value="">Pilih siswa</option>@foreach ($siswas as $siswa)<option value="{{ $siswa->id }}" @selected(old('siswa_id') == $siswa->id)>{{ $siswa->nama_siswa }} — {{ $siswa->kelas->nama_kelas }}</option>@endforeach</select></div>
+                    @endif
                     <div class="field"><label for="tanggal">Tanggal dispensasi</label><input
                             id="tanggal"
                             type="date"
@@ -52,13 +55,16 @@
                             @foreach ($jamPelajarans as $jam)
                                 <option
                                     value="{{ $jam->id }}"
+                                    data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
+                                    @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_mulai_id') == $jam->id)
                                 >
                                     Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
                                     {{ $jam->jam_selesai }})
                                 </option>
                             @endforeach
-                        </select></div>
+                        </select>@error('jam_mulai_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field"><label for="jam_selesai_id">Jam selesai</label><select
                             id="jam_selesai_id"
                             name="jam_selesai_id"
@@ -68,13 +74,16 @@
                             @foreach ($jamPelajarans as $jam)
                                 <option
                                     value="{{ $jam->id }}"
+                                    data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
+                                    @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_selesai_id') == $jam->id)
                                 >
                                     Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
                                     {{ $jam->jam_selesai }})
                                 </option>
                             @endforeach
-                        </select></div>
+                        </select>@error('jam_selesai_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field full"><label for="alasan">Alasan atau kegiatan</label>
                         <textarea
                             id="alasan"
@@ -83,12 +92,12 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
-                    <div class="field full"><label for="bukti">Bukti atau surat <span class="field-help">(PDF/JPG/PNG, maksimal 5 MB)</span></label><input
+                    <div class="field full"><label for="bukti">Bukti foto <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input
                             id="bukti"
                             type="file"
                             name="bukti"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        ></div>
+                            accept="image/jpeg,image/png,image/webp"
+                        >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"
@@ -130,4 +139,31 @@
     })();
     </script>
     @endif
+    <script>
+    (() => {
+        const start = document.getElementById('jam_mulai_id');
+        const end = document.getElementById('jam_selesai_id');
+
+        const updateEndTimes = () => {
+            const selectedStart = start.options[start.selectedIndex];
+            const startPeriod = Number(selectedStart?.dataset.jamKe ?? 0);
+
+            [...end.options].forEach((option) => {
+                if (!option.value) {
+                    return;
+                }
+
+                option.disabled = option.dataset.unavailable === 'true'
+                    || (startPeriod > 0 && Number(option.dataset.jamKe) < startPeriod);
+            });
+
+            if (end.selectedOptions[0]?.disabled) {
+                end.value = '';
+            }
+        };
+
+        start.addEventListener('change', updateEndTimes);
+        updateEndTimes();
+    })();
+    </script>
 @endsection

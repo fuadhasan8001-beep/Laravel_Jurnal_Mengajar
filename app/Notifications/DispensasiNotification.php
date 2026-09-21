@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Dispensasi;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class DispensasiNotification extends Notification
@@ -17,7 +18,15 @@ class DispensasiNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('Pembaruan dispensasi')
+            ->line($this->message())
+            ->action('Buka dispensasi', route('dispensasi.show', $this->dispensasi));
     }
 
     /**

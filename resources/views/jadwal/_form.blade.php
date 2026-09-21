@@ -28,6 +28,10 @@
                 @endforeach
             </select>
         </div>
+        @if ($isEdit)
+            <div class="field"><label for="jam_mulai">Mulai (menit)</label><input id="jam_mulai" type="time" name="jam_mulai" value="{{ old('jam_mulai', $jadwal->jamPelajaran?->jam_mulai) }}"></div>
+            <div class="field"><label for="jam_selesai">Selesai (menit)</label><input id="jam_selesai" type="time" name="jam_selesai" value="{{ old('jam_selesai', $jadwal->jamPelajaran?->jam_selesai) }}"></div>
+        @endif
         <div class="field">
             <label for="guru_id">Guru</label>
             <select id="guru_id" name="guru_id" required>

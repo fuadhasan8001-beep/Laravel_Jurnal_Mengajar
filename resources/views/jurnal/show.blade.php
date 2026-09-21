@@ -40,6 +40,15 @@
         </div>
     </section>
 
+    @if ($jurnal->tanda_tangan)
+        <section class="panel panel-top-spaced signature-card">
+            <div class="panel-head"><h2>Tanda tangan guru</h2></div>
+            <div class="signature-space">
+                <img class="saved-signature" src="{{ route('jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
+            </div>
+        </section>
+    @endif
+
     <section class="panel panel-top-spaced">
         <div class="panel-head"><h2>Absensi siswa</h2><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa</span></div>
         <div class="table-wrap"><table>

@@ -43,6 +43,7 @@ class UpdateJurnalRequest extends FormRequest
             'kegiatan' => ['nullable', 'string', 'max:5000'],
             'tugas' => ['nullable', 'string', 'max:5000'],
             'catatan' => ['nullable', 'string', 'max:5000'],
+            'tanda_tangan' => ['nullable', 'string', 'max:1048576'],
             'absensi' => ['nullable', 'array'],
             'absensi.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
             'absensi.*.status' => ['required', 'in:H,S,I,A,D'],

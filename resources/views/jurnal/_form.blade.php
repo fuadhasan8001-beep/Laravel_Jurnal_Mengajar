@@ -82,12 +82,88 @@
             @endforelse
         </tbody></table></div>
     </details>
+    <section class="signature-card" aria-labelledby="signature-title">
+        <div class="journal-card-header">
+            <div>
+                <h3 id="signature-title">Tanda tangan guru</h3>
+                <p>Bubuhkan tanda tangan dengan mouse atau jari Anda.</p>
+            </div>
+            <button class="btn btn-muted" type="button" id="clear-signature">Bersihkan</button>
+        </div>
+        <div class="signature-space">
+            @if ($isEdit && $jurnal->tanda_tangan)
+                <div class="signature-info">
+                    <strong>Tanda tangan tersimpan</strong>
+                    <img class="saved-signature" src="{{ route('jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
+                </div>
+            @endif
+            <canvas id="signature-canvas" class="signature-canvas" width="900" height="250" aria-label="Area tanda tangan"></canvas>
+            <input id="tanda_tangan" name="tanda_tangan" type="hidden">
+            @error('tanda_tangan')<small class="error">{{ $message }}</small>@enderror
+        </div>
+    </section>
     <div class="form-actions"><a class="btn btn-muted" href="{{ route('jurnal.index') }}">Batal</a><button class="btn" type="submit">{{ $isEdit ? 'Simpan perubahan' : 'Simpan jurnal' }}</button></div>
 </form>
 <script>
-document.getElementById('btn-hadir-semua').addEventListener('click', () => {
+document.getElementById('btn-hadir-semua')?.addEventListener('click', () => {
     document.querySelectorAll('#journal-form .attendance-status').forEach(select => select.value = 'H');
 });
+
+(() => {
+    const canvas = document.getElementById('signature-canvas');
+    const hiddenInput = document.getElementById('tanda_tangan');
+    const clearButton = document.getElementById('clear-signature');
+    const context = canvas.getContext('2d');
+    let drawing = false;
+    let hasSignature = false;
+
+    context.strokeStyle = '#15213b';
+    context.lineWidth = 4;
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+
+    const point = (event) => {
+        const bounds = canvas.getBoundingClientRect();
+        return {
+            x: (event.clientX - bounds.left) * (canvas.width / bounds.width),
+            y: (event.clientY - bounds.top) * (canvas.height / bounds.height),
+        };
+    };
+
+    canvas.addEventListener('pointerdown', (event) => {
+        drawing = true;
+        hasSignature = true;
+        canvas.setPointerCapture(event.pointerId);
+        const start = point(event);
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+        if (!drawing) {
+            return;
+        }
+
+        const next = point(event);
+        context.lineTo(next.x, next.y);
+        context.stroke();
+    });
+
+    const stopDrawing = () => { drawing = false; };
+    canvas.addEventListener('pointerup', stopDrawing);
+    canvas.addEventListener('pointercancel', stopDrawing);
+    clearButton.addEventListener('click', () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        hasSignature = false;
+        hiddenInput.value = '';
+    });
+
+    document.getElementById('journal-form').addEventListener('submit', () => {
+        if (hasSignature) {
+            hiddenInput.value = canvas.toDataURL('image/png');
+        }
+    });
+})();
 </script>
 @if (! $isEdit && $sessions->where('active', true)->count() > 1)
 <script>

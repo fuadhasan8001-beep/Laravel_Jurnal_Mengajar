@@ -13,11 +13,14 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class JurnalController extends Controller
 {
@@ -30,10 +33,6 @@ class JurnalController extends Controller
             $query->where('guru_id', $this->currentGuru()->id);
         }
 
-        if (auth()->user()->role === 'sekretaris') {
-            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
-        }
-
         $query
             ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($builder) => $builder->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
@@ -43,8 +42,7 @@ class JurnalController extends Controller
 
         return view('jurnal.index', [
             'jurnals' => $query->paginate(15)->withQueryString(),
-            'kelas' => Kelas::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('id', auth()->user()->kelasSekretaris()->select('kelas.id')))
-                ->orderBy('nama_kelas')->get(),
+            'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
         ]);
     }
@@ -58,30 +56,23 @@ class JurnalController extends Controller
     {
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        unset($data['absensi'], $data['jadwal_id']);
+        $signature = $data['tanda_tangan'] ?? null;
+        unset($data['absensi'], $data['tanda_tangan']);
         $this->validatePeriodOrder($data);
 
-        $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
-            // Serialize submissions for this teacher, including two tabs saving at once.
-            $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
-            $existing = $this->journalForSession($guru->id, $data)->lockForUpdate()->first();
-            if ($existing) {
-                return $existing;
-            }
-
+        $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
             $jurnal = Jurnal::create([
                 ...$data,
-                'guru_id' => $guru->id,
+                'guru_id' => $this->currentGuru()->id,
+                'tanda_tangan' => $this->saveSignature($signature),
             ]);
             $this->syncAbsensis($jurnal, $absensis);
 
             return $jurnal;
-        }, 5);
+        });
 
         return redirect()->route('jurnal.show', $jurnal)
-            ->with('success', $jurnal->wasRecentlyCreated
-                ? 'Jurnal berhasil disimpan.'
-                : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
+            ->with('success', 'Jurnal berhasil disimpan.');
     }
 
     public function show(Jurnal $jurnal): View
@@ -97,6 +88,18 @@ class JurnalController extends Controller
                 'jamSelesai',
                 'absensis.siswa',
             ]),
+        ]);
+    }
+
+    public function signature(Jurnal $jurnal): StreamedResponse
+    {
+        $this->authorizeJournal($jurnal);
+
+        abort_unless($jurnal->tanda_tangan && Storage::exists($jurnal->tanda_tangan), 404);
+
+        return Storage::response($jurnal->tanda_tangan, 'tanda-tangan-jurnal.png', [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => 'inline; filename="tanda-tangan-jurnal.png"',
         ]);
     }
 
@@ -118,10 +121,12 @@ class JurnalController extends Controller
 
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        unset($data['absensi'], $data['jadwal_id']);
+        $signature = $data['tanda_tangan'] ?? null;
+        unset($data['absensi'], $data['tanda_tangan']);
         unset($data['tanggal']);
         $this->validatePeriodOrder($data);
-        DB::transaction(function () use ($data, $absensis, $jurnal): void {
+        DB::transaction(function () use ($data, $absensis, $jurnal, $signature): void {
+            $data['tanda_tangan'] = $this->saveSignature($signature, $jurnal->tanda_tangan);
             $jurnal->update($data);
             $this->syncAbsensis($jurnal, $absensis);
         });
@@ -135,6 +140,7 @@ class JurnalController extends Controller
         $this->authorizeJournal($jurnal, true);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat dihapus.');
 
+        Storage::delete($jurnal->tanda_tangan);
         $jurnal->delete();
 
         return redirect()->route('jurnal.index')
@@ -143,7 +149,6 @@ class JurnalController extends Controller
 
     public function verify(Request $request, Jurnal $jurnal): RedirectResponse
     {
-        $this->authorizeJournal($jurnal);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
 
         $data = $request->validate([
@@ -167,25 +172,9 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
-    /** @param array<string, mixed> $session */
-    private function journalForSession(int $guruId, array $session): Builder
-    {
-        return Jurnal::where('guru_id', $guruId)
-            ->whereDate('tanggal', $session['tanggal'])
-            ->where('kelas_id', $session['kelas_id'])
-            ->where('mapel_id', $session['mapel_id'])
-            ->where('jam_mulai_id', $session['jam_mulai_id'])
-            ->where('jam_selesai_id', $session['jam_selesai_id'])
-            ->orderBy('id');
-    }
-
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
     {
         abort_unless(in_array(auth()->user()->role, ['guru', 'admin', 'sekretaris'], true), 403);
-
-        if (auth()->user()->role === 'sekretaris') {
-            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jurnal->kelas_id)->exists(), 403);
-        }
 
         if ($mustOwn || auth()->user()->role === 'guru') {
             abort_unless($jurnal->guru_id === $this->currentGuru()->id, 403);
@@ -200,6 +189,36 @@ class JurnalController extends Controller
         abort_if($start->jam_mulai >= $end->jam_selesai, 422, 'Jam selesai harus setelah jam mulai.');
     }
 
+    private function saveSignature(?string $signature, ?string $previousSignature = null): ?string
+    {
+        if (blank($signature)) {
+            return $previousSignature;
+        }
+
+        if (! preg_match('/^data:image\\/png;base64,([A-Za-z0-9+\\/=]+)$/', $signature, $matches)) {
+            throw ValidationException::withMessages([
+                'tanda_tangan' => 'Tanda tangan harus berupa gambar PNG.',
+            ]);
+        }
+
+        $image = base64_decode($matches[1], true);
+        $imageInfo = $image === false ? false : @getimagesizefromstring($image);
+        if ($image === false || strlen($image) > 512000 || $imageInfo === false || $imageInfo[2] !== IMAGETYPE_PNG) {
+            throw ValidationException::withMessages([
+                'tanda_tangan' => 'Tanda tangan tidak valid atau ukurannya melebihi 500 KB.',
+            ]);
+        }
+
+        $path = 'jurnal/tanda-tangan/'.Str::uuid().'.png';
+        Storage::put($path, $image);
+
+        if ($previousSignature) {
+            Storage::delete($previousSignature);
+        }
+
+        return $path;
+    }
+
     /**
      * @param  array<int, array{siswa_id: int, status: string, catatan?: string|null}>  $absensis
      */
@@ -211,20 +230,29 @@ class JurnalController extends Controller
             ->get(['id']);
         $studentIds = $students->pluck('id');
         $submittedAbsensis = collect($absensis)->keyBy('siswa_id');
+        $dispensedStudentIds = Dispensasi::query()
+            ->whereIn('siswa_id', $studentIds)
+            ->whereDate('tanggal', $jurnal->tanggal)
+            ->where('status_akhir', 'Disetujui')
+            ->where('jam_mulai_id', '<=', $jurnal->jam_selesai_id)
+            ->where('jam_selesai_id', '>=', $jurnal->jam_mulai_id)
+            ->pluck('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
 
-        $dispensedIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
-        abort_if($submittedAbsensis->contains(fn (array $item): bool => $item['status'] === 'D' && ! $dispensedIds->contains($item['siswa_id'])), 422, 'Status dispensasi memerlukan persetujuan admin.');
         $timestamp = now();
-        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedIds): array {
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds): array {
             $absensi = $submittedAbsensis->get($student->id, []);
+
+            if ($dispensedStudentIds->contains($student->id)) {
+                $absensi = ['status' => 'D', 'catatan' => 'Dispensasi disetujui.'];
+            }
 
             return [
                 'jurnal_id' => $jurnal->id,
                 'siswa_id' => $student->id,
-                'status' => $dispensedIds->contains($student->id) ? 'D' : ($absensi['status'] ?? 'H'),
-                'catatan' => $dispensedIds->contains($student->id) ? 'Dispensasi disetujui.' : ($absensi['catatan'] ?? null),
+                'status' => $absensi['status'] ?? 'H',
+                'catatan' => $absensi['catatan'] ?? null,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
@@ -245,26 +273,27 @@ class JurnalController extends Controller
     private function formData(?Jurnal $jurnal = null): array
     {
         $sessions = Jadwal::sessionsForGuru($this->currentGuru(), now());
-        $active = $sessions->where('active', true);
+        $activeSessions = $sessions->where('active', true);
         $requestedSession = request()->integer('jadwal_id');
-        $session = $requestedSession
-            && $active->count() > 1
-            ? $active->firstWhere('id', $requestedSession)
-            : ($active->count() === 1 ? $active->first() : $active->first());
-        $kelasId = $jurnal?->kelas_id ?? $session['kelas_id'] ?? null;
-        $date = $jurnal?->tanggal ?? today();
+        $activeSession = $requestedSession && $activeSessions->count() > 1
+            ? $activeSessions->firstWhere('id', $requestedSession)
+            : ($activeSessions->count() === 1 ? $activeSessions->first() : $activeSessions->first());
+        $kelasId = $jurnal?->kelas_id ?? $activeSession['kelas_id'] ?? null;
+        $tanggal = $jurnal?->tanggal ?? today();
 
         return [
             'sessions' => $sessions,
-            'existingJournal' => ! $jurnal && $session
-                ? $this->journalForSession($this->currentGuru()->id, [...$session, 'tanggal' => $date->toDateString()])->first()
-                : null,
-            'activeSession' => $jurnal ? null : $session,
-            'scheduleConflict' => $active->count() > 1,
-            'approvedDispensasis' => Dispensasi::with(['jamMulai', 'jamSelesai'])->whereDate('tanggal', $date)
+            'activeSession' => $jurnal ? null : $activeSession,
+            'existingJournal' => null,
+            'scheduleConflict' => $activeSessions->count() > 1,
+            'approvedDispensasis' => Dispensasi::with(['jamMulai', 'jamSelesai'])
+                ->whereDate('tanggal', $tanggal)
                 ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $kelasId))
-                ->where('status_akhir', 'Disetujui')->get(['id', 'siswa_id', 'jam_mulai_id', 'jam_selesai_id']),
-            'kelas' => Kelas::with(['siswas' => fn ($query) => $query->select(['id', 'kelas_id', 'nama_siswa', 'nis'])->orderBy('nama_siswa')])->where('id', $kelasId)->get(),
+                ->where('status_akhir', 'Disetujui')
+                ->get(['id', 'siswa_id', 'jam_mulai_id', 'jam_selesai_id']),
+            'kelas' => Kelas::with(['siswas' => fn ($query) => $query->select(['id', 'kelas_id', 'nama_siswa', 'nis'])->orderBy('nama_siswa')])
+                ->whereKey($kelasId)
+                ->get(),
             'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
         ];
     }

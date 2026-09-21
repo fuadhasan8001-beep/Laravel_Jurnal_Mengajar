@@ -22,6 +22,7 @@ class Jurnal extends Model
         'tugas',
         'catatan',
         'status_verifikasi',
+        'tanda_tangan',
     ];
 
     protected function casts(): array
