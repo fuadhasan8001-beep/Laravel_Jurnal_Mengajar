@@ -159,8 +159,8 @@
 
         border-radius: 50%;
 
-        background: #e5eef8;
-        color: #27425b;
+        background: #fff3cd;
+        color: #8f4d00;
 
         display: flex;
         align-items: center;
@@ -183,8 +183,8 @@
 
         border-radius: 20px;
 
-        background: #edf4ff;
-        color: #3478f6;
+        background: #fff0c2;
+        color: #a85b00;
 
         font-size: 10px;
         font-weight: 600;

@@ -1,4 +1,10 @@
 :root {
+    --primary-yellow: #ffc107;
+    --primary-orange: #ff9800;
+    --dark-orange: #e07800;
+    --light-yellow: #fff8e1;
+    --gradient-primary: linear-gradient(135deg, #ffd54f, #ff9800);
+
     font-family: "Trebuchet MS", Arial, sans-serif;
     color: #111b33;
 }
@@ -33,7 +39,7 @@ body {
     min-height: 100vh;
     overflow: hidden;
     padding: 56px 64px;
-    background: #edf5ff;
+    background: linear-gradient(145deg, #fff8e1 0%, #ffe0a3 100%);
 }
 
 /* BRAND */
@@ -51,8 +57,8 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: #2864e8;
-    color: white;
+    background: var(--gradient-primary);
+    color: #5a2b00;
 }
 
 .brand-icon svg {
@@ -219,8 +225,8 @@ form {
 }
 
 .input-container input:focus {
-    border-color: #2864e8;
-    box-shadow: 0 0 0 4px #dceaff;
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, .24);
 }
 
 .input-container input::placeholder {
@@ -262,7 +268,7 @@ form {
 }
 
 .password-toggle:hover {
-    color: #2864e8;
+    color: var(--dark-orange);
 }
 
 /* =================================
@@ -275,7 +281,7 @@ form {
 }
 
 .forgot-password a {
-    color: #2864e8;
+    color: var(--dark-orange);
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
@@ -295,18 +301,19 @@ form {
     margin-top: 80px;
     border: 0;
     border-radius: 8px;
-    background: #2864e8;
-    color: white;
+    background: var(--gradient-primary);
+    color: #5a2b00;
     cursor: pointer;
     font-family: inherit;
     font-size: 16px;
     font-weight: 700;
-    box-shadow: 0 8px 16px rgba(40, 100, 232, 0.18);
+    box-shadow: 0 8px 16px rgba(224, 120, 0, .22);
     transition: 0.2s;
 }
 
 .login-button:hover {
-    background: #1f55cd;
+    background: var(--dark-orange);
+    color: white;
     transform: translateY(-1px);
 }
 
@@ -322,7 +329,7 @@ form {
 }
 
 .register-text a {
-    color: #2864e8;
+    color: var(--dark-orange);
     font-weight: 700;
     text-decoration: none;
 }
