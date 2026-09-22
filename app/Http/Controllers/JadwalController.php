@@ -22,6 +22,10 @@ class JadwalController extends Controller
     {
         $query = Jadwal::with(['guru', 'kelas', 'mapel', 'jamPelajaran'])->latest();
 
+        if (auth()->user()->role === 'guru') {
+            $query->where('guru_id', Guru::where('user_id', auth()->id())->value('id'));
+        }
+
         $query
             ->when($request->filled('hari'), fn ($builder) => $builder->where('hari', $request->string('hari')))
             ->when($request->filled('guru_id'), fn ($builder) => $builder->where('guru_id', $request->integer('guru_id')))
@@ -49,6 +53,10 @@ class JadwalController extends Controller
 
     public function show(Jadwal $jadwal): View
     {
+        if (auth()->user()->role === 'guru') {
+            abort_unless($jadwal->guru_id === Guru::where('user_id', auth()->id())->value('id'), 403);
+        }
+
         return view('jadwal.show', ['jadwal' => $jadwal->load(['guru', 'kelas', 'mapel', 'jamPelajaran'])]);
     }
 
@@ -130,10 +138,19 @@ class JadwalController extends Controller
      */
     private function formData(): array
     {
+        $guru = auth()->user()->role === 'guru'
+            ? Guru::where('user_id', auth()->id())->first()
+            : null;
+        $guruSchedule = Jadwal::query()->where('guru_id', $guru?->id);
+
         return [
-            'gurus' => Guru::orderBy('nama_guru')->get(),
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
-            'mapels' => Mapel::orderBy('nama_mapel')->get(),
+            'gurus' => $guru ? collect([$guru]) : Guru::orderBy('nama_guru')->get(),
+            'kelas' => $guru
+                ? Kelas::whereIn('id', (clone $guruSchedule)->select('kelas_id')->distinct())->orderBy('nama_kelas')->get()
+                : Kelas::orderBy('nama_kelas')->get(),
+            'mapels' => $guru
+                ? Mapel::whereIn('id', (clone $guruSchedule)->select('mapel_id')->distinct())->orderBy('nama_mapel')->get()
+                : Mapel::orderBy('nama_mapel')->get(),
             'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
         ];
     }

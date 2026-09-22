@@ -1741,11 +1741,30 @@
                             <path d="M16 2v4M8 2v4M3 10h18" />
                         </svg>
 
-                        {{ now()->translatedFormat('l, d F Y') }}
+                        <span>{{ now()->translatedFormat('l, d F Y') }}</span>
+                        <time
+                            class="live-clock"
+                            data-live-clock
+                            data-server-time="{{ now()->getTimestampMs() }}"
+                            data-timezone="{{ config('app.timezone') }}"
+                            datetime="{{ now()->toIso8601String() }}"
+                        >
+                            {{ now()->format('H:i:s') }}
+                        </time>
 
                     </div>
 
                     <div class="mobile-top-actions">
+
+                        <time
+                            class="live-clock mobile-live-clock"
+                            data-live-clock
+                            data-server-time="{{ now()->getTimestampMs() }}"
+                            data-timezone="{{ config('app.timezone') }}"
+                            datetime="{{ now()->toIso8601String() }}"
+                        >
+                            {{ now()->format('H:i:s') }}
+                        </time>
 
                         <div class="notification-menu">
 
@@ -1964,6 +1983,28 @@
     @endauth
 
     <script>
+        document.querySelectorAll('[data-live-clock]').forEach((clock) => {
+            const serverTime = Number(clock.dataset.serverTime);
+            const timezone = clock.dataset.timezone;
+            const startedAt = performance.now();
+            const formatter = new Intl.DateTimeFormat('id-ID', {
+                timeZone: timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            });
+
+            const updateClock = () => {
+                const currentTime = new Date(serverTime + (performance.now() - startedAt));
+                clock.textContent = formatter.format(currentTime);
+                clock.dateTime = currentTime.toISOString();
+            };
+
+            updateClock();
+            window.setInterval(updateClock, 1000);
+        });
+
         document
             .querySelectorAll('[data-menu-toggle], [data-menu-close]')
             .forEach((element) => {

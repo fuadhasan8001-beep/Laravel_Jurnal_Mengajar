@@ -210,13 +210,13 @@ Route::get('/admin', function () {
 Route::get('/guru', function () {
     $hariIni = now()->locale('id')->translatedFormat('l');
     $guru = Guru::where('user_id', auth()->id())->first();
-    $jurnalTerbaru = Jurnal::with(['kelas', 'mapel', 'absensis.siswa'])
-        ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+    $jurnalTerbaru = Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai', 'absensis.siswa'])
+        ->where('guru_id', $guru?->id)
         ->latest('tanggal')
         ->first();
 
     $jadwalHariIni = Jadwal::with(['kelas', 'mapel', 'jamPelajaran'])
-        ->when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        ->where('guru_id', $guru?->id)
         ->where('hari', $hariIni)
         ->where('is_active', true)
         ->get();
@@ -234,18 +234,20 @@ Route::get('/guru', function () {
                 return false;
             }
 
-            return $waktuSekarang >= $jadwal->jamPelajaran->jam_mulai
-                && $waktuSekarang <= $jadwal->jamPelajaran->jam_selesai;
+            [$jamMulai, $jamSelesai] = $jadwal->jamPelajaran->timesForDay($jadwal->hari);
+
+            return $waktuSekarang >= $jamMulai
+                && $waktuSekarang < $jamSelesai;
         })
         ->pluck('id')
         ->values();
 
     return view('dashboard.guru', [
-        'jurnalMingguIni' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        'jurnalMingguIni' => Jurnal::where('guru_id', $guru?->id)
             ->whereBetween('tanggal', [now()->startOfWeek(), now()->endOfWeek()])
             ->count(),
 
-        'kelasAktif' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        'kelasAktif' => Jurnal::where('guru_id', $guru?->id)
             ->distinct('kelas_id')
             ->count('kelas_id'),
 
@@ -260,7 +262,8 @@ Route::get('/guru', function () {
 
         'jadwalHariIni' => $jadwalHariIni,
 
-        'jurnalHariIni' => Jurnal::when($guru, fn ($query) => $query->where('guru_id', $guru->id))
+        'jurnalHariIni' => Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->where('guru_id', $guru?->id)
             ->whereDate('tanggal', today())
             ->get(),
         'jurnalTerbaru' => $jurnalTerbaru,

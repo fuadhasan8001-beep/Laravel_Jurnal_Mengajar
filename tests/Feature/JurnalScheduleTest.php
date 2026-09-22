@@ -127,6 +127,32 @@ it('fills the entire consecutive lesson block and ignores manual selection', fun
         ->assertDontSee('Cari kelas')->assertDontSee('name="kelas_id"', false);
 });
 
+it('only exposes and accepts schedules belonging to the logged in teacher', function () {
+    $data = activeJournalSchedule();
+    $otherUser = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $otherGuru = Guru::create(['user_id' => $otherUser->id, 'nip' => 'SCHEDULE-2', 'nama_guru' => 'Guru Lain', 'status_kepegawaian' => 'Honorer']);
+    $otherClass = Kelas::create(['nama_kelas' => 'X LAIN', 'tingkat' => 'X']);
+    $otherSchedule = Jadwal::create([
+        'guru_id' => $otherGuru->id,
+        'kelas_id' => $otherClass->id,
+        'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $data['periods'][0]->id,
+        'hari' => 'Senin',
+        'is_active' => true,
+    ]);
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+
+    $this->actingAs($data['user'])
+        ->get(route('jurnal.create'))
+        ->assertSee('X TKI 1')
+        ->assertDontSee('X LAIN');
+
+    $this->post(route('jurnal.store'), ['jadwal_id' => $otherSchedule->id, 'status_guru' => 'Hadir'])
+        ->assertSessionHasErrors('jadwal_id');
+
+    $this->assertDatabaseCount('jurnals', 0);
+});
+
 it('saves status only with server derived dates and lesson boundaries', function () {
     $data = activeJournalSchedule();
     $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
