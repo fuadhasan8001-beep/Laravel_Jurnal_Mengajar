@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Dispensasi;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class DispensasiNotification extends Notification
@@ -17,7 +18,15 @@ class DispensasiNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('Pembaruan dispensasi')
+            ->line($this->message())
+            ->action('Buka dispensasi', route('dispensasi.show', $this->dispensasi));
     }
 
     /**
@@ -28,7 +37,7 @@ class DispensasiNotification extends Notification
         return [
             'event' => $this->event,
             'message' => $this->message(),
-            'url' => route('dispensasi.show', $this->dispensasi),
+            'url' => $this->event === 'teacher_approved' ? route('jurnal.index', ['tanggal_mulai' => $this->dispensasi->tanggal->toDateString(), 'tanggal_selesai' => $this->dispensasi->tanggal->toDateString(), 'kelas_id' => $this->dispensasi->siswa->kelas_id]) : route('dispensasi.show', $this->dispensasi),
             'dispensasi_id' => $this->dispensasi->id,
         ];
     }
@@ -36,6 +45,7 @@ class DispensasiNotification extends Notification
     private function message(): string
     {
         return match ($this->event) {
+            'teacher_approved' => $this->dispensasi->siswa->nama_siswa.' mendapat dispensasi pada '.$this->dispensasi->tanggal->format('d-m-Y').' pukul '.$this->dispensasi->jamMulai->jam_mulai.'–'.$this->dispensasi->jamSelesai->jam_selesai.'.',
             'submitted' => 'Pengajuan dispensasi baru menunggu pemeriksaan piket.',
             'piket_approved' => 'Pengajuan dispensasi telah disetujui piket dan menunggu admin.',
             'piket_rejected' => 'Pengajuan dispensasi ditolak oleh piket.',

@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Ajukan dispensasi</h1>
+            <h1>{{ auth()->user()->role === 'piket' ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
             <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
         </div><a
             class="btn btn-muted"
@@ -23,13 +23,28 @@
                 enctype="multipart/form-data"
             >
                 @csrf
+                @if (auth()->user()->role === 'piket')
+                    <div class="field">
+                        <label for="student-search">Cari siswa berdasarkan nama, NIS, atau kelas</label>
+                        <input id="student-search" type="search" autocomplete="off" placeholder="Cari siswa">
+                        <label for="student-picker">Siswa</label><select id="student-picker"></select>
+                        <button type="button" class="btn btn-muted" id="add-student">+ Tambahkan siswa</button>
+                        <p>Siswa meminta dispensasi kepada piket. Tambahkan siswa satu per satu, lalu kirim pernyataan untuk diverifikasi admin.</p>
+                        <ul id="selected-students"></ul><p id="student-count" aria-live="polite"></p>
+                        @error('siswa_ids')<small class="error">{{ $message }}</small>@enderror
+                    </div>
+                @endif
                 <div class="form-grid">
+                    @if (auth()->user()->role === 'piket')
+                        <div class="field full"><label for="siswa_id">Siswa</label><select id="siswa_id" name="siswa_id" required><option value="">Pilih siswa</option>@foreach ($siswas as $siswa)<option value="{{ $siswa->id }}" @selected(old('siswa_id') == $siswa->id)>{{ $siswa->nama_siswa }} — {{ $siswa->kelas->nama_kelas }}</option>@endforeach</select></div>
+                    @endif
                     <div class="field"><label for="tanggal">Tanggal dispensasi</label><input
                             id="tanggal"
                             type="date"
                             name="tanggal"
-                            value="{{ old('tanggal') }}"
-                            required
+                            value="{{ today()->toDateString() }}"
+                            class="field-readonly"
+                            readonly
                         ></div>
                     <div class="field"><label for="jam_mulai_id">Jam mulai</label><select
                             id="jam_mulai_id"
@@ -40,13 +55,16 @@
                             @foreach ($jamPelajarans as $jam)
                                 <option
                                     value="{{ $jam->id }}"
+                                    data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
+                                    @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_mulai_id') == $jam->id)
                                 >
                                     Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
                                     {{ $jam->jam_selesai }})
                                 </option>
                             @endforeach
-                        </select></div>
+                        </select>@error('jam_mulai_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field"><label for="jam_selesai_id">Jam selesai</label><select
                             id="jam_selesai_id"
                             name="jam_selesai_id"
@@ -56,13 +74,16 @@
                             @foreach ($jamPelajarans as $jam)
                                 <option
                                     value="{{ $jam->id }}"
+                                    data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
+                                    @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_selesai_id') == $jam->id)
                                 >
                                     Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
                                     {{ $jam->jam_selesai }})
                                 </option>
                             @endforeach
-                        </select></div>
+                        </select>@error('jam_selesai_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field full"><label for="alasan">Alasan atau kegiatan</label>
                         <textarea
                             id="alasan"
@@ -71,14 +92,12 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
-                    <div class="field full"><label for="bukti">Bukti atau surat <span
-                                style="font-weight:400;color:var(--muted)"
-                            >(PDF/JPG/PNG, maksimal 5 MB)</span></label><input
+                    <div class="field full"><label for="bukti">Bukti foto <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input
                             id="bukti"
                             type="file"
                             name="bukti"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        ></div>
+                            accept="image/jpeg,image/png,image/webp"
+                        >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"
@@ -90,4 +109,61 @@
             </form>
         </div>
     </section>
+    @if (auth()->user()->role === 'piket')
+    <script>
+    (() => {
+        const students = {{ Illuminate\Support\Js::from($siswas) }};
+        const selected = new Set({{ Illuminate\Support\Js::from(old('siswa_ids', [])) }}.map(String));
+        const picker = document.getElementById('student-picker');
+        const search = document.getElementById('student-search');
+        const list = document.getElementById('selected-students');
+        const label = student => `${student.nama_siswa} · ${student.nis} · ${student.kelas?.nama_kelas ?? ''}`;
+        function render() {
+            picker.replaceChildren(new Option('Pilih siswa', ''));
+            students.filter(student => !selected.has(String(student.id)) && label(student).toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+                .forEach(student => picker.add(new Option(label(student), student.id)));
+            list.replaceChildren();
+            students.filter(student => selected.has(String(student.id))).forEach(student => {
+                const row = document.createElement('li');
+                const text = document.createElement('span'); text.textContent = label(student) + ' ';
+                const input = document.createElement('input'); input.type = 'hidden'; input.name = 'siswa_ids[]'; input.value = student.id;
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn btn-muted'; remove.textContent = 'Hapus'; remove.setAttribute('aria-label', 'Hapus ' + student.nama_siswa);
+                remove.addEventListener('click', () => { selected.delete(String(student.id)); render(); });
+                row.append(text, input, remove); list.append(row);
+            });
+            document.getElementById('student-count').textContent = selected.size + ' siswa ditambahkan';
+        }
+        search.addEventListener('input', render);
+        document.getElementById('add-student').addEventListener('click', () => { if (picker.value) { selected.add(picker.value); render(); } });
+        render();
+    })();
+    </script>
+    @endif
+    <script>
+    (() => {
+        const start = document.getElementById('jam_mulai_id');
+        const end = document.getElementById('jam_selesai_id');
+
+        const updateEndTimes = () => {
+            const selectedStart = start.options[start.selectedIndex];
+            const startPeriod = Number(selectedStart?.dataset.jamKe ?? 0);
+
+            [...end.options].forEach((option) => {
+                if (!option.value) {
+                    return;
+                }
+
+                option.disabled = option.dataset.unavailable === 'true'
+                    || (startPeriod > 0 && Number(option.dataset.jamKe) < startPeriod);
+            });
+
+            if (end.selectedOptions[0]?.disabled) {
+                end.value = '';
+            }
+        };
+
+        start.addEventListener('change', updateEndTimes);
+        updateEndTimes();
+    })();
+    </script>
 @endsection

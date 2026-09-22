@@ -12,16 +12,21 @@
             href="{{ route('dispensasi.index') }}"
         >Kembali ke riwayat</a>
     </div>
-    <section
-        class="panel"
-        style="margin-bottom:18px"
-    >
+    <section class="panel panel-spaced">
         <div class="panel-head">
             <h2>Informasi pengajuan</h2><span
                 class="status {{ $dispensasi->status_akhir === 'Disetujui' ? 'approved' : ($dispensasi->status_akhir === 'Ditolak' ? 'rejected' : 'pending') }}"
             >{{ $dispensasi->status_akhir }}</span>
         </div>
         <div class="panel-body">
+            @if ($dispensasi->group_key && $dispensasi->groupStudents->count() > 1)
+                <p><strong>Siswa dalam pernyataan:</strong></p>
+                <ol>
+                    @foreach ($dispensasi->groupStudents as $member)
+                        <li>{{ $member->siswa->nama_siswa }} ({{ $member->siswa->nis }})</li>
+                    @endforeach
+                </ol>
+            @endif
             <dl class="detail-grid">
                 <div class="detail-item">
                     <dt>Siswa</dt>
@@ -46,10 +51,7 @@
                         @endif
                     </dd>
                 </div>
-                <div
-                    class="detail-item"
-                    style="grid-column:1/-1"
-                >
+                <div class="detail-item detail-item-full">
                     <dt>Alasan/kegiatan</dt>
                     <dd>{{ $dispensasi->alasan }}</dd>
                 </div>
@@ -64,10 +66,7 @@
                     </dd>
                 </div>
                 @if ($dispensasi->catatan_verifikasi)
-                    <div
-                        class="detail-item"
-                        style="grid-column:1/-1"
-                    >
+                    <div class="detail-item detail-item-full">
                         <dt>Catatan verifikasi</dt>
                         <dd>{{ $dispensasi->catatan_verifikasi }}</dd>
                     </div>
@@ -76,8 +75,9 @@
         </div>
     </section>
 
-    @if (in_array(auth()->user()->role, ['piket', 'admin'], true) &&
-            $dispensasi->status_akhir === 'Menunggu')
+    @if ($dispensasi->status_akhir === 'Menunggu' &&
+        ((auth()->user()->role === 'piket' && $dispensasi->status_piket === 'Menunggu') ||
+        (auth()->user()->role === 'admin' && $dispensasi->status_piket === 'Disetujui')))
         <section class="panel form-panel">
             <div class="panel-head">
                 <h2>Ambil keputusan</h2><span class="eyebrow">Tahap

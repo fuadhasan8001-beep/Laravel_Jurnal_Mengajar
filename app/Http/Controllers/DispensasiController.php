@@ -34,35 +34,57 @@ class DispensasiController extends Controller
 
     public function create(): View
     {
+        $hari = today()->locale('id')->translatedFormat('l');
+        $waktuSekarang = now()->format('H:i:s');
+        $jamPelajarans = JamPelajaran::query()
+            ->where('is_active', true)
+            ->orderBy('jam_ke')
+            ->get();
+
         return view('dispensasi.create', [
-            'jamPelajarans' => JamPelajaran::query()
-                ->where('is_active', true)
-                ->orderBy('jam_ke')
-                ->get(),
+            'siswas' => auth()->user()->role === 'piket' ? Siswa::with('kelas')->orderBy('nama_siswa')->get() : collect(),
+            'jamPelajarans' => $jamPelajarans,
+            'jamTidakTersediaIds' => $jamPelajarans
+                ->filter(fn (JamPelajaran $jam): bool => $jam->timesForDay($hari)[1] <= $waktuSekarang)
+                ->pluck('id')
+                ->all(),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $request->merge(['tanggal' => today()->toDateString()]);
+
         $data = $request->validate([
+            'siswa_id' => ['nullable', 'exists:siswas,id'],
             'tanggal' => ['required', 'date'],
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
             'alasan' => ['required', 'string', 'max:5000'],
-            'bukti' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'bukti' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
         $jamMulai = JamPelajaran::findOrFail($data['jam_mulai_id']);
         $jamSelesai = JamPelajaran::findOrFail($data['jam_selesai_id']);
 
-        if ($jamMulai->jam_mulai >= $jamSelesai->jam_selesai) {
+        if ($jamSelesai->jam_ke < $jamMulai->jam_ke) {
             return back()->withInput()->withErrors([
-                'jam_selesai_id' => 'Jam selesai harus setelah jam mulai.',
+                'jam_selesai_id' => 'Jam selesai tidak boleh sebelum jam dispensasi.',
+            ]);
+        }
+
+        $hari = today()->locale('id')->translatedFormat('l');
+        if ($jamMulai->timesForDay($hari)[1] <= now()->format('H:i:s')) {
+            return back()->withInput()->withErrors([
+                'jam_mulai_id' => 'Jam dispensasi harus jam saat ini atau jam berikutnya.',
             ]);
         }
 
         $dispensasi = new Dispensasi($data);
-        $dispensasi->siswa_id = $this->student()->id;
+        $dispensasi->siswa_id = auth()->user()->role === 'piket'
+            ? $request->integer('siswa_id')
+            : $this->student()->id;
+        abort_unless($dispensasi->siswa_id, 422, 'Siswa wajib dipilih.');
 
         if ($request->hasFile('bukti')) {
             $dispensasi->bukti = $request->file('bukti')->store('dispensasi/bukti');

@@ -64,6 +64,24 @@ it('allows active students to log in with their NISN', function () {
     expect(auth()->id())->toBe($user->id);
 });
 
+it('recognizes a students NISN on the forgot password form', function () {
+    $user = User::factory()->create([
+        'role' => 'siswa',
+        'is_active' => true,
+    ]);
+    $kelas = Kelas::create(['nama_kelas' => 'X TKI 2', 'tingkat' => 'X']);
+    Siswa::create([
+        'user_id' => $user->id,
+        'kelas_id' => $kelas->id,
+        'nis' => '0105292766',
+        'nama_siswa' => 'Siswa Lupa Password',
+        'jenis_kelamin' => 'L',
+    ]);
+
+    $this->post('/forgot-password', ['login' => '0105292766'])
+        ->assertSessionHas('status', 'Silakan hubungi admin untuk menyiapkan ulang password akun Anda.');
+});
+
 it('blocks a role from another role dashboard', function () {
     $user = User::factory()->create([
         'role' => 'guru',

@@ -3,7 +3,6 @@
 @section('content')
     <h2>Rekap Jurnal Mingguan</h2>
 
-    {{-- Filter tanggal --}}
     <form method="GET" action="{{ route('rekap.mingguan') }}">
         <input type="date" name="tanggal" value="{{ $tanggal }}">
         <button type="submit">Tampilkan</button>
@@ -13,12 +12,11 @@
         Periode: <strong>{{ $senin->format('d M Y') }} - {{ $minggu->format('d M Y') }}</strong>
     </p>
 
-    {{-- Loop 7 hari, dari Senin sampai Minggu --}}
     @for($i = 0; $i < 7; $i++)
         @php
             $hari = $senin->copy()->addDays($i);
             $tgl = $hari->format('Y-m-d');
-            $dataHari = $jurnals->get($tgl, collect()); // ambil jurnal hari itu (kosongkan kalau tidak ada)
+            $dataHari = $jurnals->get($tgl, collect()); 
         @endphp
 
         <h3>{{ $hari->translatedFormat('l, d M Y') }}</h3>

@@ -3,7 +3,6 @@
 @section('content')
     <h2>Rekap Jurnal Tahunan</h2>
 
-    {{-- Filter tahun --}}
     <form method="GET" action="{{ route('rekap.tahunan') }}">
         <input type="number" name="tahun" value="{{ $tahun }}" min="2020" max="2100">
         <button type="submit">Tampilkan</button>

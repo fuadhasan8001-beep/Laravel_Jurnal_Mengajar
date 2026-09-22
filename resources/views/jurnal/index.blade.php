@@ -14,6 +14,7 @@
     </div>
 
     <section class="panel">
+        <div class="panel-head"><h2>Filter riwayat jurnal</h2></div>
         <div class="panel-body">
             <form method="GET" action="{{ route('jurnal.index') }}">
                 <div class="form-grid">
@@ -90,7 +91,7 @@
                                 <td>{{ $jurnal->mapel->nama_mapel }}</td>
                                 <td>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
                                 <td>{{ $jurnal->materi }}</td>
-                                <td><span class="status pending">{{ $jurnal->status_verifikasi }}</span></td>
+                                <td><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span></td>
                                 <td><a href="{{ route('jurnal.show', $jurnal) }}">Detail</a></td>
                             </tr>
                         @endforeach

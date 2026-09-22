@@ -10,10 +10,7 @@
         </div><span class="status approved">Status D = dispensasi</span>
     </div>
     @forelse ($jurnals as $jurnal)
-        <section
-            class="panel"
-            style="margin-bottom:18px"
-        >
+                        <section class="panel panel-spaced">
             <div class="panel-head">
                 <div>
                     <h2>{{ $jurnal->tanggal->format('d M Y') }}</h2>
@@ -25,7 +22,7 @@
                     <button
                         class="btn btn-muted"
                         type="button"
-                        onclick="this.closest('section').querySelectorAll('select[data-absence-status]').forEach((select) => { if (!select.disabled) select.value = 'H'; })"
+                        data-mark-present
                     >Hadir semua</button>
                 </div>
                 <div class="table-wrap">

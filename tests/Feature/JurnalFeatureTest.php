@@ -1,18 +1,21 @@
 <?php
 
 use App\Models\Guru;
+use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 function journalSetup(): array
 {
+    test()->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
     $user = User::factory()->create([
         'role' => 'guru',
         'is_active' => true,
@@ -27,6 +30,8 @@ function journalSetup(): array
     $mapel = Mapel::create(['kode_mapel' => 'MAT', 'nama_mapel' => 'Matematika']);
     $jamMulai = JamPelajaran::create(['jam_ke' => 1, 'jam_mulai' => '07:00', 'jam_selesai' => '07:45']);
     $jamSelesai = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '07:45', 'jam_selesai' => '08:30']);
+    Jadwal::create(['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
+        'jam_pelajaran_id' => $jamMulai->id, 'hari' => 'Senin', 'is_active' => true]);
 
     return compact('user', 'guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai');
 }
@@ -89,7 +94,7 @@ it('records teacher absence tasks and student attendance when creating a journal
     ]);
 });
 
-it('requires task details when the teacher is absent', function () {
+it('allows an absent teacher to record only their status', function () {
     $data = journalSetup();
 
     $this->actingAs($data['user'])->post(route('jurnal.store'), [
@@ -99,7 +104,9 @@ it('requires task details when the teacher is absent', function () {
         'jam_selesai_id' => $data['jamMulai']->id,
         'status_guru' => 'Sakit',
         'materi' => 'Belajar mandiri',
-    ])->assertSessionHasErrors('tugas');
+    ])->assertSessionHasNoErrors();
+
+    $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Sakit']);
 });
 
 it('prevents a teacher from viewing another teachers journal', function () {

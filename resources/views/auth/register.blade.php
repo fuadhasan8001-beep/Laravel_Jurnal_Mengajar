@@ -19,7 +19,7 @@
                 @csrf
                 <div class="field"><label for="name">Nama lengkap</label><input id="name" name="name" value="{{ old('name') }}" required></div>
                 <div class="field"><label for="email">Email</label><input id="email" type="email" name="email" value="{{ old('email') }}" required></div>
-                <div class="field"><label for="role">Role yang didaftarkan</label><select id="role" name="role" required>@foreach (['guru' => 'Guru', 'siswa' => 'Siswa', 'sekretaris' => 'Sekretaris', 'piket' => 'Piket'] as $value => $label)<option value="{{ $value }}" @selected(old('role') === $value)>{{ $label }}</option>@endforeach</select></div>
+                <div class="field"><label for="role">Role yang didaftarkan</label><select id="role" name="role" required>@foreach (['guru' => 'Guru', 'siswa' => 'Siswa', 'piket' => 'Piket'] as $value => $label)<option value="{{ $value }}" @selected(old('role') === $value)>{{ $label }}</option>@endforeach</select></div>
                 <div class="field"><label for="password">Password</label><input id="password" type="password" name="password" required></div>
                 <div class="field"><label for="password_confirmation">Konfirmasi password</label><input id="password_confirmation" type="password" name="password_confirmation" required></div>
                 <button class="btn" type="submit">Kirim pendaftaran</button>

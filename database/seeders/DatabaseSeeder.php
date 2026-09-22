@@ -352,8 +352,12 @@ class DatabaseSeeder extends Seeder
 
         $jamPertama = JamPelajaran::where('jam_ke', 1)->firstOrFail();
         $jamKedua = JamPelajaran::where('jam_ke', 2)->firstOrFail();
-        $tanggalDemo = now()->toDateString();
-        $hariDemo = now()->locale('id')->translatedFormat('l');
+        $waktuDemo = now();
+        if ($waktuDemo->isSunday()) {
+            $waktuDemo->addDay();
+        }
+        $tanggalDemo = $waktuDemo->toDateString();
+        $hariDemo = $waktuDemo->locale('id')->translatedFormat('l');
 
         $jadwal = Jadwal::updateOrCreate(
             [
@@ -430,5 +434,7 @@ class DatabaseSeeder extends Seeder
             'catatan_verifikasi' => 'Data demo.',
         ]);
         $dispensasi->save();
+
+        $this->call(JadwalSemesterSeeder::class);
     }
 }
