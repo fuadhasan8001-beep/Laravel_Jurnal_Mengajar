@@ -31,4 +31,23 @@
             <div class="empty">Belum ada jurnal pada periode ini.</div>
         @endif
     </section>
+    <section class="panel">
+        <div class="panel-head"><h2>Deteksi pengisian jurnal</h2><span class="eyebrow">{{ $monitoringDate->format('d M Y') }}</span></div>
+        <div class="panel-body">
+            <form method="GET" action="{{ route('laporan.jurnal') }}">
+                @foreach (request()->except('monitoring_date', 'page') as $key => $value)
+                    @if (is_scalar($value))<input type="hidden" name="{{ $key }}" value="{{ $value }}">@endif
+                @endforeach
+                <div class="form-actions" style="justify-content:flex-start;margin-top:0">
+                    <div class="field"><label for="monitoring_date">Tanggal monitoring</label><input id="monitoring_date" type="date" name="monitoring_date" value="{{ $monitoringDate->toDateString() }}"></div>
+                    <button class="btn" type="submit">Periksa jadwal</button>
+                </div>
+            </form>
+        </div>
+        @if ($monitoring->isNotEmpty())
+            <div class="table-wrap"><table><thead><tr><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th></tr></thead><tbody>@foreach ($monitoring as $item)<tr><td>{{ $item['guru'] }}</td><td>{{ $item['kelas'] }}</td><td>{{ $item['mapel'] }}</td><td>{{ $item['jam'] }}</td><td>{{ $item['status'] }}</td></tr>@endforeach</tbody></table></div>
+        @else
+            <div class="empty">Tidak ada jadwal aktif pada tanggal ini.</div>
+        @endif
+    </section>
 @endsection

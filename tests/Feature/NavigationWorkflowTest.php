@@ -43,6 +43,16 @@ it('shows mobile notification and logout controls in the app shell', function ()
         ->assertSee('Asia/Jakarta');
 });
 
+it('shows the configured admin WhatsApp contact', function () {
+    config(['app.admin_whatsapp' => '+62 812-3456-7890']);
+    $user = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+
+    $this->actingAs($user)
+        ->get('/guru')
+        ->assertSee('Hubungi Admin')
+        ->assertSee('https://wa.me/6281234567890', false);
+});
+
 it('creates unique teacher usernames and retains an activity log entry', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
     User::factory()->create(['role' => 'guru', 'username' => 'siti.aminah', 'is_active' => true]);

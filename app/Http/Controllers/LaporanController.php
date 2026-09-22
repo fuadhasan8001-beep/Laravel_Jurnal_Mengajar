@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\Jadwal;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
@@ -12,6 +13,7 @@ use App\Models\Siswa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class LaporanController extends Controller
@@ -22,6 +24,8 @@ class LaporanController extends Controller
 
         return view('laporan.jurnal', [
             'jurnals' => $jurnals,
+            'monitoringDate' => Carbon::parse($request->input('monitoring_date', today()->toDateString())),
+            'monitoring' => $this->journalMonitoring($request),
             ...$this->filterData(),
         ]);
     }
@@ -189,6 +193,50 @@ class LaporanController extends Controller
     private function currentGuru(): Guru
     {
         return Guru::where('user_id', auth()->id())->firstOrFail();
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function journalMonitoring(Request $request): Collection
+    {
+        $date = Carbon::parse($request->input('monitoring_date', today()->toDateString()));
+        $weekday = $date->copy()->locale('id')->translatedFormat('l');
+        $schedules = Jadwal::query()
+            ->with(['guru', 'kelas', 'mapel', 'jamPelajaran'])
+            ->where('hari', $weekday)
+            ->where('is_active', true)
+            ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
+            ->when(auth()->user()->role === 'guru', fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
+            ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id')))
+            ->when($request->filled('guru_id'), fn ($query) => $query->where('guru_id', $request->integer('guru_id')))
+            ->when($request->filled('kelas_id'), fn ($query) => $query->where('kelas_id', $request->integer('kelas_id')))
+            ->when($request->filled('mapel_id'), fn ($query) => $query->where('mapel_id', $request->integer('mapel_id')))
+            ->get();
+        $journals = Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->whereDate('tanggal', $date)
+            ->whereIn('guru_id', $schedules->pluck('guru_id')->unique())
+            ->get()
+            ->groupBy(fn (Jurnal $jurnal): string => $jurnal->guru_id.'-'.$jurnal->kelas_id.'-'.$jurnal->mapel_id);
+
+        return $schedules->map(function (Jadwal $schedule) use ($journals, $weekday): array {
+            $journal = $journals->get($schedule->guru_id.'-'.$schedule->kelas_id.'-'.$schedule->mapel_id, collect())
+                ->first(fn (Jurnal $candidate): bool => $candidate->jamMulai->jam_ke <= $schedule->jamPelajaran->jam_ke
+                    && $candidate->jamSelesai->jam_ke >= $schedule->jamPelajaran->jam_ke);
+            [$start, $end] = $schedule->jamPelajaran->timesForDay($weekday);
+
+            return [
+                'guru' => $schedule->guru->nama_guru,
+                'kelas' => $schedule->kelas->nama_kelas,
+                'mapel' => $schedule->mapel->nama_mapel,
+                'jam' => substr($start, 0, 5).' - '.substr($end, 0, 5),
+                'status' => match ($journal?->status_guru) {
+                    'Izin' => 'Guru izin',
+                    'Sakit' => 'Guru sakit',
+                    default => $journal ? 'Jurnal sudah dibuat' : 'Belum mengisi jurnal',
+                },
+            ];
+        })->values();
     }
 
     /**

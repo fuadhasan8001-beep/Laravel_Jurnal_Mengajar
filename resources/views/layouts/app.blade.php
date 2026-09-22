@@ -320,6 +320,12 @@
             box-shadow: 0 12px 30px #203b6420;
 
             padding: 8px;
+
+            max-width: calc(100vw - 32px);
+
+            max-height: min(70vh, 420px);
+
+            overflow-y: auto;
         }
 
         .notification-item {
@@ -353,6 +359,31 @@
         .mobile-top-actions,
         .mobile-logout-button {
             display: none;
+        }
+
+        .contact-admin {
+            display: block;
+
+            margin-top: 10px;
+
+            border: 1px solid #25d366;
+            border-radius: 8px;
+
+            padding: 9px 12px;
+
+            background: #25d366;
+            color: #073b1a;
+
+            text-align: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .contact-admin:hover {
+            background: #20bd5c;
+            color: #073b1a;
+            text-decoration: none;
         }
 
         /* =========================================================
@@ -1219,6 +1250,10 @@
             }
 
             .topbar > div:first-child {
+                min-width: 0;
+            }
+
+            .topbar > div:first-child {
                 display: flex;
 
                 align-items: center;
@@ -1231,6 +1266,8 @@
             }
 
             .mobile-top-actions {
+                min-width: 0;
+
                 display: flex;
 
                 align-items: center;
@@ -1259,9 +1296,25 @@
             }
 
             .mobile-top-actions .notification-list {
-                right: 0;
+                position: fixed;
 
-                width: min(86vw, 300px);
+                top: 76px;
+                right: 16px;
+                left: 16px;
+
+                width: auto;
+
+                max-width: none;
+            }
+
+            .mobile-notification-button {
+                max-width: 42vw;
+
+                overflow: hidden;
+
+                text-overflow: ellipsis;
+
+                white-space: nowrap;
             }
 
             .content {
@@ -1601,6 +1654,17 @@
                     >
                         Profil
                     </a>
+
+                    @if (filled(config('app.admin_whatsapp')))
+                        <a
+                            class="contact-admin"
+                            href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Hubungi Admin
+                        </a>
+                    @endif
 
                 </nav>
 
@@ -2017,7 +2081,10 @@
                         return;
                     }
 
-                    const isOpen = shell.classList.toggle('menu-open');
+                    const isCloseButton = element.matches('[data-menu-close]');
+                    const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
+
+                    shell.classList.toggle('menu-open', isOpen);
 
                     document
                         .querySelector('[data-menu-toggle]')
