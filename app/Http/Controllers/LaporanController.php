@@ -170,6 +170,7 @@ class LaporanController extends Controller
         ]);
 
         return Dispensasi::with(['siswa.kelas', 'jamMulai', 'jamSelesai'])
+            ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereHas('siswa', fn ($student) => $student->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'))))
             ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
             ->when($request->filled('kelas_id'), fn ($query) => $query->whereHas('siswa', fn ($student) => $student->where('kelas_id', $request->integer('kelas_id'))))

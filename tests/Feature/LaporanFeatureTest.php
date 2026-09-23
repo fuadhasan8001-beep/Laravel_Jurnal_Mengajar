@@ -61,7 +61,7 @@ it('classifies scheduled lessons by journal and teacher leave status', function 
 
     $response->assertOk()->assertViewHas('monitoring', function ($monitoring): bool {
         return $monitoring->pluck('status')->all() === [
-            'Jurnal sudah dibuat',
+            'Guru hadir',
             'Guru izin',
             'Guru sakit',
             'Belum mengisi jurnal',

@@ -9,7 +9,7 @@
             <p>{{ auth()->user()->role === 'siswa' ? 'Pantau seluruh pengajuan dan keputusan dispensasi Anda.' : 'Tinjau pengajuan dispensasi yang membutuhkan tindakan.' }}
             </p>
         </div>
-        @if (in_array(auth()->user()->role, ['siswa', 'piket'], true))
+        @if (auth()->user()->role === 'piket')
             <a
                 class="btn"
                 href="{{ route('dispensasi.create') }}"

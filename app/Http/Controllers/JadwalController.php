@@ -22,6 +22,10 @@ class JadwalController extends Controller
     {
         $query = Jadwal::with(['guru', 'kelas', 'mapel', 'jamPelajaran'])->latest();
 
+        if (auth()->user()->role === 'sekretaris') {
+            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
+        }
+
         if (auth()->user()->role === 'guru') {
             $query->where('guru_id', Guru::where('user_id', auth()->id())->value('id'));
         }
@@ -53,6 +57,9 @@ class JadwalController extends Controller
 
     public function show(Jadwal $jadwal): View
     {
+        if (auth()->user()->role === 'sekretaris') {
+            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jadwal->kelas_id)->exists(), 403);
+        }
         if (auth()->user()->role === 'guru') {
             abort_unless($jadwal->guru_id === Guru::where('user_id', auth()->id())->value('id'), 403);
         }
@@ -88,14 +95,27 @@ class JadwalController extends Controller
 
     private function shiftGlobalPeriods(JamPelajaran $period, string $startTime, string $endTime): void
     {
-        $periods = JamPelajaran::query()->where('jam_ke', '>=', $period->jam_ke)->orderBy('jam_ke')->get();
-        $nextStart = Carbon::createFromFormat('H:i', $startTime);
+        $periods = JamPelajaran::query()->where('jam_ke', '>=', $period->jam_ke)->orderBy('jam_ke')->lockForUpdate()->get();
+        $nextStart = Carbon::parse($startTime);
+        $previous = JamPelajaran::where('jam_ke', '<', $period->jam_ke)->where('is_active', true)->orderByDesc('jam_ke')->first();
+        if ($previous && Carbon::parse($previous->jam_selesai)->greaterThan($nextStart)) {
+            throw ValidationException::withMessages(['jam_mulai' => 'Jam mulai bertumpuk dengan jam sebelumnya.']);
+        }
+        $originalEnd = null;
 
         foreach ($periods as $index => $currentPeriod) {
+            if ($originalEnd !== null) {
+                $gap = $originalEnd->diffInMinutes(Carbon::parse($currentPeriod->jam_mulai));
+                $nextStart->addMinutes(max(0, $gap));
+            }
             $duration = $index === 0
-                ? Carbon::createFromFormat('H:i', $endTime)->diffInMinutes($nextStart)
+                ? $nextStart->diffInMinutes(Carbon::parse($endTime))
                 : Carbon::parse($currentPeriod->jam_mulai)->diffInMinutes(Carbon::parse($currentPeriod->jam_selesai));
+            $originalEnd = Carbon::parse($currentPeriod->jam_selesai);
             $currentEnd = $nextStart->copy()->addMinutes($duration);
+            if ($duration <= 0 || ! $currentEnd->isSameDay($nextStart)) {
+                throw ValidationException::withMessages(['jam_selesai' => 'Durasi harus positif dan tidak boleh melewati tengah malam.']);
+            }
             $currentPeriod->update([
                 'jam_mulai' => $nextStart->format('H:i'),
                 'jam_selesai' => $currentEnd->format('H:i'),

@@ -63,6 +63,131 @@
             min-height: 100vh;
         }
 
+        .searchable-select-shell {
+            position: relative;
+            width: 100%;
+        }
+
+        .searchable-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            min-height: 46px;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--ink);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(11, 18, 32, 0.03);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            text-align: left;
+        }
+
+        .searchable-select-trigger:hover,
+        .searchable-select-trigger:focus-visible {
+            border-color: rgba(36, 83, 212, 0.55);
+            box-shadow: 0 0 0 4px rgba(36, 83, 212, 0.08);
+            outline: none;
+        }
+
+        .searchable-select-label {
+            display: block;
+            overflow: hidden;
+            color: var(--ink);
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .searchable-select-chevron {
+            margin-left: 0.8rem;
+            color: var(--muted);
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .searchable-select-shell.is-open .searchable-select-chevron {
+            transform: rotate(180deg);
+        }
+
+        .searchable-select-menu {
+            position: absolute;
+            z-index: 60;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            display: none;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: 0 18px 34px rgba(11, 18, 32, 0.12);
+            overflow: hidden;
+        }
+
+        .searchable-select-shell.is-open .searchable-select-menu {
+            display: block;
+        }
+
+        .searchable-select-search {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid var(--line);
+            background: #f7faf9;
+            color: var(--ink);
+            padding: 0.8rem 0.9rem;
+            outline: none;
+        }
+
+        .searchable-select-search::placeholder {
+            color: var(--muted);
+        }
+
+        .searchable-select-options {
+            max-height: 240px;
+            overflow-y: auto;
+            background: var(--surface);
+        }
+
+        .searchable-select-option {
+            display: block;
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid rgba(220, 229, 224, 0.7);
+            background: transparent;
+            color: var(--ink);
+            padding: 0.8rem 0.9rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease;
+        }
+
+        .searchable-select-option:last-child {
+            border-bottom: 0;
+        }
+
+        .searchable-select-option:hover,
+        .searchable-select-option:focus-visible {
+            background: rgba(36, 83, 212, 0.06);
+            outline: none;
+        }
+
+        .searchable-select-option.is-selected {
+            background: rgba(36, 83, 212, 0.1);
+            color: var(--brand-blue-dark);
+            font-weight: 700;
+        }
+
+        .searchable-select-option.is-empty {
+            color: var(--muted);
+            cursor: default;
+        }
+
+        select.searchable-hidden {
+            display: none !important;
+        }
+
         /* =========================================================
            SIDEBAR
         ========================================================= */
@@ -2283,6 +2408,145 @@
     @endauth
 
     <script>
+        const closeNotificationMenus = () => {
+            document.querySelectorAll('.notification-menu details').forEach((details) => {
+                details.removeAttribute('open');
+            });
+        };
+
+        const closeSidebarMenu = () => {
+            const shell = document.querySelector('.app-shell');
+            if (!shell) {
+                return;
+            }
+
+            shell.classList.remove('menu-open');
+            document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
+        };
+
+        const applySearchableSelects = () => {
+            document.querySelectorAll('select').forEach((select) => {
+                if (select.dataset.searchableApplied === 'true' || select.multiple || select.classList.contains('searchable-hidden')) {
+                    return;
+                }
+
+                const shouldSearch = select.options.length > 7 || select.dataset.searchable === 'true';
+                if (!shouldSearch) {
+                    return;
+                }
+
+                const shell = document.createElement('div');
+                shell.className = 'searchable-select-shell';
+
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'searchable-select-trigger';
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+
+                const label = document.createElement('span');
+                label.className = 'searchable-select-label';
+
+                const chevron = document.createElement('span');
+                chevron.className = 'searchable-select-chevron';
+                chevron.textContent = '▾';
+
+                const menu = document.createElement('div');
+                menu.className = 'searchable-select-menu';
+
+                const search = document.createElement('input');
+                search.type = 'search';
+                search.className = 'searchable-select-search';
+                search.placeholder = 'Cari opsi...';
+
+                const list = document.createElement('div');
+                list.className = 'searchable-select-options';
+
+                const updateLabel = () => {
+                    const selectedOption = Array.from(select.options).find((option) => option.selected);
+                    const text = selectedOption ? selectedOption.textContent.trim() : 'Pilih opsi';
+                    label.textContent = text;
+                    Array.from(list.children).forEach((optionButton) => {
+                        optionButton.classList.toggle('is-selected', optionButton.dataset.value === (selectedOption?.value ?? ''));
+                    });
+                };
+
+                Array.from(select.options).forEach((option) => {
+                    const optionButton = document.createElement('button');
+                    optionButton.type = 'button';
+                    optionButton.className = 'searchable-select-option';
+                    optionButton.dataset.value = option.value;
+                    optionButton.textContent = option.textContent.trim();
+
+                    if (option.selected) {
+                        optionButton.classList.add('is-selected');
+                    }
+
+                    optionButton.addEventListener('click', () => {
+                        select.value = option.value;
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                        updateLabel();
+                        shell.classList.remove('is-open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    });
+
+                    list.appendChild(optionButton);
+                });
+
+                search.addEventListener('input', (event) => {
+                    const query = event.target.value.trim().toLowerCase();
+                    let hasVisibleOption = false;
+
+                    Array.from(list.children).forEach((optionButton) => {
+                        const matches = !query || optionButton.textContent.toLowerCase().includes(query);
+                        optionButton.style.display = matches ? 'block' : 'none';
+                        if (matches) {
+                            hasVisibleOption = true;
+                        }
+                    });
+
+                    if (!hasVisibleOption) {
+                        const emptyState = list.querySelector('.searchable-select-option.is-empty');
+                        if (!emptyState) {
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'searchable-select-option is-empty';
+                            placeholder.textContent = 'Tidak ada opsi yang cocok';
+                            list.appendChild(placeholder);
+                        }
+                    } else {
+                        const emptyState = list.querySelector('.searchable-select-option.is-empty');
+                        if (emptyState) {
+                            emptyState.remove();
+                        }
+                    }
+                });
+
+                trigger.addEventListener('click', () => {
+                    const isOpen = shell.classList.contains('is-open');
+                    shell.classList.toggle('is-open', !isOpen);
+                    trigger.setAttribute('aria-expanded', String(!isOpen));
+                    if (!isOpen) {
+                        search.focus();
+                    }
+                });
+
+                trigger.append(label, chevron);
+                menu.append(search, list);
+                shell.append(trigger, menu);
+                select.parentNode.insertBefore(shell, select);
+                select.classList.add('searchable-hidden');
+                select.dataset.searchableApplied = 'true';
+                updateLabel();
+
+                document.addEventListener('click', (event) => {
+                    if (!shell.contains(event.target)) {
+                        shell.classList.remove('is-open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+        };
+
         document.querySelectorAll('[data-live-clock]').forEach((clock) => {
             const serverTime = Number(clock.dataset.serverTime);
             const timezone = clock.dataset.timezone;
@@ -2317,6 +2581,8 @@
                         return;
                     }
 
+                    closeNotificationMenus();
+
                     const isCloseButton = element.matches('[data-menu-close]');
                     const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
 
@@ -2330,6 +2596,16 @@
                         );
                 });
             });
+
+        document.querySelectorAll('.notification-menu details').forEach((details) => {
+            details.addEventListener('toggle', () => {
+                if (details.open) {
+                    closeSidebarMenu();
+                }
+            });
+        });
+
+        applySearchableSelects();
     </script>
     @stack('scripts')
 

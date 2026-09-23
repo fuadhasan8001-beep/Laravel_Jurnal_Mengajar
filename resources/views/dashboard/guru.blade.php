@@ -11,9 +11,9 @@
 
         <a
             class="btn"
-            href="{{ route('absensi.index') }}"
+            href="{{ route('jurnal.create') }}"
         >
-            Lihat absensi
+            Tambah jurnal
         </a>
     </div>
 

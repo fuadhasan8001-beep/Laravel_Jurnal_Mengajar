@@ -34,15 +34,14 @@
         <div class="field"><label for="jam_mulai">Jam mulai</label><input id="jam_mulai" value="{{ substr($start->timesForDay($hari)[0], 0, 5) }} (jam ke-{{ $start->jam_ke }})" readonly></div>
         <div class="field"><label for="jam_selesai">Jam selesai</label><input id="jam_selesai" value="{{ substr($end->timesForDay($hari)[1], 0, 5) }} (jam ke-{{ $end->jam_ke }})" readonly></div>
         <div class="field"><label for="status_guru">Kehadiran guru</label><select id="status_guru" name="status_guru">
-            <option value="">Default: Hadir</option>
             @foreach (['Hadir', 'Izin', 'Sakit'] as $status)
-                <option @selected(old('status_guru', $jurnal?->status_guru) === $status)>{{ $status }}</option>
+                <option value="{{ $status }}" @selected((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === $status)>{{ $status }}</option>
             @endforeach
         </select>@error('status_guru')<small class="error">{{ $message }}</small>@enderror</div>
     </div>
     @error('jadwal_id')<p class="error" role="alert">{{ $message }}</p>@enderror
-    <details @if($isEdit || $errors->any()) open @endif>
-        <summary>Detail pembelajaran dan absensi</summary>
+    <section class="journal-detail-panel" aria-label="Detail pembelajaran dan absensi">
+        <div class="journal-card-header"><h3>Detail pembelajaran dan absensi</h3></div>
         @foreach (['materi' => 'Materi pembelajaran', 'tujuan_pembelajaran' => 'Tujuan pembelajaran', 'kegiatan' => 'Kegiatan pembelajaran', 'tugas' => 'Tugas', 'catatan' => 'Catatan'] as $field => $label)
             <div class="field"><label for="{{ $field }}">{{ $label }}</label>
                 @if ($field === 'materi')
@@ -81,7 +80,7 @@
                 <tr><td colspan="4">Belum ada siswa di kelas ini.</td></tr>
             @endforelse
         </tbody></table></div>
-    </details>
+    </section>
     <section class="signature-card" aria-labelledby="signature-title">
         <div class="journal-card-header">
             <div>

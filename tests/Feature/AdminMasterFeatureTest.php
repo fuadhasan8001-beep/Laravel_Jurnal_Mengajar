@@ -11,6 +11,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+it('rejects overlapping or reversed lesson periods but allows adjacent periods', function (string $start, string $end, bool $valid) {
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+    JamPelajaran::create(['jam_ke' => 10, 'jam_mulai' => '14:20:00', 'jam_selesai' => '15:00:00', 'is_active' => true]);
+    $response = $this->actingAs($admin)->post(route('admin.jam.store'), ['jam_ke' => 11, 'jam_mulai' => $start, 'jam_selesai' => $end, 'is_active' => 1]);
+    if ($valid) {
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseCount('jam_pelajarans', 2);
+    } else {
+        $response->assertSessionHasErrors();
+        $this->assertDatabaseCount('jam_pelajarans', 1);
+    }
+})->with([['14:00', '14:30', false], ['14:30', '15:00', false], ['14:30', '14:00', false], ['14:30', '14:30', false], ['15:00', '15:40', true]]);
+
 it('allows an admin to create a teacher account and profile', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
 

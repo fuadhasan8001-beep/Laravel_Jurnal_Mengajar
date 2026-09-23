@@ -59,6 +59,7 @@ class DispensasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->role === 'piket', 403);
         $isPiket = auth()->user()->role === 'piket';
         abort_if(! $isPiket && $request->filled('siswa_ids'), 403);
         $request->merge(['tanggal' => today()->toDateString()]);

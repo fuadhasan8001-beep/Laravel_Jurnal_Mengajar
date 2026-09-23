@@ -61,36 +61,36 @@ class JurnalController extends Controller
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
         $signature = $data['tanda_tangan'] ?? null;
-        unset($data['absensi'], $data['tanda_tangan']);
+        unset($data['absensi'], $data['tanda_tangan'], $data['jadwal_id']);
         $this->validatePeriodOrder($data);
 
-        $existingJournal = Jurnal::query()
-            ->where('guru_id', $this->currentGuru()->id)
+        $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
+            $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
+            $existingJournal = Jurnal::query()
+            ->where('guru_id', $guru->id)
             ->whereDate('tanggal', $data['tanggal'])
             ->where('kelas_id', $data['kelas_id'])
             ->where('mapel_id', $data['mapel_id'])
             ->where('jam_mulai_id', $data['jam_mulai_id'])
             ->where('jam_selesai_id', $data['jam_selesai_id'])
-            ->first();
+            ->lockForUpdate()->first();
 
         if ($existingJournal) {
-            return redirect()->route('jurnal.show', $existingJournal)
-                ->with('success', 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
+            return $existingJournal;
         }
 
-        $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
             $jurnal = Jurnal::create([
                 ...$data,
-                'guru_id' => $this->currentGuru()->id,
+                'guru_id' => $guru->id,
                 'tanda_tangan' => $this->saveSignature($signature),
             ]);
             $this->syncAbsensis($jurnal, $absensis);
 
             return $jurnal;
-        });
+        }, 5);
 
         return redirect()->route('jurnal.show', $jurnal)
-            ->with('success', 'Jurnal berhasil disimpan.');
+            ->with('success', $jurnal->wasRecentlyCreated ? 'Jurnal berhasil disimpan.' : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
     }
 
     public function show(Jurnal $jurnal): View
@@ -144,6 +144,8 @@ class JurnalController extends Controller
         unset($data['tanggal']);
         $this->validatePeriodOrder($data);
         DB::transaction(function () use ($data, $absensis, $jurnal, $signature): void {
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
             $data['tanda_tangan'] = $this->saveSignature($signature, $jurnal->tanda_tangan);
             $jurnal->update($data);
             $this->syncAbsensis($jurnal, $absensis);
@@ -158,8 +160,15 @@ class JurnalController extends Controller
         $this->authorizeJournal($jurnal, true);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat dihapus.');
 
-        Storage::delete($jurnal->tanda_tangan);
-        $jurnal->delete();
+        DB::transaction(function () use ($jurnal): void {
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat dihapus.');
+            $signature = $jurnal->tanda_tangan;
+            $jurnal->delete();
+            if ($signature) {
+                DB::afterCommit(fn () => Storage::delete($signature));
+            }
+        });
 
         return redirect()->route('jurnal.index')
             ->with('success', 'Jurnal berhasil dihapus.');
@@ -175,6 +184,9 @@ class JurnalController extends Controller
             'catatan' => ['nullable', 'string', 'max:5000'],
         ]);
 
+        DB::transaction(function () use ($jurnal, $data): void {
+        $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+        abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
         $jurnal->update(['status_verifikasi' => $data['status']]);
         $jurnal->verifikasiJurnals()->create([
             'verifikator_id' => auth()->id(),
@@ -182,6 +194,7 @@ class JurnalController extends Controller
             'catatan' => $data['catatan'] ?? null,
             'verified_at' => now(),
         ]);
+        });
 
         return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');
     }
@@ -236,7 +249,7 @@ class JurnalController extends Controller
         Storage::put($path, $image);
 
         if ($previousSignature) {
-            Storage::delete($previousSignature);
+            DB::afterCommit(fn () => Storage::delete($previousSignature));
         }
 
         return $path;

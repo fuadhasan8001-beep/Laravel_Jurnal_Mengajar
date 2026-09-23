@@ -59,6 +59,35 @@ it('provisions one secretary account for each scheduled class', function () {
     $this->assertDatabaseHas('sekretaris_kelas', ['user_id' => $user->id, 'kelas_id' => $data['assigned']->id]);
 });
 
+it('scopes schedule details and dispensation exports to the secretary class', function () {
+    $data = secretaryClassSetup();
+    $schedule = Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['other']->id,
+        'mapel_id' => $data['mapel']->id, 'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);
+    $otherStudent = Siswa::create(['user_id' => User::factory()->create(['role' => 'siswa'])->id, 'kelas_id' => $data['other']->id, 'nis' => 'OTHER-SECRETARY', 'nama_siswa' => 'Rahasia kelas lain', 'jenis_kelamin' => 'L']);
+    \App\Models\Dispensasi::create(['siswa_id' => $otherStudent->id, 'tanggal' => '2026-09-14',
+        'jam_mulai_id' => $data['period']->id, 'jam_selesai_id' => $data['period']->id, 'alasan' => 'Kegiatan']);
+    $this->actingAs($data['secretary'])->get(route('jadwal.show', $schedule))->assertForbidden();
+    $this->get(route('jadwal.index'))->assertViewHas('jadwals', fn ($items) => $items->isEmpty());
+    $this->get(route('laporan.dispensasi', ['kelas_id' => $data['other']->id]))->assertOk()->assertDontSee('Rahasia kelas lain');
+    $this->get(route('laporan.dispensasi.export', ['kelas_id' => $data['other']->id]))->assertOk()->assertDontSee('Rahasia kelas lain');
+});
+
+it('shifts lesson times forward while preserving the break', function () {
+    $data = secretaryClassSetup();
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+    $later = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '08:00', 'jam_selesai' => '08:45', 'is_active' => true]);
+    $schedule = Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['assigned']->id,
+        'mapel_id' => $data['mapel']->id, 'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);
+    $this->actingAs($admin)->put(route('jadwal.update', $schedule), [
+        'guru_id' => $data['guru']->id, 'kelas_id' => $data['assigned']->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => 1,
+        'jam_mulai' => '07:00', 'jam_selesai' => '07:50',
+    ])->assertSessionHasNoErrors()->assertRedirect();
+    expect($data['period']->fresh()->jam_selesai)->toBe('07:50');
+    expect($later->fresh()->jam_mulai)->toBe('08:05');
+    expect($later->fresh()->jam_selesai)->toBe('08:50');
+});
+
 function secretaryClassSetup(): array
 {
     $secretary = User::factory()->create(['role' => 'sekretaris', 'is_active' => true]);

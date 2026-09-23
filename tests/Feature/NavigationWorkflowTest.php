@@ -27,6 +27,22 @@ function navigationLesson(): array
     return compact('teacher', 'guru', 'kelas', 'mapel', 'period', 'journal');
 }
 
+it('renders every role dashboard without undefined view data', function (string $role) {
+    $user = User::factory()->create(['role' => $role, 'is_active' => true]);
+    $this->actingAs($user)->get('/'.$role)->assertOk();
+})->with(['admin', 'guru', 'piket', 'siswa', 'sekretaris']);
+
+it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {
+    $data = navigationLesson();
+    $this->travelTo(\Carbon\Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
+    $data['period']->update(['is_active' => false]);
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);
+    $this->actingAs($data['teacher'])->get('/guru')->assertOk()
+        ->assertViewHas('jadwalHariIni', fn ($items) => $items->isEmpty())
+        ->assertViewHas('activeJadwalIds', fn ($items) => $items->isEmpty());
+});
+
 it('opens the dashboard belonging to the logged in role', function (string $role) {
     $user = User::factory()->create(['role' => $role, 'is_active' => true]);
     $this->actingAs($user)->get('/')->assertRedirect('/'.$role);

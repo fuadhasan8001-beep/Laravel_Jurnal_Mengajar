@@ -147,13 +147,35 @@ it('allows an absent teacher to record only their status', function () {
     $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Sakit']);
 });
 
+it('orders the teacher dashboard schedule by lesson number ascending', function () {
+    $data = journalSetup();
+    $jamFive = JamPelajaran::firstOrCreate(
+        ['jam_ke' => 5],
+        ['jam_mulai' => '09:00', 'jam_selesai' => '09:45']
+    );
+    $kelas2 = Kelas::create(['nama_kelas' => 'X RPL 2', 'tingkat' => 'X']);
+    $mapel2 = Mapel::create(['kode_mapel' => 'IPA', 'nama_mapel' => 'IPA']);
+
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id, 'jam_pelajaran_id' => $jamFive->id, 'hari' => 'Senin', 'is_active' => true]);
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $kelas2->id, 'mapel_id' => $mapel2->id, 'jam_pelajaran_id' => $data['jamMulai']->id, 'hari' => 'Senin', 'is_active' => true]);
+
+    $this->actingAs($data['user'])
+        ->get('/guru')
+        ->assertOk()
+        ->assertSee('Tambah jurnal')
+        ->assertSeeInOrder(['Jam 1', 'Jam 5']);
+});
+
 it('shows a journal review summary before saving', function () {
     $data = journalSetup();
 
     $this->actingAs($data['user'])
         ->get(route('jurnal.create'))
         ->assertOk()
-        ->assertSee('Ringkasan jurnal');
+        ->assertSee('Ringkasan jurnal')
+        ->assertDontSee('<details')
+        ->assertDontSee('Default: Hadir')
+        ->assertSee('Detail pembelajaran dan absensi');
 });
 
 it('defaults teacher attendance to hadir when status is omitted', function () {

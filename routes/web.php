@@ -217,9 +217,12 @@ Route::get('/guru', function () {
 
     $jadwalHariIni = Jadwal::with(['kelas', 'mapel', 'jamPelajaran'])
         ->where('guru_id', $guru?->id)
+        ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
         ->where('hari', $hariIni)
         ->where('is_active', true)
-        ->get();
+        ->get()
+        ->sortBy(fn ($jadwal) => $jadwal->jamPelajaran?->jam_ke ?? PHP_INT_MAX)
+        ->values();
 
     /*
     |--------------------------------------------------------------------------
@@ -255,6 +258,7 @@ Route::get('/guru', function () {
             ? Siswa::whereIn('kelas_id', Jadwal::query()
                 ->where('guru_id', $guru->id)
                 ->where('is_active', true)
+                ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
                 ->select('kelas_id')
                 ->distinct())
                 ->count()
@@ -311,8 +315,8 @@ Route::get('/piket', function () {
     return view('dashboard.piket', [
         'antrianBaru' => Dispensasi::where('status_akhir', 'Menunggu')->count(),
         'diverifikasiHariIni' => Dispensasi::whereDate('verified_piket_at', today())->count(),
-        'totalBulanIni' => Dispensasi::whereMonth('created_at', now()->month)->count(),
-        'perluPerhatian' => Dispensasi::where('status_piket', 'Ditolak')->whereMonth('updated_at', now()->month)->count(),
+        'totalBulanIni' => Dispensasi::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+        'perluPerhatian' => Dispensasi::where('status_akhir', 'Ditolak')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
         'pengajuanMenunggu' => Dispensasi::with(['siswa', 'jamMulai', 'jamSelesai'])
             ->where('status_akhir', 'Menunggu')
             ->latest()
@@ -336,7 +340,7 @@ Route::post('/absensi', [AbsensiController::class, 'store'])
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])
-    ->middleware('role:siswa,piket')
+    ->middleware('role:piket')
     ->name('dispensasi.create');
 
 Route::middleware('role:siswa,piket,admin')->group(function () {
@@ -346,9 +350,7 @@ Route::middleware('role:siswa,piket,admin')->group(function () {
     Route::get('/dispensasi/{dispensasi}', [DispensasiController::class, 'show'])->name('dispensasi.show');
 });
 
-Route::middleware('role:siswa')->group(function () {});
-
-Route::middleware('role:siswa,piket')->group(function () {
+Route::middleware('role:piket')->group(function () {
     Route::post('/dispensasi', [DispensasiController::class, 'store'])->name('dispensasi.store');
 });
 

@@ -104,6 +104,7 @@ it('does not allow students to create online dispensations', function () {
     $student = $data['students']->first();
 
     $this->actingAs($student->user)->get(route('dispensasi.create'))->assertForbidden();
+    $this->actingAs($student->user)->post(route('dispensasi.store'), $data['payload'])->assertForbidden();
     $this->actingAs($student->user)->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => [$student->id]])->assertForbidden();
     $this->assertDatabaseCount('dispensasis', 0);
     Notification::assertNothingSent();
