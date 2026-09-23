@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi berhasil | Jurnal Guru</title>
+    @vite('resources/css/login.css')
     <style>
         .registration-result {
             max-width: 640px;

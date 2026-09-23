@@ -353,27 +353,27 @@
         align-items: center;
 
         background: #edf4ff;
-        color: #3976ee;
+        color: #2453d4;
 
         font-weight: bold;
     }
 
     .success {
-        color: #15945f;
+        color: #23852b;
     }
 
     .success-icon {
         background: #e7f8ef;
-        color: #15945f;
+        color: #23852b;
     }
 
     .warning {
-        color: #d97706;
+        color: #806000;
     }
 
     .warning-icon {
-        background: #fff4dd;
-        color: #d97706;
+        background: #fff9c4;
+        color: #806000;
     }
 
 
@@ -450,7 +450,7 @@
     }
 
     .data-item b {
-        color: #3976ee;
+        color: #2453d4;
         font-size: 16px;
     }
 
@@ -493,7 +493,7 @@
         align-items: center;
 
         background: #edf4ff;
-        color: #3478f6;
+        color: #2453d4;
     }
 
     .quick-card strong {
@@ -531,7 +531,7 @@
 
     .view-all {
         text-decoration: none;
-        color: #3976ee;
+        color: #2453d4;
         font-size: 11px;
     }
 
@@ -599,12 +599,12 @@
 
     .status.approved {
         background: #e7f8ef;
-        color: #15945f;
+        color: #23852b;
     }
 
     .status.pending {
-        background: #fff4dd;
-        color: #d97706;
+        background: #fff9c4;
+        color: #806000;
     }
 
 
@@ -615,7 +615,7 @@
     .verify-btn {
         display: inline-block;
 
-        background: #3478f6;
+        background: #2453d4;
         color: white;
 
         text-decoration: none;
