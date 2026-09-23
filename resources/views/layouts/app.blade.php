@@ -310,7 +310,7 @@
 
         .notification-list {
             position: absolute;
-            z-index: 100;
+            z-index: 35;
 
             top: calc(100% + 8px);
             right: 0;
@@ -1251,8 +1251,10 @@
 
             .topbar {
                 min-height: 78px;
-
-                padding: 0 18px;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 10px;
+                padding: 12px 16px;
             }
 
             .topbar > div:first-child {
@@ -1267,13 +1269,30 @@
                 gap: 10px;
             }
 
+            .topbar > div:first-child > .eyebrow {
+                display: none;
+            }
+
+            .topbar-title {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+
+            .menu-toggle {
+                flex: 0 0 44px;
+                height: 44px;
+            }
+
             .date-chip {
                 display: none;
             }
 
             .mobile-top-actions {
                 min-width: 0;
-                max-width: 55vw;
+                max-width: none;
+                width: 100%;
 
                 display: flex;
 
@@ -1283,7 +1302,14 @@
 
                 justify-content: flex-end;
 
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+            }
+
+            .mobile-top-actions .mobile-live-clock {
+                margin-right: auto;
+                font-size: 13px;
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
             }
 
             .mobile-logout-button {
@@ -1311,7 +1337,7 @@
             .mobile-top-actions .notification-list {
                 position: fixed;
 
-                top: 76px;
+                top: 124px;
                 right: 16px;
                 left: 16px;
 
@@ -2097,6 +2123,10 @@
                     const isCloseButton = element.matches('[data-menu-close]');
                     const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
 
+                    document.querySelectorAll('.notification-menu details[open]').forEach(details => {
+                        details.open = false;
+                    });
+
                     shell.classList.toggle('menu-open', isOpen);
 
                     document
@@ -2107,6 +2137,24 @@
                         );
                 });
             });
+
+        document.addEventListener('click', (event) => {
+            document.querySelectorAll('.notification-menu details[open]').forEach(details => {
+                if (!details.contains(event.target)) {
+                    details.open = false;
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.notification-menu details[open]').forEach(details => {
+                    details.open = false;
+                });
+                document.querySelector('.app-shell')?.classList.remove('menu-open');
+                document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
+            }
+        });
     </script>
 
 </body>

@@ -231,6 +231,7 @@ class LaporanController extends Controller
                 'mapel' => $schedule->mapel->nama_mapel,
                 'jam' => substr($start, 0, 5).' - '.substr($end, 0, 5),
                 'status' => match ($journal?->status_guru) {
+                    'Hadir' => 'Guru hadir',
                     'Izin' => 'Guru izin',
                     'Sakit' => 'Guru sakit',
                     default => $journal ? 'Jurnal sudah dibuat' : 'Belum mengisi jurnal',

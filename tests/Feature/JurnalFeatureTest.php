@@ -109,6 +109,30 @@ it('allows an absent teacher to record only their status', function () {
     $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Sakit']);
 });
 
+it('shows a journal review summary before saving', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])
+        ->get(route('jurnal.create'))
+        ->assertOk()
+        ->assertSee('Ringkasan jurnal');
+});
+
+it('defaults teacher attendance to hadir when status is omitted', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'kelas_id' => $data['kelas']->id,
+        'mapel_id' => $data['mapel']->id,
+        'jam_mulai_id' => $data['jamMulai']->id,
+        'jam_selesai_id' => $data['jamMulai']->id,
+        'status_guru' => '',
+        'materi' => 'Belajar mandiri',
+    ])->assertRedirect();
+
+    $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Hadir']);
+});
+
 it('prevents a teacher from viewing another teachers journal', function () {
     $owner = journalSetup();
     $otherUser = User::factory()->create(['role' => 'guru', 'is_active' => true]);
