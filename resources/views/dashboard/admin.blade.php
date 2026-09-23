@@ -352,8 +352,8 @@
         justify-content: center;
         align-items: center;
 
-        background: #edf4ff;
-        color: #2453d4;
+        background: var(--cream);
+        color: var(--gold-dark);
 
         font-weight: bold;
     }
@@ -450,7 +450,7 @@
     }
 
     .data-item b {
-        color: #2453d4;
+        color: var(--gold-dark);
         font-size: 16px;
     }
 
@@ -492,8 +492,8 @@
         justify-content: center;
         align-items: center;
 
-        background: #edf4ff;
-        color: #2453d4;
+        background: var(--cream);
+        color: var(--gold-dark);
     }
 
     .quick-card strong {
@@ -531,7 +531,7 @@
 
     .view-all {
         text-decoration: none;
-        color: #2453d4;
+        color: var(--gold-dark);
         font-size: 11px;
     }
 
@@ -542,10 +542,14 @@
         border-radius: 8px;
 
         overflow: hidden;
+        min-width: 0;
     }
 
     .table-wrapper {
+        width: 100%;
+        max-width: 100%;
         overflow-x: auto;
+        overscroll-behavior-inline: contain;
     }
 
     table {
@@ -615,7 +619,7 @@
     .verify-btn {
         display: inline-block;
 
-        background: #2453d4;
+        background: var(--gold);
         color: white;
 
         text-decoration: none;
