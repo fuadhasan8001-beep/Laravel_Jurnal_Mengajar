@@ -293,6 +293,17 @@ class JurnalController extends Controller
         if ($records !== []) {
             Absensi::upsert($records, ['jurnal_id', 'siswa_id'], ['status', 'catatan', 'updated_at']);
         }
+
+        $jurnal->update([
+            'attendance_witnesses' => Absensi::query()
+                ->where('jurnal_id', $jurnal->id)
+                ->where('status', 'H')
+                ->inRandomOrder()
+                ->limit(3)
+                ->pluck('siswa_id')
+                ->values()
+                ->all(),
+        ]);
     }
 
     /**

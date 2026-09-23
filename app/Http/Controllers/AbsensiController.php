@@ -6,6 +6,8 @@ use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jurnal;
+use App\Models\Kelas;
+use App\Models\Mapel;
 use App\Models\Siswa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +15,7 @@ use Illuminate\View\View;
 
 class AbsensiController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $query = Jurnal::with(['absensis.siswa', 'kelas.siswas'])
             ->orderByDesc('tanggal');
@@ -26,7 +28,21 @@ class AbsensiController extends Controller
             $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
         }
 
-        return view('absensi.index', ['jurnals' => $query->get()]);
+        $query
+            ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
+            ->when($request->filled('tanggal_selesai'), fn ($builder) => $builder->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
+            ->when($request->filled('kelas_id'), fn ($builder) => $builder->where('kelas_id', $request->integer('kelas_id')))
+            ->when($request->filled('guru_id'), fn ($builder) => $builder->where('guru_id', $request->integer('guru_id')))
+            ->when($request->filled('mapel_id'), fn ($builder) => $builder->where('mapel_id', $request->integer('mapel_id')))
+            ->when($request->filled('siswa_id'), fn ($builder) => $builder->whereHas('absensis', fn ($attendance) => $attendance->where('siswa_id', $request->integer('siswa_id'))));
+
+        return view('absensi.index', [
+            'jurnals' => $query->paginate(15)->withQueryString(),
+            'gurus' => Guru::orderBy('nama_guru')->get(),
+            'kelas' => Kelas::orderBy('nama_kelas')->get(),
+            'mapels' => Mapel::orderBy('nama_mapel')->get(),
+            'siswas' => Siswa::orderBy('nama_siswa')->get(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

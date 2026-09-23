@@ -76,7 +76,7 @@ class LaporanController extends Controller
                 $absensi->jurnal->kelas->nama_kelas,
                 $absensi->jurnal->guru->nama_guru,
                 $absensi->jurnal->mapel->nama_mapel,
-                $absensi->status,
+                ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status,
                 $absensi->catatan,
             ])->all(),
         ]);

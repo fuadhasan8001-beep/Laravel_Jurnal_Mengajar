@@ -1,12 +1,18 @@
 :root {
-    --primary-yellow: #ffc107;
-    --primary-orange: #ff9800;
-    --dark-orange: #e07800;
-    --light-yellow: #fff8e1;
-    --gradient-primary: linear-gradient(135deg, #ffd54f, #ff9800);
+    --primary-gold: #d4a72c;
+    --dark-gold: #9b741d;
+    --primary-yellow: #d4a72c;
+    --golden: #e0b84c;
+    --soft-yellow: #f2d675;
+    --primary-orange: #d9822b;
+    --burnt-orange: #d9822b;
+    --dark-orange: #b96520;
+    --light-yellow: #fff8e7;
+    --warm-white: #fffdf8;
+    --gradient-primary: linear-gradient(135deg, #d4a72c, #e0b84c, #d9822b);
 
     font-family: "Trebuchet MS", Arial, sans-serif;
-    color: #111b33;
+    color: #3f3a2f;
 }
 
 * {
@@ -16,7 +22,7 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background: #fff;
+    background: var(--warm-white);
 }
 
 /* =================================
@@ -39,7 +45,7 @@ body {
     min-height: 100vh;
     overflow: hidden;
     padding: 56px 64px;
-    background: linear-gradient(145deg, #fff8e1 0%, #ffe0a3 100%);
+    background: linear-gradient(145deg, #fff8e7 0%, #f2d675 100%);
 }
 
 /* BRAND */
@@ -57,8 +63,9 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: var(--gradient-primary);
-    color: #5a2b00;
+    background: var(--warm-white);
+    color: var(--dark-gold);
+    box-shadow: 0 3px 10px rgba(63, 58, 47, .16);
 }
 
 .brand-icon svg {
@@ -96,8 +103,8 @@ body {
     margin-bottom: 32px;
     border-radius: 50%;
     background: white;
-    color: #111b33;
-    box-shadow: 0 18px 35px rgba(71, 103, 153, 0.08);
+    color: #3f3a2f;
+    box-shadow: 0 18px 35px rgba(169, 95, 46, .1);
 }
 
 .illustration svg {
@@ -119,7 +126,7 @@ body {
 .left-content p {
     max-width: 440px;
     margin: 8px 0 0;
-    color: #526682;
+    color: #7d705c;
     font-size: 16px;
     line-height: 1.25;
 }
@@ -128,7 +135,7 @@ body {
 
 .left-footer {
     margin: 0;
-    color: #91a4c2;
+    color: #8b806b;
     font-size: 14px;
     text-align: center;
 }
@@ -166,7 +173,7 @@ body {
 
 .login-heading p {
     margin: 8px 0 0;
-    color: #92a4c1;
+    color: #8b806b;
     font-size: 16px;
 }
 
@@ -197,7 +204,7 @@ form {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #4b5c75;
+    color: #5b5b4c;
     font-size: 14px;
     font-weight: 700;
 }
@@ -214,11 +221,11 @@ form {
     width: 100%;
     height: 54px;
     padding: 0 16px 0 48px;
-    border: 1px solid #dce4ef;
+    border: 1px solid #d8d2c4;
     border-radius: 8px;
     outline: none;
-    background: white;
-    color: #111b33;
+    background: var(--warm-white);
+    color: #3f3a2f;
     font-family: inherit;
     font-size: 16px;
     transition: 0.2s;
@@ -226,11 +233,11 @@ form {
 
 .input-container input:focus {
     border-color: var(--primary-orange);
-    box-shadow: 0 0 0 4px rgba(255, 193, 7, .24);
+    box-shadow: 0 0 0 4px rgba(212, 167, 44, .26);
 }
 
 .input-container input::placeholder {
-    color: #9aabc5;
+    color: #a99b82;
 }
 
 /* INPUT ICON */
@@ -242,7 +249,7 @@ form {
     left: 16px;
     display: flex;
     align-items: center;
-    color: #91a4c2;
+    color: #8b806b;
     pointer-events: none;
 }
 
@@ -262,7 +269,7 @@ form {
     align-items: center;
     border: 0;
     background: transparent;
-    color: #91a4c2;
+    color: #8b806b;
     cursor: pointer;
     font-size: 17px;
 }
@@ -302,12 +309,12 @@ form {
     border: 0;
     border-radius: 8px;
     background: var(--gradient-primary);
-    color: #5a2b00;
+    color: #3f3a2f;
     cursor: pointer;
     font-family: inherit;
     font-size: 16px;
     font-weight: 700;
-    box-shadow: 0 8px 16px rgba(224, 120, 0, .22);
+    box-shadow: 0 8px 16px rgba(185, 101, 32, .22);
     transition: 0.2s;
 }
 
@@ -323,7 +330,7 @@ form {
 
 .register-text {
     margin-top: 20px;
-    color: #91a4c2;
+    color: #8b806b;
     font-size: 16px;
     text-align: center;
 }

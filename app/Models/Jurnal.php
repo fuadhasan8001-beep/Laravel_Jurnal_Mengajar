@@ -23,12 +23,14 @@ class Jurnal extends Model
         'catatan',
         'status_verifikasi',
         'tanda_tangan',
+        'attendance_witnesses',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal' => 'date',
+            'attendance_witnesses' => 'array',
         ];
     }
 

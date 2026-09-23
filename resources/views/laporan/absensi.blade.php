@@ -30,7 +30,7 @@
     <section class="panel">
         <div class="panel-head"><h2>Data absensi</h2><span class="eyebrow">{{ $absensis->total() }} data</span></div>
         @if ($absensis->isNotEmpty())
-            <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Siswa</th><th>Kelas</th><th>Guru</th><th>Mapel</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($absensis as $absensi)<tr><td>{{ $absensi->jurnal->tanggal->format('d M Y') }}</td><td>{{ $absensi->siswa->nama_siswa }}</td><td>{{ $absensi->jurnal->kelas->nama_kelas }}</td><td>{{ $absensi->jurnal->guru->nama_guru }}</td><td>{{ $absensi->jurnal->mapel->nama_mapel }}</td><td>{{ $absensi->status }}</td><td>{{ $absensi->catatan ?: '-' }}</td></tr>@endforeach</tbody></table></div>
+            <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Siswa</th><th>Kelas</th><th>Guru</th><th>Mapel</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($absensis as $absensi)<tr><td>{{ $absensi->jurnal->tanggal->format('d M Y') }}</td><td>{{ $absensi->siswa->nama_siswa }}</td><td>{{ $absensi->jurnal->kelas->nama_kelas }}</td><td>{{ $absensi->jurnal->guru->nama_guru }}</td><td>{{ $absensi->jurnal->mapel->nama_mapel }}</td><td>{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status }}</td><td>{{ $absensi->catatan ?: '-' }}</td></tr>@endforeach</tbody></table></div>
             <div class="panel-body">{{ $absensis->links() }}</div>
         @else
             <div class="empty">Belum ada data absensi pada filter ini.</div>

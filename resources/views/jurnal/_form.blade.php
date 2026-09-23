@@ -109,7 +109,7 @@
 <div id="journal-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(11,18,32,.62); z-index:1000; align-items:center; justify-content:center; padding:1rem;">
     <div style="width:min(900px,100%); background:#fff; border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.2); padding:1.5rem; max-height:80vh; overflow:auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1rem;">
-            <h3 style="margin:0;">Konfirmasi simpan jurnal</h3>
+            <h3 style="margin:0;">Konfirmasi simpan jurnal <span class="sr-only">Ringkasan jurnal</span></h3>
             <button type="button" class="btn btn-muted" data-close-confirmation>Keluar</button>
         </div>
         <div id="confirmation-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0.75rem 1rem; line-height:1.6;">

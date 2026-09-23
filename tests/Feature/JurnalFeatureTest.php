@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Absensi;
 use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
@@ -52,6 +53,43 @@ it('allows a teacher to create a journal', function () {
 
     $response->assertRedirect();
     expect(Jurnal::where('guru_id', $data['guru']->id)->count())->toBe(1);
+});
+
+it('rejects retired teacher attendance statuses', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])
+        ->post(route('jurnal.store'), ['status_guru' => 'Dinas'])
+        ->assertSessionHasErrors('status_guru');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('stores at most three server-selected present student witnesses', function () {
+    $data = journalSetup();
+
+    foreach (range(1, 5) as $index) {
+        $studentUser = User::factory()->create(['role' => 'siswa', 'is_active' => true]);
+        Siswa::create([
+            'user_id' => $studentUser->id,
+            'kelas_id' => $data['kelas']->id,
+            'nis' => 'WITNESS-'.$index,
+            'nama_siswa' => 'Siswa Witness '.$index,
+            'jenis_kelamin' => 'P',
+        ]);
+    }
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'status_guru' => 'Hadir',
+        'absensi' => Siswa::query()->pluck('id')->mapWithKeys(fn (int $id, int $index): array => [
+            $index => ['siswa_id' => $id, 'status' => $index === 0 ? 'S' : 'H'],
+        ])->all(),
+    ])->assertRedirect();
+
+    $witnesses = Jurnal::sole()->attendance_witnesses;
+
+    expect($witnesses)->toHaveCount(3)
+        ->and(Absensi::whereIn('siswa_id', $witnesses)->where('status', '!=', 'H')->count())->toBe(0);
 });
 
 it('records teacher absence tasks and student attendance when creating a journal', function () {
