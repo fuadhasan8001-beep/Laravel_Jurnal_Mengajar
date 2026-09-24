@@ -31,15 +31,17 @@
             --brand-green-dark: #196622;
             --surface-soft: #f8f4ea;
             --surface: #fffdf8;
-            --action-background: #a8894a;
+            --action-background: #8a6a32;
             --pale: #f8f4ea;
             --line: #ded2b8;
             --green: #11865b;
             --amber: #b16b00;
             --red: #c43b45;
 
-            font-family: "Segoe UI", Tahoma, sans-serif;
+            font-family: Inter, "Segoe UI", Tahoma, sans-serif;
             color: var(--ink);
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
         }
 
         * {
@@ -49,6 +51,19 @@
         body {
             margin: 0;
             background: var(--pale);
+            color: var(--ink);
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: var(--text-dark);
+            font-weight: 800;
+            line-height: 1.25;
         }
 
         a {
@@ -267,20 +282,60 @@
         }
 
         .nav-label {
-            padding: 0 12px 10px;
+            display: block;
+            padding: 0 12px 9px;
 
-            color: #d6ebd7;
-            font-size: 11px;
-            font-weight: 700;
+            color: #f0e6d2;
+            font-size: 10px;
+            font-weight: 800;
 
-            letter-spacing: .12em;
+            letter-spacing: .1em;
             text-transform: uppercase;
         }
 
         .nav-list {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
+        }
+
+        .nav-extra {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .nav-extra > summary {
+            cursor: pointer;
+            list-style: none;
+            border-radius: 8px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+
+        .nav-extra > summary:hover,
+        .nav-extra > summary:focus-visible {
+            color: #fff;
+            outline: none;
+        }
+
+        .nav-extra > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .nav-extra > summary::after {
+            content: '+';
+            float: right;
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        .nav-extra[open] > summary::after {
+            content: '−';
+        }
+
+        .nav-label-account {
+            margin-top: 18px;
         }
 
         .nav-link {
@@ -288,24 +343,30 @@
             align-items: center;
             gap: 12px;
 
-            padding: 12px;
+            min-height: 42px;
+            padding: 10px 12px;
 
             border-radius: 9px;
 
             color: #ffffff;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .nav-link:hover,
         .nav-link.active {
-            background: var(--gold);
+            background: rgba(255, 255, 255, .14);
             color: #fff;
             text-decoration: none;
         }
 
+        .nav-link.active {
+            background: var(--warm-white);
+            color: var(--text-dark);
+        }
+
         .nav-link[aria-disabled="true"] {
-            color: rgba(255, 255, 255, .58);
+            color: #ded2b8;
             cursor: not-allowed;
         }
 
@@ -370,21 +431,24 @@
             min-height: 42px;
             padding: 10px;
 
-            border: 1px solid rgba(255, 255, 255, .55);
-            border-radius: 8px;
+            border: 1px solid #efb6a8;
+            border-radius: 10px;
 
-            background: transparent;
+            background: #a7463e;
             color: #ffffff;
 
             cursor: pointer;
 
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 5px 14px rgba(35, 12, 10, .2);
         }
 
         .logout:hover {
-            border-color: var(--action-color);
+            border-color: #ffd2c7;
+            background: #89372f;
             color: #fff;
+            text-decoration: none;
         }
 
         /* =========================================================
@@ -428,6 +492,7 @@
         .topbar-title {
             margin: 3px 0 0;
             font-size: 18px;
+            font-weight: 800;
         }
 
         .topbar-actions {
@@ -477,19 +542,28 @@
         .menu-toggle {
             display: none;
 
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
 
             align-items: center;
             justify-content: center;
 
             border: 1px solid var(--line);
-            border-radius: 8px;
+            border-radius: 12px;
 
             background: rgba(255, 255, 255, .82);
             color: var(--ink);
 
             cursor: pointer;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .menu-toggle:hover,
+        .menu-toggle:focus-visible {
+            border-color: var(--gold-dark);
+            background: var(--cream);
+            outline: 3px solid rgba(138, 106, 50, .2);
         }
 
         /* =========================================================
@@ -603,7 +677,9 @@
             text-align: left;
             cursor: pointer;
 
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.45;
         }
 
         .notification-item:hover {
@@ -616,7 +692,10 @@
             font-size: 12px;
         }
 
-        .mobile-top-actions,
+        .mobile-top-actions {
+            display: none;
+        }
+
         .mobile-logout-button {
             display: none;
         }
@@ -652,10 +731,10 @@
 
         .content {
             width: 100%;
-            max-width: none;
+            max-width: 1600px;
 
-            margin: 0;
-            padding: 38px 42px 56px;
+            margin: 0 auto;
+            padding: 34px clamp(22px, 3.2vw, 48px) 56px;
         }
 
         .page-head {
@@ -671,6 +750,7 @@
             margin: 0;
 
             font-size: 29px;
+            font-weight: 800;
             letter-spacing: -.03em;
         }
 
@@ -679,6 +759,7 @@
 
             color: var(--muted);
             font-size: 14px;
+            font-weight: 500;
         }
 
         /* =========================================================
@@ -706,13 +787,13 @@
             cursor: pointer;
 
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
 
             box-shadow: 0 5px 12px rgba(25, 65, 40, .24);
         }
 
         .btn:hover {
-            background: var(--gold-dark);
+            background: var(--orange-dark);
             color: #fff;
             text-decoration: none;
         }
@@ -826,7 +907,8 @@
             display: block;
 
             color: var(--muted);
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .stat-card strong {
@@ -835,6 +917,7 @@
             margin-top: 4px;
 
             font-size: 23px;
+            font-weight: 800;
         }
 
         /* =========================================================
@@ -859,10 +942,11 @@
         .panel-head h3 {
             margin: 0;
             font-size: 16px;
+            font-weight: 800;
         }
 
         .panel-body {
-            padding: 20px;
+            padding: 22px;
         }
 
         /* =========================================================
@@ -877,14 +961,15 @@
             width: 100%;
             border-collapse: collapse;
 
-            font-size: 13px;
+            font-size: 14px;
         }
 
         th {
             background: var(--cream);
             color: var(--muted);
 
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 800;
             letter-spacing: .04em;
 
             text-align: left;
@@ -1087,10 +1172,10 @@
         }
 
         .field label {
-            color: #4b5c75;
+            color: var(--text-dark);
 
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 800;
         }
 
         .field input,
@@ -1099,8 +1184,8 @@
             width: 100%;
             max-width: 100%;
 
-            border: 1px solid #d6e1da;
-            border-radius: 8px;
+            border: 1px solid #cfc4ad;
+            border-radius: 10px;
 
             padding: 11px 12px;
 
@@ -1109,7 +1194,8 @@
             background: var(--surface);
             color: var(--ink);
 
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .field textarea {
@@ -1534,14 +1620,6 @@
             overflow-wrap: anywhere;
         }
 
-        /* =========================================================
-           MOBILE NAV
-        ========================================================= */
-
-        .mobile-nav {
-            display: none;
-        }
-
         .sidebar-backdrop {
             display: none;
         }
@@ -1566,12 +1644,39 @@
 
         @media (max-width: 900px) {
             .sidebar {
-                width: 220px;
+                width: min(82vw, 320px);
+                height: 100vh;
+                padding: 22px 18px;
+                transform: translateX(-105%);
+                visibility: hidden;
+                pointer-events: none;
+                transition: transform .2s ease, visibility .2s ease;
+            }
+
+            .app-shell.menu-open .sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .sidebar-backdrop {
+                position: fixed;
+                z-index: 40;
+                inset: 0;
+                background: rgba(25, 22, 17, .58);
+            }
+
+            .app-shell.menu-open .sidebar-backdrop {
+                display: block;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
             }
 
             .main {
-                width: calc(100% - 220px);
-                margin-left: 220px;
+                width: 100%;
+                margin-left: 0;
             }
 
             .topbar,
@@ -1669,10 +1774,11 @@
             }
 
             .topbar {
-                min-height: 62px;
+                min-height: 66px;
 
                 padding: 0 12px;
                 gap: 8px;
+                background: #fffdf8;
             }
 
             .topbar-brand {
@@ -1720,28 +1826,24 @@
             }
 
             .mobile-logout-button {
-                flex: 0 0 auto;
-
                 display: inline-flex;
-
+                min-height: 40px;
                 align-items: center;
                 justify-content: center;
-
-                border: 1px solid var(--line);
-                border-radius: 8px;
-
-                width: 62px;
-                min-height: 40px;
-                padding: 7px 8px;
-
-                background: var(--surface);
-                color: var(--ink);
-
-                cursor: pointer;
-
-                font-size: 11px;
-                font-weight: 700;
+                border: 1px solid #efb6a8;
+                border-radius: 10px;
+                padding: 7px 10px;
+                background: #a7463e;
+                color: #fff;
+                font-size: 12px;
+                font-weight: 800;
                 white-space: nowrap;
+            }
+
+            .mobile-logout-button:hover,
+            .mobile-logout-button:focus-visible {
+                background: #89372f;
+                outline: 3px solid rgba(167, 70, 62, .2);
             }
 
             .mobile-top-actions .notification-list {
@@ -1774,8 +1876,26 @@
                 margin-bottom: 22px;
             }
 
+            .content {
+                padding: 22px 16px 36px;
+            }
+
+            .panel-head {
+                padding: 15px 16px;
+            }
+
+            .panel-body {
+                padding: 16px;
+            }
+
+            th,
+            td {
+                padding: 11px 12px;
+            }
+
             .page-head h1 {
-                font-size: 25px;
+                font-size: 24px;
+                font-weight: 800;
             }
 
             .stats {
@@ -1790,6 +1910,10 @@
 
             .stat-card strong {
                 font-size: 20px;
+            }
+
+            .stat-card small {
+                font-size: 12px;
             }
 
             .form-grid,
@@ -1843,14 +1967,11 @@
                 gap: 14px;
             }
 
-            .field label {
-                font-size: 12px;
-            }
-
             .field input,
             .field select,
             .field textarea {
-                font-size: 13px;
+                min-height: 48px;
+                font-size: 16px;
             }
 
             .attendance-card {
@@ -1877,64 +1998,6 @@
                 width: 100%;
             }
 
-            .mobile-nav {
-                display: flex;
-
-                position: sticky;
-                z-index: 30;
-
-                top: 0;
-
-                gap: 6px;
-
-                overflow-x: auto;
-
-                padding: 8px 12px;
-
-                border-bottom: 1px solid var(--line);
-
-                background: #fff;
-                scrollbar-width: none;
-            }
-
-            .mobile-nav::-webkit-scrollbar {
-                display: none;
-            }
-
-            .mobile-nav-link {
-                flex: none;
-
-                border: 1px solid var(--line);
-                border-radius: 999px;
-
-                padding: 7px 10px;
-
-                background: #fff;
-                color: var(--ink);
-
-                font-size: 11px;
-                font-weight: 700;
-
-                white-space: nowrap;
-            }
-
-            .mobile-nav-link.active {
-                border-color: var(--gold);
-
-                background: var(--gold);
-                color: #fff;
-            }
-
-            .mobile-nav-link[aria-disabled="true"] {
-                color: var(--muted);
-                background: var(--cream);
-                cursor: not-allowed;
-            }
-
-            .mobile-nav-link:hover {
-                text-decoration: none;
-            }
-
             .signature-space {
                 min-height: 130px;
             }
@@ -1948,6 +2011,10 @@
             .content {
                 padding-right: 14px;
                 padding-left: 14px;
+            }
+
+            .mobile-live-clock {
+                display: none;
             }
 
             .journal-card-header {
@@ -2043,6 +2110,11 @@
                         </a>
                     @endif
 
+                    </nav>
+
+                    <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin*') || request()->is('dispensasi*')) open @endif>
+                        <summary class="nav-label">Menu tambahan</summary>
+                        <nav class="nav-list" aria-label="Menu tambahan">
                     @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris', 'piket'], true))
                         <a
                             class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}"
@@ -2077,10 +2149,10 @@
                         </a>
 
                         <a
-                            class="nav-link {{ request()->is('admin/data*') ? 'active' : '' }}"
+                            class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}"
                             href="{{ route('admin.gurus.index') }}"
                         >
-                            Data master
+                            Guru
                         </a>
 
                         <a
@@ -2113,7 +2185,7 @@
 
                     @endif
 
-                    @if (in_array(auth()->user()->role, ['siswa', 'piket', 'admin'], true))
+                    @if (in_array(auth()->user()->role, ['siswa', 'piket', 'admin'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
                         <a
                             class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}"
                             href="{{ route('dispensasi.index') }}"
@@ -2122,6 +2194,11 @@
                         </a>
                     @endif
 
+                        </nav>
+                    </details>
+
+                    <div class="nav-label nav-label-account">Akun</div>
+                    <nav class="nav-list" aria-label="Menu akun">
                     <a
                         class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
                         href="{{ route('profile') }}"
@@ -2139,8 +2216,7 @@
                             Hubungi Admin
                         </a>
                     @endif
-
-                </nav>
+                    </nav>
 
                 <div class="sidebar-footer">
 
@@ -2389,143 +2465,15 @@
 
                         </div>
 
-                        <form
-                            action="{{ route('logout') }}"
-                            method="POST"
-                        >
+                        <form action="{{ route('logout') }}" method="POST">
                             @csrf
-
-                            <button
-                                class="mobile-logout-button"
-                                type="submit"
-                            >
-                                Keluar
-                            </button>
-
+                            <button class="mobile-logout-button" type="submit">Keluar</button>
                         </form>
 
                     </div>
 
                 </header>
 
-                <nav
-                    class="mobile-nav"
-                    aria-label="Navigasi utama"
-                >
-
-                    <a
-                        class="mobile-nav-link {{ request()->is(auth()->user()->role) ? 'active' : '' }}"
-                        href="{{ url('/' . auth()->user()->role) }}"
-                    >
-                        Beranda
-                    </a>
-
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
-                        <a
-                            class="mobile-nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
-                            href="{{ route('absensi.index') }}"
-                        >
-                            Absensi
-                        </a>
-                    @endif
-
-                    @if (in_array(auth()->user()->role, ['guru', 'piket'], true))
-                        @if (auth()->user()->isPiketHariIni())
-                            <a class="mobile-nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}">Piket</a>
-                        @else
-                            <span class="mobile-nav-link" aria-disabled="true">Piket · tidak bertugas</span>
-                        @endif
-                    @endif
-
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
-                        <a
-                            class="mobile-nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
-                            href="{{ route('jurnal.index') }}"
-                        >
-                            Jurnal
-                        </a>
-                    @endif
-
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris', 'piket'], true))
-                        <a
-                            class="mobile-nav-link {{ request()->is('rekap*') ? 'active' : '' }}"
-                            href="{{ route('laporan.jurnal') }}"
-                        >
-                            Laporan
-                        </a>
-                    @endif
-
-                    @if (in_array(auth()->user()->role, ['siswa', 'piket', 'admin'], true))
-                        <a
-                            class="mobile-nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}"
-                            href="{{ route('dispensasi.index') }}"
-                        >
-                            Dispensasi
-                        </a>
-                    @endif
-
-                    @if (auth()->user()->role === 'admin')
-                        <a class="mobile-nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket</a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}"
-                            href="{{ route('admin.registrations.index') }}"
-                        >
-                            Pendaftaran
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}"
-                            href="{{ route('admin.activity-logs') }}"
-                        >
-                            Aktivitas
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}"
-                            href="{{ route('admin.secretaries.index') }}"
-                        >
-                            Pengurus kelas
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}"
-                            href="{{ route('admin.gurus.index') }}"
-                        >
-                            Guru
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}"
-                            href="{{ route('admin.siswas.index') }}"
-                        >
-                            Siswa
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}"
-                            href="{{ route('admin.kelas.index') }}"
-                        >
-                            Kelas
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}"
-                            href="{{ route('admin.mapel.index') }}"
-                        >
-                            Mapel
-                        </a>
-
-                        <a
-                            class="mobile-nav-link {{ request()->is('admin/data/jam*') ? 'active' : '' }}"
-                            href="{{ route('admin.jam.index') }}"
-                        >
-                            Jam
-                        </a>
-
-                    @endif
-
-                </nav>
 
                 <main class="content">
 
