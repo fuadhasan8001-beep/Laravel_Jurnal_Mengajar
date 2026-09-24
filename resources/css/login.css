@@ -1,25 +1,8 @@
-:root {
-    --gold-dark: #8a6a32;
-    --gold: #a8894a;
-    --gold-soft: #c2a96b;
-    --cream: #f8f4ea;
-    --warm-white: #fffdf8;
-    --text-dark: #3f3a32;
-    --text-muted: #756d60;
-    --brand-blue: #a8894a;
-    --brand-blue-dark: #8a6a32;
-    --action-color: #a8894a;
-    --brand-blue-light: #c2a96b;
-    --brand-yellow: #f8f4ea;
-    --brand-green: #23852b;
-    --success-color: #23852b;
-    --brand-green-dark: #196622;
-    --surface-soft: #f8f4ea;
-    --surface: #fffdf8;
-    --action-background: #a8894a;
+@import './brand.css';
 
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    color: #202b27;
+:root {
+    font-family: var(--font-family-ui);
+    color: var(--color-text);
 }
 
 * {
@@ -35,30 +18,30 @@ body {
 .auth-shell, .registration-result {
     width: min(100% - 32px, 560px);
     margin: 48px auto;
-    color: #202b27;
+    color: var(--color-text);
 }
 
 .auth-card {
     padding: 24px;
-    border: 1px solid #dce5e0;
+    border: 1px solid var(--color-border);
     border-top: 4px solid var(--gold);
     border-radius: 8px;
-    background: #ffffff;
+    background: var(--color-white);
 }
 
-a { color: var(--gold-dark); }
-.field label { display: block; margin-bottom: 8px; color: #344b3d; }
+a { color: var(--color-secondary); }
+.field label { display: block; margin-bottom: 8px; color: var(--color-text); }
 .field input, .field select {
     width: 100%; min-height: 44px; padding: 10px;
-    border: 1px solid #d6e1da; border-radius: 6px;
-    background: #ffffff; color: #202b27; font: inherit;
+    border: 1px solid var(--color-border); border-radius: 6px;
+    background: var(--color-white); color: var(--color-text); font: inherit;
 }
 .btn {
     min-height: 44px; padding: 12px 18px; border: 0;
-    border-radius: 6px; background: var(--gold); color: #ffffff;
+    border-radius: 6px; background: var(--color-primary-dark); color: var(--color-white);
     font: inherit; cursor: pointer;
 }
-.btn:hover { background: var(--gold-dark); }
+.btn:hover { background: var(--color-secondary); }
 
 /* =================================
    MAIN
@@ -80,7 +63,7 @@ a { color: var(--gold-dark); }
     min-height: 100vh;
     overflow: hidden;
     padding: 56px 64px;
-    background: #fff9c4;
+    background: var(--color-surface-soft);
 }
 
 /* BRAND */
@@ -98,8 +81,8 @@ a { color: var(--gold-dark); }
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: var(--surface);
-    color: var(--brand-blue-dark);
+    background: var(--color-primary-dark);
+    color: var(--color-white);
     box-shadow: 0 3px 10px rgba(25, 65, 40, .16);
 }
 
@@ -138,7 +121,7 @@ a { color: var(--gold-dark); }
     margin-bottom: 32px;
     border-radius: 50%;
     background: white;
-    color: #202b27;
+    color: var(--color-text);
     box-shadow: 0 18px 35px rgba(25, 65, 40, .1);
 }
 
@@ -161,7 +144,7 @@ a { color: var(--gold-dark); }
 .left-content p {
     max-width: 440px;
     margin: 8px 0 0;
-    color: #596961;
+    color: var(--color-text-muted);
     font-size: 16px;
     line-height: 1.25;
 }
@@ -170,7 +153,7 @@ a { color: var(--gold-dark); }
 
 .left-footer {
     margin: 0;
-    color: #596961;
+    color: var(--color-text-muted);
     font-size: 14px;
     text-align: center;
 }
@@ -208,7 +191,7 @@ a { color: var(--gold-dark); }
 
 .login-heading p {
     margin: 8px 0 0;
-    color: #596961;
+    color: var(--color-text-muted);
     font-size: 16px;
 }
 
@@ -219,10 +202,10 @@ a { color: var(--gold-dark); }
 .error-message {
     margin-bottom: 20px;
     padding: 12px 16px;
-    border: 1px solid #fecaca;
+    border: 1px solid var(--color-danger);
     border-radius: 8px;
-    background: #fef2f2;
-    color: #b91c1c;
+    background: var(--color-danger-surface);
+    color: var(--color-danger);
     font-size: 14px;
 }
 
@@ -239,7 +222,7 @@ form {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #344b3d;
+    color: var(--color-text);
     font-size: 14px;
     font-weight: 700;
 }
@@ -256,23 +239,23 @@ form {
     width: 100%;
     height: 54px;
     padding: 0 16px 0 48px;
-    border: 1px solid #d6e1da;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     outline: none;
     background: var(--surface);
-    color: #202b27;
+    color: var(--color-text);
     font-family: inherit;
     font-size: 16px;
     transition: 0.2s;
 }
 
 .input-container input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 4px rgba(196, 154, 58, .24);
+    border-color: var(--color-primary-dark);
+    box-shadow: 0 0 0 4px rgb(85 179 53 / 20%);
 }
 
 .input-container input::placeholder {
-    color: #73847a;
+    color: var(--color-disabled);
 }
 
 /* INPUT ICON */
@@ -284,7 +267,7 @@ form {
     left: 16px;
     display: flex;
     align-items: center;
-    color: #596961;
+    color: var(--color-text-muted);
     pointer-events: none;
 }
 
@@ -304,13 +287,13 @@ form {
     align-items: center;
     border: 0;
     background: transparent;
-    color: #596961;
+    color: var(--color-text-muted);
     cursor: pointer;
     font-size: 17px;
 }
 
 .password-toggle:hover {
-    color: var(--gold-dark);
+    color: var(--color-secondary);
 }
 
 /* =================================
@@ -323,7 +306,7 @@ form {
 }
 
 .forgot-password a {
-    color: var(--gold-dark);
+    color: var(--color-secondary);
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
@@ -343,8 +326,8 @@ form {
     margin-top: 80px;
     border: 0;
     border-radius: 8px;
-    background: var(--action-background);
-    color: #ffffff;
+    background: var(--color-primary-dark);
+    color: var(--color-white);
     cursor: pointer;
     font-family: inherit;
     font-size: 16px;
@@ -354,8 +337,8 @@ form {
 }
 
 .login-button:hover {
-    background: var(--gold-dark);
-    color: white;
+    background: var(--color-secondary);
+    color: var(--color-white);
     transform: translateY(-1px);
 }
 
@@ -365,13 +348,13 @@ form {
 
 .register-text {
     margin-top: 20px;
-    color: #596961;
+    color: var(--color-text-muted);
     font-size: 16px;
     text-align: center;
 }
 
 .register-text a {
-    color: var(--gold-dark);
+    color: var(--color-secondary);
     font-weight: 700;
     text-decoration: none;
 }

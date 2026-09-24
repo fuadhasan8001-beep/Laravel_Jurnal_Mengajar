@@ -197,7 +197,7 @@
 
         border-radius: 20px;
 
-        background: #f4e7bd;
+        background: var(--color-accent-light);
         color: var(--orange-dark);
 
         font-size: 10px;
@@ -249,8 +249,8 @@
 
         border-radius: 20px;
 
-        background: #e7f8ef;
-        color: #15945f;
+        background: var(--color-surface-soft);
+        color: var(--color-primary-dark);
 
         font-size: 10px;
         font-weight: 600;
@@ -316,7 +316,7 @@
 
     .profile-panel .field input:focus {
         border-color: var(--gold);
-        box-shadow: 0 0 0 3px rgba(168, 137, 74, .2);
+        box-shadow: 0 0 0 3px rgb(85 179 53 / 20%);
     }
 
     .profile-panel .form-actions {

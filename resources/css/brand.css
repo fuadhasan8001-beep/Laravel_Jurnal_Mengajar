@@ -1,0 +1,52 @@
+:root {
+    color-scheme: light;
+    --color-primary: #55B335;
+    --color-primary-dark: #288444;
+    --color-primary-light: #90B66D;
+    --color-secondary: #2A386F;
+    --color-secondary-light: #4169E1;
+    --color-accent: #EFB855;
+    --color-accent-light: #EFDE9C;
+    --color-danger: #D71920;
+    --color-danger-surface: #FFF1F1;
+    --color-warning-text: #805300;
+    --color-white: #FFFFFF;
+    --color-text: #202B27;
+    --color-text-muted: #596961;
+    --color-surface: #FFFFFF;
+    --color-surface-soft: #F5F8F3;
+    --color-border: #DCE5E0;
+    --color-disabled: #738078;
+
+    --font-family-ui: "Segoe UI", Tahoma, sans-serif;
+
+    /* Compatibility aliases for the existing Blade styles. */
+    --gold-dark: var(--color-primary-dark);
+    --gold: var(--color-primary-dark);
+    --gold-soft: var(--color-primary-light);
+    --orange-muted: var(--color-accent);
+    --orange-dark: var(--color-warning-text);
+    --cream: var(--color-surface-soft);
+    --warm-white: var(--color-white);
+    --text-dark: var(--color-text);
+    --text-muted: var(--color-text-muted);
+    --ink: var(--color-text);
+    --muted: var(--color-text-muted);
+    --brand-blue: var(--color-secondary);
+    --brand-blue-dark: var(--color-secondary);
+    --action-color: var(--color-primary-dark);
+    --brand-blue-light: var(--color-secondary-light);
+    --brand-yellow: var(--color-accent-light);
+    --brand-yellow-soft: var(--color-accent-light);
+    --brand-green: var(--color-primary-dark);
+    --success-color: var(--color-primary-dark);
+    --brand-green-dark: var(--color-primary-dark);
+    --surface-soft: var(--color-surface-soft);
+    --surface: var(--color-surface);
+    --action-background: var(--color-primary-dark);
+    --pale: var(--color-surface-soft);
+    --line: var(--color-border);
+    --green: var(--color-primary-dark);
+    --amber: var(--color-warning-text);
+    --red: var(--color-danger);
+}
