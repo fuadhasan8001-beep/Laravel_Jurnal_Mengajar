@@ -47,6 +47,7 @@ it('completes the journal verification and approved dispensation attendance flow
         'nama_siswa' => 'Siswa End to End',
         'jenis_kelamin' => 'L',
     ]);
+    $kelas->sekretarisUsers()->attach($secretary);
     Jadwal::create([
         'guru_id' => $guru->id,
         'kelas_id' => $kelas->id,
@@ -68,6 +69,7 @@ it('completes the journal verification and approved dispensation attendance flow
     ])->assertRedirect();
     $this->assertDatabaseHas('jurnals', ['id' => $journal->id, 'status_verifikasi' => 'Disetujui']);
 
+    $this->travelTo(Carbon::parse('2026-09-14 06:00:00', 'Asia/Jakarta'));
     $dispensationData = [
         'tanggal' => '2026-09-14',
         'jam_mulai_id' => $jam->id,
@@ -92,5 +94,5 @@ it('completes the journal verification and approved dispensation attendance flow
 
     $export = $this->get(route('laporan.absensi.export', ['status' => 'D']));
     $export->assertDownload('rekap-absensi.csv');
-    expect($export->streamedContent())->toContain('Siswa End to End', ',D,');
+    expect($export->streamedContent())->toContain('Siswa End to End', 'Dispensasi');
 });

@@ -13,6 +13,7 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,17 +68,17 @@ class JurnalController extends Controller
         $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
             $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
             $existingJournal = Jurnal::query()
-            ->where('guru_id', $guru->id)
-            ->whereDate('tanggal', $data['tanggal'])
-            ->where('kelas_id', $data['kelas_id'])
-            ->where('mapel_id', $data['mapel_id'])
-            ->where('jam_mulai_id', $data['jam_mulai_id'])
-            ->where('jam_selesai_id', $data['jam_selesai_id'])
-            ->lockForUpdate()->first();
+                ->where('guru_id', $guru->id)
+                ->whereDate('tanggal', $data['tanggal'])
+                ->where('kelas_id', $data['kelas_id'])
+                ->where('mapel_id', $data['mapel_id'])
+                ->where('jam_mulai_id', $data['jam_mulai_id'])
+                ->where('jam_selesai_id', $data['jam_selesai_id'])
+                ->lockForUpdate()->first();
 
-        if ($existingJournal) {
-            return $existingJournal;
-        }
+            if ($existingJournal) {
+                return $existingJournal;
+            }
 
             $jurnal = Jurnal::create([
                 ...$data,
@@ -142,7 +143,7 @@ class JurnalController extends Controller
         $signature = $data['tanda_tangan'] ?? null;
         unset($data['absensi'], $data['tanda_tangan']);
         unset($data['tanggal']);
-        $this->validatePeriodOrder($data);
+        $this->validatePeriodOrder($data, $jurnal->tanggal->toDateString());
         DB::transaction(function () use ($data, $absensis, $jurnal, $signature): void {
             $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
             abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
@@ -185,15 +186,15 @@ class JurnalController extends Controller
         ]);
 
         DB::transaction(function () use ($jurnal, $data): void {
-        $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
-        abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
-        $jurnal->update(['status_verifikasi' => $data['status']]);
-        $jurnal->verifikasiJurnals()->create([
-            'verifikator_id' => auth()->id(),
-            'status' => $data['status'],
-            'catatan' => $data['catatan'] ?? null,
-            'verified_at' => now(),
-        ]);
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
+            $jurnal->update(['status_verifikasi' => $data['status']]);
+            $jurnal->verifikasiJurnals()->create([
+                'verifikator_id' => auth()->id(),
+                'status' => $data['status'],
+                'catatan' => $data['catatan'] ?? null,
+                'verified_at' => now(),
+            ]);
         });
 
         return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');
@@ -217,12 +218,15 @@ class JurnalController extends Controller
         }
     }
 
-    private function validatePeriodOrder(array $data): void
+    private function validatePeriodOrder(array $data, ?string $tanggal = null): void
     {
         $start = JamPelajaran::findOrFail($data['jam_mulai_id']);
         $end = JamPelajaran::findOrFail($data['jam_selesai_id']);
+        $hari = Carbon::parse($tanggal ?? $data['tanggal'])->locale('id')->translatedFormat('l');
+        [$startTime] = $start->timesForDay($hari);
+        [, $endTime] = $end->timesForDay($hari);
 
-        abort_if($start->jam_mulai >= $end->jam_selesai, 422, 'Jam selesai harus setelah jam mulai.');
+        abort_if($startTime >= $endTime, 422, 'Jam selesai harus setelah jam mulai.');
     }
 
     private function saveSignature(?string $signature, ?string $previousSignature = null): ?string
@@ -266,13 +270,7 @@ class JurnalController extends Controller
             ->get(['id']);
         $studentIds = $students->pluck('id');
         $submittedAbsensis = collect($absensis)->keyBy('siswa_id');
-        $dispensedStudentIds = Dispensasi::query()
-            ->whereIn('siswa_id', $studentIds)
-            ->whereDate('tanggal', $jurnal->tanggal)
-            ->where('status_akhir', 'Disetujui')
-            ->where('jam_mulai_id', '<=', $jurnal->jam_selesai_id)
-            ->where('jam_selesai_id', '>=', $jurnal->jam_mulai_id)
-            ->pluck('siswa_id');
+        $dispensedStudentIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
         abort_if(

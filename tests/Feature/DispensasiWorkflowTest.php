@@ -71,8 +71,8 @@ function dispensasiSetup(): array
 }
 
 it('lets piket submit multiple students while leaving attendance pending admin approval', function () {
-    $this->freezeTime();
     $data = dispensasiSetup();
+    $this->travelTo(Carbon::parse('2026-09-14 06:00:00', 'Asia/Jakarta'));
     Notification::fake();
 
     $this->actingAs($data['piket'])->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => $data['students']->pluck('id')->all()])->assertRedirect(route('dispensasi.index'));
@@ -98,16 +98,19 @@ it('rejects missing duplicate and nonexistent students without partial requests'
     Notification::assertNothingSent();
 })->with(['empty' => [[]], 'duplicates' => [['first', 'first']], 'unknown student' => [['first', 999999]]]);
 
-it('does not allow students to create online dispensations', function () {
+it('lets students create only their own online dispensation', function () {
     $data = dispensasiSetup();
+    $this->travelTo(Carbon::parse('2026-09-14 06:00:00', 'Asia/Jakarta'));
     Notification::fake();
     $student = $data['students']->first();
 
-    $this->actingAs($student->user)->get(route('dispensasi.create'))->assertForbidden();
-    $this->actingAs($student->user)->post(route('dispensasi.store'), $data['payload'])->assertForbidden();
-    $this->actingAs($student->user)->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => [$student->id]])->assertForbidden();
-    $this->assertDatabaseCount('dispensasis', 0);
-    Notification::assertNothingSent();
+    $this->actingAs($student->user)->get(route('dispensasi.create'))->assertOk();
+    $this->actingAs($student->user)->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => [$data['students']->last()->id]])->assertForbidden();
+    $this->actingAs($student->user)->post(route('dispensasi.store'), $data['payload'])
+        ->assertRedirect(route('dispensasi.index'));
+    $this->assertDatabaseHas('dispensasis', ['siswa_id' => $student->id, 'piket_id' => null]);
+    $this->assertDatabaseMissing('dispensasis', ['siswa_id' => $data['students']->last()->id]);
+    Notification::assertSentTo($data['piket'], DispensasiNotification::class, fn ($notification) => $notification->event === 'submitted');
 });
 
 it('sends the admin an email when piket approves a student request', function () {

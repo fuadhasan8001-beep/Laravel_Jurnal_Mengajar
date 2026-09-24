@@ -81,13 +81,14 @@ class JadwalController extends Controller
         $startTime = $data['jam_mulai'] ?? null;
         $endTime = $data['jam_selesai'] ?? null;
         unset($data['jam_mulai'], $data['jam_selesai']);
-        $this->ensureNoConflict($data, $jadwal);
         DB::transaction(function () use ($jadwal, $data, $startTime, $endTime): void {
             $jadwal->update($data);
 
             if ($startTime && $endTime) {
                 $this->shiftGlobalPeriods($jadwal->jamPelajaran, $startTime, $endTime);
             }
+
+            $this->ensureNoConflict($data, $jadwal);
         });
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
@@ -136,19 +137,32 @@ class JadwalController extends Controller
      */
     private function ensureNoConflict(array $data, ?Jadwal $jadwal = null): void
     {
-        $query = Jadwal::query()
+        if (! $data['is_active']) {
+            return;
+        }
+
+        $period = JamPelajaran::findOrFail($data['jam_pelajaran_id']);
+        [$start] = $period->timesForDay($data['hari']);
+        [, $end] = $period->timesForDay($data['hari']);
+
+        $conflictExists = Jadwal::with('jamPelajaran')
             ->where('hari', $data['hari'])
-            ->where('jam_pelajaran_id', $data['jam_pelajaran_id'])
             ->where('is_active', true)
             ->when($jadwal, fn ($builder) => $builder->where('id', '!=', $jadwal->id))
             ->where(function ($builder) use ($data): void {
                 $builder->where('guru_id', $data['guru_id'])
                     ->orWhere('kelas_id', $data['kelas_id']);
+            })
+            ->get()
+            ->contains(function (Jadwal $existing) use ($data, $start, $end): bool {
+                [$existingStart, $existingEnd] = $existing->jamPelajaran->timesForDay($data['hari']);
+
+                return $start < $existingEnd && $end > $existingStart;
             });
 
-        if ($query->exists()) {
+        if ($conflictExists) {
             throw ValidationException::withMessages([
-                'jam_pelajaran_id' => 'Guru atau kelas sudah memiliki jadwal pada hari dan jam tersebut.',
+                'jam_pelajaran_id' => 'Guru atau kelas sudah memiliki jadwal yang waktunya bertabrakan.',
             ]);
         }
     }

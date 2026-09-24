@@ -22,7 +22,7 @@ it('does not allow a user to mark another users notification as read', function 
     ]);
 
     $this->actingAs($otherUser)->post(route('notifications.read', $notificationId))
-        ->assertRedirect();
+        ->assertNotFound();
 
     expect(DB::table('notifications')->where('id', $notificationId)->value('read_at'))->toBeNull();
 });

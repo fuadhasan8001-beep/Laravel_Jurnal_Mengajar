@@ -177,7 +177,10 @@ it('prevents a teacher from creating a duplicate journal for the same lesson and
     $payload = ['jadwal_id' => $data['schedules']->first()->id, 'status_guru' => 'Hadir'];
 
     $this->actingAs($data['user'])->post(route('jurnal.store'), $payload)->assertRedirect();
-    $this->post(route('jurnal.store'), $payload)->assertSessionHasErrors('jadwal_id');
+    $journal = Jurnal::firstOrFail();
+    $this->post(route('jurnal.store'), $payload)
+        ->assertRedirect(route('jurnal.show', $journal))
+        ->assertSessionHas('success', 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
 
     $this->assertDatabaseCount('jurnals', 1);
 });

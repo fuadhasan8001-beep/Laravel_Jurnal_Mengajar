@@ -12,9 +12,9 @@ use App\Models\Mapel;
 use App\Models\Siswa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LaporanController extends Controller
 {
@@ -30,22 +30,19 @@ class LaporanController extends Controller
         ]);
     }
 
-    public function jurnalExport(Request $request): Response
+    public function jurnalExport(Request $request): StreamedResponse
     {
-        $jurnals = $this->jurnalQuery($request)->get();
-
         return $this->csv('rekap-jurnal.csv', [
-            ['Tanggal', 'Guru', 'Kelas', 'Mata Pelajaran', 'Jam', 'Materi', 'Status'],
-            ...$jurnals->map(fn (Jurnal $jurnal) => [
-                Carbon::parse($jurnal->tanggal)->toDateString(),
-                $jurnal->guru->nama_guru,
-                $jurnal->kelas->nama_kelas,
-                $jurnal->mapel->nama_mapel,
-                $jurnal->jamMulai->jam_ke.' - '.$jurnal->jamSelesai->jam_ke,
-                $jurnal->materi,
-                $jurnal->status_verifikasi,
-            ])->all(),
-        ]);
+            'Tanggal', 'Guru', 'Kelas', 'Mata Pelajaran', 'Jam', 'Materi', 'Status',
+        ], $this->jurnalQuery($request)->lazy(500)->map(fn (Jurnal $jurnal) => [
+            Carbon::parse($jurnal->tanggal)->toDateString(),
+            $jurnal->guru->nama_guru,
+            $jurnal->kelas->nama_kelas,
+            $jurnal->mapel->nama_mapel,
+            $jurnal->jamMulai->jam_ke.' - '.$jurnal->jamSelesai->jam_ke,
+            $jurnal->materi,
+            $jurnal->status_verifikasi,
+        ]));
     }
 
     public function absensi(Request $request): View
@@ -64,22 +61,19 @@ class LaporanController extends Controller
         ]);
     }
 
-    public function absensiExport(Request $request): Response
+    public function absensiExport(Request $request): StreamedResponse
     {
-        $absensis = $this->absensiQuery($request)->get();
-
         return $this->csv('rekap-absensi.csv', [
-            ['Tanggal', 'Siswa', 'Kelas', 'Guru', 'Mata Pelajaran', 'Status', 'Catatan'],
-            ...$absensis->map(fn (Absensi $absensi) => [
-                $absensi->jurnal->tanggal->format('Y-m-d'),
-                $absensi->siswa->nama_siswa,
-                $absensi->jurnal->kelas->nama_kelas,
-                $absensi->jurnal->guru->nama_guru,
-                $absensi->jurnal->mapel->nama_mapel,
-                ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status,
-                $absensi->catatan,
-            ])->all(),
-        ]);
+            'Tanggal', 'Siswa', 'Kelas', 'Guru', 'Mata Pelajaran', 'Status', 'Catatan',
+        ], $this->absensiQuery($request)->lazy(500)->map(fn (Absensi $absensi) => [
+            $absensi->jurnal->tanggal->format('Y-m-d'),
+            $absensi->siswa->nama_siswa,
+            $absensi->jurnal->kelas->nama_kelas,
+            $absensi->jurnal->guru->nama_guru,
+            $absensi->jurnal->mapel->nama_mapel,
+            ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status,
+            $absensi->catatan,
+        ]));
     }
 
     public function dispensasi(Request $request): View
@@ -97,21 +91,18 @@ class LaporanController extends Controller
         ]);
     }
 
-    public function dispensasiExport(Request $request): Response
+    public function dispensasiExport(Request $request): StreamedResponse
     {
-        $dispensasis = $this->dispensasiQuery($request)->get();
-
         return $this->csv('rekap-dispensasi.csv', [
-            ['Tanggal', 'Siswa', 'Kelas', 'Jam', 'Status', 'Alasan'],
-            ...$dispensasis->map(fn (Dispensasi $dispensasi) => [
-                Carbon::parse($dispensasi->tanggal)->toDateString(),
-                $dispensasi->siswa->nama_siswa,
-                $dispensasi->siswa->kelas->nama_kelas,
-                $dispensasi->jamMulai->jam_ke.' - '.$dispensasi->jamSelesai->jam_ke,
-                $dispensasi->status_akhir,
-                $dispensasi->alasan,
-            ])->all(),
-        ]);
+            'Tanggal', 'Siswa', 'Kelas', 'Jam', 'Status', 'Alasan',
+        ], $this->dispensasiQuery($request)->lazy(500)->map(fn (Dispensasi $dispensasi) => [
+            Carbon::parse($dispensasi->tanggal)->toDateString(),
+            $dispensasi->siswa->nama_siswa,
+            $dispensasi->siswa->kelas->nama_kelas,
+            $dispensasi->jamMulai->jam_ke.' - '.$dispensasi->jamSelesai->jam_ke,
+            $dispensasi->status_akhir,
+            $dispensasi->alasan,
+        ]));
     }
 
     private function jurnalQuery(Request $request)
@@ -146,6 +137,7 @@ class LaporanController extends Controller
             'kelas_id' => ['nullable', 'exists:kelas,id'],
             'mapel_id' => ['nullable', 'exists:mapels,id'],
             'siswa_id' => ['nullable', 'exists:siswas,id'],
+            'status' => ['nullable', 'in:H,S,I,A,D'],
         ]);
 
         return Absensi::with(['siswa', 'jurnal.guru', 'jurnal.kelas', 'jurnal.mapel'])
@@ -157,6 +149,7 @@ class LaporanController extends Controller
             ->when($request->filled('kelas_id'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->where('kelas_id', $request->integer('kelas_id'))))
             ->when($request->filled('mapel_id'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->where('mapel_id', $request->integer('mapel_id'))))
             ->when($request->filled('siswa_id'), fn ($query) => $query->where('siswa_id', $request->integer('siswa_id')))
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->latest();
     }
 
@@ -242,23 +235,29 @@ class LaporanController extends Controller
     }
 
     /**
-     * @param  array<int, array<int, mixed>>  $rows
+     * @param  array<int, string>  $header
+     * @param  iterable<array<int, mixed>>  $rows
      */
-    private function csv(string $filename, array $rows): Response
+    private function csv(string $filename, array $header, iterable $rows): StreamedResponse
     {
-        $handle = fopen('php://temp', 'r+');
+        return response()->streamDownload(function () use ($header, $rows): void {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, array_map($this->safeCsvCell(...), $header));
 
-        foreach ($rows as $row) {
-            fputcsv($handle, $row);
+            foreach ($rows as $row) {
+                fputcsv($handle, array_map($this->safeCsvCell(...), $row));
+            }
+
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    private function safeCsvCell(mixed $value): mixed
+    {
+        if (is_string($value) && preg_match('/^[\t\r\n ]*[=+\-@]/u', $value) === 1) {
+            return "'".$value;
         }
 
-        rewind($handle);
-        $contents = stream_get_contents($handle);
-        fclose($handle);
-
-        return response()->make($contents, 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-        ]);
+        return $value;
     }
 }

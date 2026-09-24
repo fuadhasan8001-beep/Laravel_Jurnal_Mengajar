@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\Dispensasi;
+use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -24,7 +25,11 @@ class DispensasiController extends Controller
 {
     public function index(): View
     {
-        $query = Dispensasi::with(['siswa', 'jamMulai', 'jamSelesai'])
+        $query = Dispensasi::with(['siswa', 'jamMulai', 'jamSelesai', 'groupStudents.siswa'])
+            ->where(function ($query): void {
+                $query->whereNull('group_key')
+                    ->orWhereRaw('dispensasis.id = (select MIN(grouped.id) from dispensasis as grouped where grouped.group_key = dispensasis.group_key)');
+            })
             ->latest();
 
         if (auth()->user()->role === 'siswa') {
@@ -32,14 +37,12 @@ class DispensasiController extends Controller
         }
 
         return view('dispensasi.index', [
-            'dispensasis' => $query->get(),
+            'dispensasis' => $query->paginate(20)->withQueryString(),
         ]);
     }
 
     public function create(): View
     {
-        abort_unless(auth()->user()->role === 'piket', 403);
-
         $hari = today()->locale('id')->translatedFormat('l');
         $waktuSekarang = now()->format('H:i:s');
         $jamPelajarans = JamPelajaran::query()
@@ -59,7 +62,6 @@ class DispensasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        abort_unless(auth()->user()->role === 'piket', 403);
         $isPiket = auth()->user()->role === 'piket';
         abort_if(! $isPiket && $request->filled('siswa_ids'), 403);
         $request->merge(['tanggal' => today()->toDateString()]);
@@ -77,14 +79,17 @@ class DispensasiController extends Controller
         $jamMulai = JamPelajaran::findOrFail($data['jam_mulai_id']);
         $jamSelesai = JamPelajaran::findOrFail($data['jam_selesai_id']);
 
-        if ($jamSelesai->jam_ke < $jamMulai->jam_ke) {
+        $hari = Carbon::parse($data['tanggal'])->locale('id')->translatedFormat('l');
+        [$jamMulaiWaktu] = $jamMulai->timesForDay($hari);
+        [, $jamSelesaiWaktu] = $jamSelesai->timesForDay($hari);
+
+        if ($jamMulaiWaktu >= $jamSelesaiWaktu) {
             return back()->withInput()->withErrors([
-                'jam_selesai_id' => 'Jam selesai tidak boleh sebelum jam dispensasi.',
+                'jam_selesai_id' => 'Jam selesai harus setelah jam mulai.',
             ]);
         }
 
-        $hari = today()->locale('id')->translatedFormat('l');
-        $lessonEnd = Carbon::parse(today()->toDateString().' '.$jamMulai->timesForDay($hari)[1]);
+        $lessonEnd = Carbon::parse($data['tanggal'].' '.$jamMulaiWaktu);
         if ($lessonEnd->lessThanOrEqualTo(now())) {
             return back()->withInput()->withErrors([
                 'jam_mulai_id' => 'Jam dispensasi harus untuk pelajaran yang belum berakhir.',
@@ -96,7 +101,7 @@ class DispensasiController extends Controller
             $evidencePath = $request->file('bukti')->store('dispensasi/bukti');
         }
 
-        $groupKey = (string) Str::uuid();
+        $groupKey = $isPiket ? (string) Str::uuid() : null;
         $studentIds = $isPiket ? $data['siswa_ids'] : [$this->student()->id];
         $dispensasis = DB::transaction(function () use ($data, $evidencePath, $groupKey, $studentIds, $isPiket): array {
             return collect($studentIds)->map(function (int $siswaId) use ($data, $evidencePath, $groupKey, $isPiket): Dispensasi {
@@ -133,6 +138,7 @@ class DispensasiController extends Controller
         return view('dispensasi.show', [
             'dispensasi' => $dispensasi->load([
                 'siswa',
+                'groupStudents.siswa',
                 'jamMulai',
                 'jamSelesai',
                 'piket',
@@ -152,47 +158,73 @@ class DispensasiController extends Controller
 
     public function verify(Request $request, Dispensasi $dispensasi): RedirectResponse
     {
-        abort_if($dispensasi->status_akhir !== 'Menunggu', 422, 'Dispensasi sudah memiliki keputusan akhir.');
-
         $data = $request->validate([
             'status' => ['required', 'in:Disetujui,Ditolak'],
             'catatan_verifikasi' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        $user = auth()->user();
-        $isPiket = $user->role === 'piket';
+        DB::transaction(function () use ($dispensasi, $data): void {
+            $dispensasi = Dispensasi::whereKey($dispensasi->id)->lockForUpdate()->firstOrFail();
+            abort_if($dispensasi->status_akhir !== 'Menunggu', 422, 'Dispensasi sudah memiliki keputusan akhir.');
 
-        if (! $isPiket && $dispensasi->status_piket !== 'Disetujui') {
-            abort(422, 'Dispensasi harus disetujui piket terlebih dahulu.');
-        }
+            $user = auth()->user();
+            $isPiket = $user->role === 'piket';
+            if (! $isPiket && $dispensasi->status_piket !== 'Disetujui') {
+                abort(422, 'Dispensasi harus disetujui piket terlebih dahulu.');
+            }
+            if ($isPiket) {
+                abort_if($dispensasi->status_piket !== 'Menunggu', 422, 'Pernyataan sudah diteruskan kepada admin.');
+                $dispensasi->status_piket = $data['status'];
+                $dispensasi->piket_id = $user->id;
+                $dispensasi->verified_piket_at = now();
+            } else {
+                $dispensasi->status_admin = $data['status'];
+                $dispensasi->admin_id = $user->id;
+                $dispensasi->verified_admin_at = now();
+            }
 
-        if ($isPiket) {
-            $dispensasi->status_piket = $data['status'];
-            $dispensasi->piket_id = $user->id;
-            $dispensasi->verified_piket_at = Carbon::now();
-        } else {
-            $dispensasi->status_admin = $data['status'];
-            $dispensasi->admin_id = $user->id;
-            $dispensasi->verified_admin_at = Carbon::now();
-        }
+            $dispensasi->catatan_verifikasi = $data['catatan_verifikasi'] ?? null;
+            $dispensasi->status_akhir = $this->finalStatus($dispensasi);
+            $dispensasi->save();
 
-        $dispensasi->catatan_verifikasi = $data['catatan_verifikasi'] ?? null;
-        $dispensasi->status_akhir = $this->finalStatus($dispensasi);
-        $dispensasi->save();
+            $group = $dispensasi->group_key
+                ? Dispensasi::where('group_key', $dispensasi->group_key)->lockForUpdate()->get()
+                : collect([$dispensasi]);
+            $group->each(function (Dispensasi $item) use ($dispensasi): void {
+                if ($item->is($dispensasi)) {
+                    return;
+                }
 
-        if ($isPiket) {
-            $event = $data['status'] === 'Disetujui' ? 'piket_approved' : 'piket_rejected';
-            User::where('role', 'admin')->where('is_active', true)->get()
-                ->each->notify(new DispensasiApprovalMail($dispensasi));
-        } else {
-            $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
-            $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
-        }
+                $item->status_piket = $dispensasi->status_piket;
+                $item->piket_id = $dispensasi->piket_id;
+                $item->verified_piket_at = $dispensasi->verified_piket_at;
+                $item->status_admin = $dispensasi->status_admin;
+                $item->admin_id = $dispensasi->admin_id;
+                $item->verified_admin_at = $dispensasi->verified_admin_at;
+                $item->status_akhir = $dispensasi->status_akhir;
+                $item->catatan_verifikasi = $dispensasi->catatan_verifikasi;
+                $item->save();
+            });
 
-        if ($dispensasi->status_akhir === 'Disetujui') {
-            $this->markAttendanceAsDispensed($dispensasi);
-            $this->notifyScheduledTeachers($dispensasi);
-        }
+            if ($isPiket) {
+                if ($data['status'] === 'Disetujui') {
+                    User::where('role', 'admin')->where('is_active', true)->get()->each(function (User $admin) use ($dispensasi): void {
+                        $admin->notify(new DispensasiNotification($dispensasi, 'piket_approved'));
+                        $admin->notify((new DispensasiApprovalMail($dispensasi))->afterCommit());
+                    });
+                } else {
+                    $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, 'piket_rejected'));
+                }
+            } else {
+                $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
+                $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
+            }
+
+            if ($dispensasi->status_akhir === 'Disetujui') {
+                $group->each(fn (Dispensasi $item): mixed => $this->markAttendanceAsDispensed($item));
+                $this->notifyScheduledTeachers($dispensasi);
+            }
+        });
 
         return redirect()->route('dispensasi.show', $dispensasi)
             ->with('success', 'Verifikasi dispensasi berhasil disimpan.');
@@ -227,12 +259,14 @@ class DispensasiController extends Controller
     {
         $dispensasi->loadMissing(['siswa', 'jamMulai', 'jamSelesai']);
 
-        $jurnals = Jurnal::query()
+        $hari = $dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$start] = $dispensasi->jamMulai->timesForDay($hari);
+        [, $end] = $dispensasi->jamSelesai->timesForDay($hari);
+        $jurnals = Jurnal::with(['jamMulai', 'jamSelesai'])
             ->whereDate('tanggal', $dispensasi->tanggal)
             ->where('kelas_id', $dispensasi->siswa->kelas_id)
-            ->where('jam_mulai_id', '<=', $dispensasi->jam_selesai_id)
-            ->where('jam_selesai_id', '>=', $dispensasi->jam_mulai_id)
-            ->get();
+            ->get()
+            ->filter(fn (Jurnal $jurnal): bool => $this->periodsOverlap($jurnal->jamMulai, $jurnal->jamSelesai, $hari, $start, $end));
 
         foreach ($jurnals as $jurnal) {
             Absensi::updateOrCreate(
@@ -247,18 +281,36 @@ class DispensasiController extends Controller
 
     private function notifyScheduledTeachers(Dispensasi $dispensasi): void
     {
-        $dispensasi->loadMissing('siswa');
-        $hari = $dispensasi->tanggal->copy()->locale('id')->translatedFormat('l');
-
-        Jadwal::query()
-            ->with('guru.user')
+        $dispensasi->loadMissing(['siswa', 'jamMulai', 'jamSelesai']);
+        $hari = $dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$start] = $dispensasi->jamMulai->timesForDay($hari);
+        [, $end] = $dispensasi->jamSelesai->timesForDay($hari);
+        $scheduledGuruIds = Jadwal::with('jamPelajaran')
             ->where('kelas_id', $dispensasi->siswa->kelas_id)
             ->where('hari', $hari)
             ->where('is_active', true)
             ->get()
-            ->pluck('guru.user')
-            ->filter()
-            ->unique('id')
+            ->filter(fn (Jadwal $jadwal): bool => $this->periodsOverlap($jadwal->jamPelajaran, $jadwal->jamPelajaran, $hari, $start, $end))
+            ->pluck('guru_id');
+        $journalGuruIds = Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->where('kelas_id', $dispensasi->siswa->kelas_id)
+            ->whereDate('tanggal', $dispensasi->tanggal)
+            ->get()
+            ->filter(fn (Jurnal $journal): bool => $this->periodsOverlap($journal->jamMulai, $journal->jamSelesai, $hari, $start, $end))
+            ->pluck('guru_id');
+
+        User::whereIn('id', Guru::whereIn('id', $scheduledGuruIds->merge($journalGuruIds)->unique())->select('user_id'))
+            ->where('is_active', true)
+            ->where('role', 'guru')
+            ->get()
             ->each->notify(new DispensasiNotification($dispensasi, 'teacher_approved'));
+    }
+
+    private function periodsOverlap(JamPelajaran $lessonStart, JamPelajaran $lessonEnd, string $hari, string $start, string $end): bool
+    {
+        [$lessonStartTime] = $lessonStart->timesForDay($hari);
+        [, $lessonEndTime] = $lessonEnd->timesForDay($hari);
+
+        return $lessonStartTime < $end && $lessonEndTime > $start;
     }
 }
