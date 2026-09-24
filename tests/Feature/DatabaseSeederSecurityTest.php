@@ -7,6 +7,16 @@ use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
+it('falls back to a known local development password when no custom seed password is configured', function () {
+    config(['seeding.default_password' => null]);
+
+    $this->seed(DatabaseSeeder::class);
+
+    $admin = User::where('email', 'admin@test.com')->firstOrFail();
+
+    expect(Hash::check('password', $admin->password))->toBeTrue();
+});
+
 it('uses the configured development seed password and preserves existing credentials', function () {
     config(['seeding.default_password' => 'configured-development-password']);
 

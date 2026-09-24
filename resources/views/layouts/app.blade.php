@@ -216,6 +216,23 @@
 
             background: var(--gold-dark);
             color: #fff;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.28);
         }
 
         .brand {
@@ -1991,6 +2008,13 @@
                         </a>
 
                         <a
+                            class="nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}"
+                            href="{{ route('admin.secretaries.index') }}"
+                        >
+                            Pengurus kelas
+                        </a>
+
+                        <a
                             class="nav-link {{ request()->is('admin/data*') ? 'active' : '' }}"
                             href="{{ route('admin.gurus.index') }}"
                         >
@@ -2384,6 +2408,13 @@
                             href="{{ route('admin.activity-logs') }}"
                         >
                             Aktivitas
+                        </a>
+
+                        <a
+                            class="mobile-nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}"
+                            href="{{ route('admin.secretaries.index') }}"
+                        >
+                            Pengurus kelas
                         </a>
 
                         <a

@@ -93,6 +93,11 @@ Route::middleware('role:admin')->prefix('admin/registrations')->name('admin.regi
     Route::post('/{registration}/reject', [AdminRegistrationController::class, 'reject'])->name('reject');
 });
 
+Route::middleware('role:admin')->prefix('admin')->group(function () {
+    Route::get('/secretaries', [AdminDataController::class, 'secretaries'])->name('admin.secretaries.index');
+    Route::post('/secretaries/{kelas}/reset', [AdminDataController::class, 'resetSecretary'])->name('admin.secretaries.reset');
+});
+
 Route::middleware('role:admin,guru,sekretaris,piket')->prefix('rekap')->group(function () {
     Route::get('/jurnal', [LaporanController::class, 'jurnal'])->name('laporan.jurnal');
     Route::get('/jurnal/export', [LaporanController::class, 'jurnalExport'])->name('laporan.jurnal.export');

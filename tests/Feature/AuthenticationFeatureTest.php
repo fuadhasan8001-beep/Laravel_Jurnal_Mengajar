@@ -99,6 +99,15 @@ it('blocks a role from another role dashboard', function () {
     $this->actingAs($user)->get('/admin')->assertForbidden();
 });
 
+it('shows the admin class secretary management page to active admins', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($admin)->get(route('admin.secretaries.index'))->assertOk();
+});
+
 it('limits repeated login attempts by account identity and client address', function () {
     foreach (range(1, 5) as $attempt) {
         $this->post('/login', ['login' => 'unknown-user', 'password' => 'invalid'])

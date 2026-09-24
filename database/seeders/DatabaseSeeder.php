@@ -443,9 +443,11 @@ class DatabaseSeeder extends Seeder
 
         if ($isNew) {
             $defaultPassword = config('seeding.default_password');
-            $user->password = Hash::make(is_string($defaultPassword) && $defaultPassword !== ''
+            $resolvedPassword = is_string($defaultPassword) && $defaultPassword !== ''
                 ? $defaultPassword
-                : Str::random(64));
+                : 'password';
+
+            $user->password = Hash::make($resolvedPassword);
         }
 
         $user->save();
