@@ -117,7 +117,7 @@
                     <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnalTerbaru->guru->nama_guru }}</dd></div>
                     <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnalTerbaru->kelas->nama_kelas }}</dd></div>
                     <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnalTerbaru->mapel->nama_mapel }}</dd></div>
-                    <div class="detail-item"><dt>Jam pelajaran</dt><dd>{{ $jurnalTerbaru->jamMulai->jam_mulai }} - {{ $jurnalTerbaru->jamSelesai->jam_selesai }}</dd></div>
+                    <div class="detail-item"><dt>Jam pelajaran</dt><dd>{{ $jurnalTerbaru->jamMulai->timesForDay($jurnalTerbaru->tanggal->locale('id')->translatedFormat('l'))[0] }} - {{ $jurnalTerbaru->jamSelesai->timesForDay($jurnalTerbaru->tanggal->locale('id')->translatedFormat('l'))[1] }}</dd></div>
                     <div class="detail-item"><dt>Materi</dt><dd>{{ $jurnalTerbaru->materi ?: '-' }}</dd></div>
                     <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnalTerbaru->status_guru ?: '-' }}</dd></div>
                     <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnalTerbaru->tujuan_pembelajaran ?: '-' }}</dd></div>

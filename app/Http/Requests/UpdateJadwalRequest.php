@@ -29,8 +29,6 @@ class UpdateJadwalRequest extends FormRequest
             'jam_pelajaran_id' => ['required', 'exists:jam_pelajarans,id'],
             'hari' => ['required', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
             'is_active' => ['nullable', 'boolean'],
-            'jam_mulai' => ['nullable', 'required_with:jam_selesai', 'date_format:H:i'],
-            'jam_selesai' => ['nullable', 'required_with:jam_mulai', 'date_format:H:i', 'after:jam_mulai'],
         ];
     }
 }

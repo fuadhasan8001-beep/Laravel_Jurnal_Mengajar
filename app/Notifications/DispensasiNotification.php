@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Dispensasi;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class DispensasiNotification extends Notification
+class DispensasiNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -44,8 +45,12 @@ class DispensasiNotification extends Notification
 
     private function message(): string
     {
+        $hari = $this->dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$start] = $this->dispensasi->jamMulai->timesForDay($hari);
+        [, $end] = $this->dispensasi->jamSelesai->timesForDay($hari);
+
         return match ($this->event) {
-            'teacher_approved' => $this->dispensasi->siswa->nama_siswa.' mendapat dispensasi pada '.$this->dispensasi->tanggal->format('d-m-Y').' pukul '.$this->dispensasi->jamMulai->jam_mulai.'–'.$this->dispensasi->jamSelesai->jam_selesai.'.',
+            'teacher_approved' => $this->dispensasi->siswa->nama_siswa.' mendapat dispensasi pada '.$this->dispensasi->tanggal->format('d-m-Y').' pukul '.$start.'–'.$end.'.',
             'submitted' => 'Pengajuan dispensasi baru menunggu pemeriksaan piket.',
             'piket_approved' => 'Pengajuan dispensasi telah disetujui piket dan menunggu admin.',
             'piket_rejected' => 'Pengajuan dispensasi ditolak oleh piket.',

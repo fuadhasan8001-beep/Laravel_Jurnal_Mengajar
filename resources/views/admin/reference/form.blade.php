@@ -19,6 +19,8 @@
                     <div class="field"><label for="jam_ke">Nomor jam</label><input id="jam_ke" type="number" min="1" name="jam_ke" value="{{ old('jam_ke', $item->jam_ke ?? '') }}" required></div>
                     <div class="field"><label for="jam_mulai">Jam mulai</label><input id="jam_mulai" type="time" name="jam_mulai" value="{{ old('jam_mulai', $item->jam_mulai ?? '') }}" required></div>
                     <div class="field"><label for="jam_selesai">Jam selesai</label><input id="jam_selesai" type="time" name="jam_selesai" value="{{ old('jam_selesai', $item->jam_selesai ?? '') }}" required></div>
+                    <div class="field"><label for="jam_mulai_jumat">Mulai hari Jumat (opsional)</label><input id="jam_mulai_jumat" type="time" name="jam_mulai_jumat" value="{{ old('jam_mulai_jumat', $item->jam_mulai_jumat ?? '') }}"></div>
+                    <div class="field"><label for="jam_selesai_jumat">Selesai hari Jumat (opsional)</label><input id="jam_selesai_jumat" type="time" name="jam_selesai_jumat" value="{{ old('jam_selesai_jumat', $item->jam_selesai_jumat ?? '') }}"></div>
                     <div class="field"><label for="is_active">Status</label><select id="is_active" name="is_active" required><option value="1" @selected(old('is_active', $item->is_active ?? true) === true || old('is_active', $item->is_active ?? true) === '1')>Aktif</option><option value="0" @selected(old('is_active', $item->is_active ?? true) === false || old('is_active', $item->is_active ?? true) === '0')>Nonaktif</option></select></div>
                 @endif
             </div>

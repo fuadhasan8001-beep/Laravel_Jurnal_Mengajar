@@ -171,6 +171,25 @@ it('saves status only with server derived dates and lesson boundaries', function
     expect(Jurnal::firstOrFail()->tanggal->toDateString())->toBe('2026-09-14');
 });
 
+it('records teacher leave or sickness against the active scheduled class session', function (string $status) {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 11:20:00', 'Asia/Jakarta'));
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'jadwal_id' => $data['schedules']->first()->id,
+        'status_guru' => $status,
+    ])->assertSessionHasNoErrors();
+
+    $this->assertDatabaseHas('jurnals', [
+        'guru_id' => $data['guru']->id,
+        'kelas_id' => $data['kelas']->id,
+        'jam_mulai_id' => $data['periods'][0]->id,
+        'jam_selesai_id' => $data['periods'][1]->id,
+        'status_guru' => $status,
+        'materi' => '',
+    ]);
+})->with(['Izin', 'Sakit']);
+
 it('prevents a teacher from creating a duplicate journal for the same lesson and date', function () {
     $data = activeJournalSchedule();
     $this->travelTo(Carbon::parse('2026-09-14 13:20:00', 'Asia/Jakarta'));

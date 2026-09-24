@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JamPelajaran;
-use App\Models\Jadwal;
 use App\Models\Dispensasi;
+use App\Models\Jadwal;
+use App\Models\JamPelajaran;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use Illuminate\Http\RedirectResponse;
@@ -124,6 +124,8 @@ class AdminReferenceController extends Controller
             'jam_ke' => ['required', 'integer', 'min:1', 'unique:jam_pelajarans,jam_ke'],
             'jam_mulai' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'jam_mulai_jumat' => ['nullable', 'required_with:jam_selesai_jumat', 'date_format:H:i'],
+            'jam_selesai_jumat' => ['nullable', 'required_with:jam_mulai_jumat', 'date_format:H:i', 'after:jam_mulai_jumat'],
             'is_active' => ['required', 'boolean'],
         ]);
         $this->ensurePeriodDoesNotOverlap($data);
@@ -143,6 +145,8 @@ class AdminReferenceController extends Controller
             'jam_ke' => ['required', 'integer', 'min:1', Rule::unique('jam_pelajarans', 'jam_ke')->ignore($jam->id)],
             'jam_mulai' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'jam_mulai_jumat' => ['nullable', 'required_with:jam_selesai_jumat', 'date_format:H:i'],
+            'jam_selesai_jumat' => ['nullable', 'required_with:jam_mulai_jumat', 'date_format:H:i', 'after:jam_mulai_jumat'],
             'is_active' => ['required', 'boolean'],
         ]);
         $this->ensurePeriodDoesNotOverlap($data, $jam);

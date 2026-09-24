@@ -27,6 +27,9 @@ class DispensasiApprovalMail extends Notification implements ShouldQueue
         $students = $this->dispensasi->groupStudents->isNotEmpty()
             ? $this->dispensasi->groupStudents->pluck('siswa')->map(fn ($student): string => $student->nama_siswa.' — '.$student->kelas->nama_kelas)->implode('; ')
             : $this->dispensasi->siswa->nama_siswa.' — '.$this->dispensasi->siswa->kelas->nama_kelas;
+        $hari = $this->dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$start] = $this->dispensasi->jamMulai->timesForDay($hari);
+        [, $end] = $this->dispensasi->jamSelesai->timesForDay($hari);
 
         return (new MailMessage)
             ->subject('Verifikasi pernyataan dispensasi siswa')
@@ -34,7 +37,7 @@ class DispensasiApprovalMail extends Notification implements ShouldQueue
             ->line('Piket '.$this->dispensasi->piket?->name.' mengajukan pernyataan dispensasi untuk:')
             ->line($students)
             ->line('Tanggal: '.$this->dispensasi->tanggal->format('d-m-Y'))
-            ->line('Waktu: '.$this->dispensasi->jamMulai->jam_mulai.' – '.$this->dispensasi->jamSelesai->jam_selesai)
+            ->line('Waktu: '.$start.' – '.$end)
             ->line('Alasan: '.$this->dispensasi->alasan)
             ->action('Periksa dan verifikasi dispensasi', route('dispensasi.show', $this->dispensasi))
             ->line('Masuk menggunakan akun admin untuk menyetujui atau menolak. Status siswa berubah menjadi dispen setelah disetujui.');

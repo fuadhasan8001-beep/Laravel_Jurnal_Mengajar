@@ -15,7 +15,7 @@
 - [x] Signature jurnal disimpan privat, hanya guru pemilik yang dapat mengubahnya, dan diuji bersama alur edit.
 - [x] Activity log tersedia untuk perubahan data guru; log hanya dapat dilihat admin dan memiliki pagination.
 - [x] Build aset Vite berhasil; Composer audit bersih; npm audit melaporkan 0 kerentanan (pemeriksaan sebelum rebase).
-- [x] Setelah integrasi dengan `origin/DEV`: seluruh suite 158 tes / 558 assertion lulus, Pint lulus, dan `git diff --check` lulus.
+- [x] Setelah integrasi dan audit lanjutan: seluruh suite 169 tes / 601 assertion lulus; Pint, lint PHP (95 file), `optimize:clear`, dan `git diff --check` lulus.
 
 ## Masih menunggu akses atau keputusan di luar repo
 
@@ -24,3 +24,32 @@
 - [ ] **Production/staging:** verifikasi `.env` deployment (`APP_ENV=production`, `APP_DEBUG=false`, secret aman), cache konfigurasi, serta halaman 403/404/419/422/500 pada server. Repo tidak memiliki konfigurasi deployment atau akses server; `.env` lokal tetap tidak diubah dan tidak terlacak Git.
 - [ ] **Cakupan activity log:** saat ini log mencakup perubahan data guru; pastikan event bisnis lain yang wajib dicatat (misalnya jurnal, dispensasi, dan login/logout), aturan retensi, serta kebutuhan audit sebelum memperluas cakupannya.
 - [ ] **Sinkronisasi database:** `db-sync.sh` tidak ditemukan di repo; perintah `help`, `push`, dan `pull` belum dapat diuji.
+
+## Audit lanjutan: 26 temuan
+
+- [x] **#1 ALREADY FIXED:** route, controller, form, dan test konsisten mendukung siswa mengajukan dispensasi sendiri; piket dapat mengajukan untuk beberapa siswa.
+- [x] **#2 ALREADY FIXED:** NIS memiliki unique constraint, validasi pembuatan siswa, dan login berbasis NIS diuji.
+- [x] **#3 FIXED:** dashboard mengambil jadwal aktif dari `Jadwal::sessionsForGuru()` yang memakai `timesForDay()`, termasuk Jumat.
+- [x] **#4 ALREADY FIXED:** validasi urutan periode jurnal sudah menggunakan tanggal/hari jurnal dan waktu Jumat.
+- [x] **#5 FIXED:** master jam mendukung input, edit, display, validasi urutan dan overlap waktu Jumat opsional.
+- [x] **#6 FIXED:** edit jadwal tidak menggeser jam global; perubahan waktu dilakukan melalui master jam.
+- [x] **#7 FIXED BY DESIGN:** satu jurnal dibuat untuk sesi jadwal aktif (termasuk beberapa jam berurutan); status Izin/Sakit menerima data sesi yang sama dan materi boleh kosong.
+- [x] **#8 FIXED:** guru dibatasi pada jurnalnya, sekretaris pada kelas penugasan; piket tidak mendapat akses tulis/rekap absensi umum.
+- [ ] **#9 NOT IN USE / DEPLOYMENT CHECK PENDING:** tidak ada kode aplikasi yang memakai `alokasi_jam_pelajarans`; migration historis dipertahankan dan data deployment perlu diperiksa sebelum tabel dihapus. Skema tabel disertakan dalam SQL dump.
+- [x] **#10 ALREADY FIXED:** urutan waktu divalidasi memakai waktu aktual hari terkait; tes mencakup sesi satu jam, multi-jam, konflik, dan Jumat.
+- [x] **#11 ALREADY FIXED IN ACTIVE FLOW:** form/request hanya menerima Hadir, Izin, Sakit. Nilai lama Dinas/Tanpa Keterangan dipertahankan dalam migration historis untuk kompatibilitas data.
+- [x] **#12 FIXED:** notifikasi guru dibatasi overlap jadwal/jurnal dan pesan menampilkan waktu lokal Jumat bila berlaku.
+- [x] **#13 FIXED:** perubahan status, absensi, dan notifikasi database berjalan dalam transaksi; notifikasi antrean dikirim setelah commit.
+- [x] **#14 FIXED:** file bukti dihapus bila transaksi penyimpanan gagal; tes memverifikasi cleanup.
+- [x] **#15 FIXED:** SQL dump kini memuat signature, witness absensi, activity log, dan alokasi jam; dump berhasil dimuat pada SQLite in-memory.
+- [x] **#16 FIXED:** halaman pemulihan akun menyebut bantuan admin dan menjelaskan bahwa reset tidak otomatis.
+- [x] **#17 ALREADY FIXED:** password seeder berasal dari konfigurasi lingkungan; password contoh hanya dipakai test.
+- [x] **#18 ALREADY FIXED:** daftar dispensasi menggunakan pagination.
+- [x] **#19 ALREADY FIXED:** rekap absensi menggunakan pagination dan eager loading.
+- [x] **#20 FIXED:** dashboard lima role dipindahkan dari closure route ke `DashboardController`.
+- [x] **#21 FIXED:** perhitungan jadwal aktif dashboard menggunakan sumber sesi jadwal yang sama dengan flow jurnal.
+- [x] **#22 ALREADY FIXED:** jumlah siswa terpantau menghitung kelas unik dari seluruh jadwal aktif guru; regression test menegaskan cakupan ini.
+- [x] **#23 ALREADY FIXED BY REQUIREMENT:** tanggal pengajuan dipatok ke hari ini karena flow dispensasi mencatat kejadian hari berjalan; regression test memastikan tanggal kiriman diabaikan.
+- [x] **#24 VERIFIED:** lint PHP dijalankan pada file aplikasi, route, migration, dan test.
+- [x] **#25 ALREADY FIXED:** unique index `jurnal_id + siswa_id` dipertahankan dan diuji langsung.
+- [x] **#26 ALREADY FIXED:** assignment sekretaris diperiksa saat melihat, memverifikasi jurnal, dan mengubah absensi; regression test akses kelas lain tersedia.

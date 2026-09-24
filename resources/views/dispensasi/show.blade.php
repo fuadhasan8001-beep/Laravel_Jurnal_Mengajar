@@ -38,8 +38,8 @@
                 </div>
                 <div class="detail-item">
                     <dt>Waktu</dt>
-                    <dd>{{ $dispensasi->jamMulai->jam_mulai }} -
-                        {{ $dispensasi->jamSelesai->jam_selesai }}</dd>
+                    <dd>{{ $dispensasi->jamMulai->timesForDay($dispensasi->tanggal->locale('id')->translatedFormat('l'))[0] }} -
+                        {{ $dispensasi->jamSelesai->timesForDay($dispensasi->tanggal->locale('id')->translatedFormat('l'))[1] }}</dd>
                 </div>
                 <div class="detail-item">
                     <dt>Bukti</dt>

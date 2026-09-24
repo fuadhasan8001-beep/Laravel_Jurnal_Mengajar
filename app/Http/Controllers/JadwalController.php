@@ -11,8 +11,6 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -78,51 +76,10 @@ class JadwalController extends Controller
     public function update(UpdateJadwalRequest $request, Jadwal $jadwal): RedirectResponse
     {
         $data = [...$request->validated(), 'is_active' => $request->boolean('is_active')];
-        $startTime = $data['jam_mulai'] ?? null;
-        $endTime = $data['jam_selesai'] ?? null;
-        unset($data['jam_mulai'], $data['jam_selesai']);
-        DB::transaction(function () use ($jadwal, $data, $startTime, $endTime): void {
-            $jadwal->update($data);
-
-            if ($startTime && $endTime) {
-                $this->shiftGlobalPeriods($jadwal->jamPelajaran, $startTime, $endTime);
-            }
-
-            $this->ensureNoConflict($data, $jadwal);
-        });
+        $this->ensureNoConflict($data, $jadwal);
+        $jadwal->update($data);
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
-    }
-
-    private function shiftGlobalPeriods(JamPelajaran $period, string $startTime, string $endTime): void
-    {
-        $periods = JamPelajaran::query()->where('jam_ke', '>=', $period->jam_ke)->orderBy('jam_ke')->lockForUpdate()->get();
-        $nextStart = Carbon::parse($startTime);
-        $previous = JamPelajaran::where('jam_ke', '<', $period->jam_ke)->where('is_active', true)->orderByDesc('jam_ke')->first();
-        if ($previous && Carbon::parse($previous->jam_selesai)->greaterThan($nextStart)) {
-            throw ValidationException::withMessages(['jam_mulai' => 'Jam mulai bertumpuk dengan jam sebelumnya.']);
-        }
-        $originalEnd = null;
-
-        foreach ($periods as $index => $currentPeriod) {
-            if ($originalEnd !== null) {
-                $gap = $originalEnd->diffInMinutes(Carbon::parse($currentPeriod->jam_mulai));
-                $nextStart->addMinutes(max(0, $gap));
-            }
-            $duration = $index === 0
-                ? $nextStart->diffInMinutes(Carbon::parse($endTime))
-                : Carbon::parse($currentPeriod->jam_mulai)->diffInMinutes(Carbon::parse($currentPeriod->jam_selesai));
-            $originalEnd = Carbon::parse($currentPeriod->jam_selesai);
-            $currentEnd = $nextStart->copy()->addMinutes($duration);
-            if ($duration <= 0 || ! $currentEnd->isSameDay($nextStart)) {
-                throw ValidationException::withMessages(['jam_selesai' => 'Durasi harus positif dan tidak boleh melewati tengah malam.']);
-            }
-            $currentPeriod->update([
-                'jam_mulai' => $nextStart->format('H:i'),
-                'jam_selesai' => $currentEnd->format('H:i'),
-            ]);
-            $nextStart = $currentEnd;
-        }
     }
 
     public function destroy(Jadwal $jadwal): RedirectResponse

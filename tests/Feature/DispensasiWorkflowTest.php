@@ -154,6 +154,35 @@ it('notifies a scheduled teacher even before their journal exists', function () 
     $this->assertDatabaseCount('jurnals', 0);
 });
 
+it('notifies only teachers whose Friday schedule overlaps the dispensation and reports Friday times', function () {
+    $data = dispensasiSetup();
+    $data['start']->update(['jam_mulai_jumat' => '10:00', 'jam_selesai_jumat' => '10:30']);
+    $data['end']->update(['jam_mulai_jumat' => '10:30', 'jam_selesai_jumat' => '11:00']);
+    $data['schedule']->update(['hari' => 'Jumat']);
+    $laterTeacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $laterGuru = Guru::create(['user_id' => $laterTeacher->id, 'nip' => 'FRIDAY-LATER', 'nama_guru' => 'Guru Sore', 'status_kepegawaian' => 'Honorer']);
+    $laterPeriod = JamPelajaran::create([
+        'jam_ke' => 3, 'jam_mulai' => '12:00', 'jam_selesai' => '12:30',
+        'jam_mulai_jumat' => '11:30', 'jam_selesai_jumat' => '12:00', 'is_active' => true,
+    ]);
+    Jadwal::create(['guru_id' => $laterGuru->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $laterPeriod->id, 'hari' => 'Jumat', 'is_active' => true]);
+    $this->travelTo(Carbon::parse('2026-09-18 10:20:00', 'Asia/Jakarta'));
+    Notification::fake();
+    $dispensasi = Dispensasi::create([
+        ...$data['payload'], 'tanggal' => '2026-09-18', 'jam_mulai_id' => $data['start']->id,
+        'jam_selesai_id' => $data['end']->id, 'siswa_id' => $data['students']->first()->id, 'status_piket' => 'Disetujui',
+    ]);
+
+    $this->actingAs($data['admin'])->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
+
+    Notification::assertSentTo($data['teacher'], DispensasiNotification::class, function (DispensasiNotification $notification) use ($data): bool {
+        return $notification->event === 'teacher_approved'
+            && str_contains($notification->toArray($data['teacher'])['message'], '10:00–11:00');
+    });
+    Notification::assertNotSentTo($laterTeacher, DispensasiNotification::class);
+});
+
 it('does not mark attendance or notify teachers when admin rejects', function () {
     $data = dispensasiSetup();
     Notification::fake();

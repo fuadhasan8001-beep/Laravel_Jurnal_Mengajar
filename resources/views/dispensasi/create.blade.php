@@ -53,12 +53,14 @@
                                 <option
                                     value="{{ $jam->id }}"
                                     data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-start-time="{{ $jam->timesForDay($hariIni)[0] }}"
+                                    data-end-time="{{ $jam->timesForDay($hariIni)[1] }}"
                                     data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
                                     @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_mulai_id') == $jam->id)
                                 >
-                                    Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
-                                    {{ $jam->jam_selesai }})
+                                    Jam {{ $jam->jam_ke }} ({{ $jam->timesForDay($hariIni)[0] }} -
+                                    {{ $jam->timesForDay($hariIni)[1] }})
                                 </option>
                             @endforeach
                         </select>@error('jam_mulai_id')<small class="error">{{ $message }}</small>@enderror</div>
@@ -72,12 +74,14 @@
                                 <option
                                     value="{{ $jam->id }}"
                                     data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-start-time="{{ $jam->timesForDay($hariIni)[0] }}"
+                                    data-end-time="{{ $jam->timesForDay($hariIni)[1] }}"
                                     data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
                                     @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_selesai_id') == $jam->id)
                                 >
-                                    Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
-                                    {{ $jam->jam_selesai }})
+                                    Jam {{ $jam->jam_ke }} ({{ $jam->timesForDay($hariIni)[0] }} -
+                                    {{ $jam->timesForDay($hariIni)[1] }})
                                 </option>
                             @endforeach
                         </select>@error('jam_selesai_id')<small class="error">{{ $message }}</small>@enderror</div>
@@ -143,7 +147,7 @@
 
         const updateEndTimes = () => {
             const selectedStart = start.options[start.selectedIndex];
-            const startPeriod = Number(selectedStart?.dataset.jamKe ?? 0);
+            const selectedStartTime = selectedStart?.dataset.startTime;
 
             [...end.options].forEach((option) => {
                 if (!option.value) {
@@ -151,7 +155,7 @@
                 }
 
                 option.disabled = option.dataset.unavailable === 'true'
-                    || (startPeriod > 0 && Number(option.dataset.jamKe) < startPeriod);
+                    || (selectedStartTime && option.dataset.endTime <= selectedStartTime);
             });
 
             if (end.selectedOptions[0]?.disabled) {

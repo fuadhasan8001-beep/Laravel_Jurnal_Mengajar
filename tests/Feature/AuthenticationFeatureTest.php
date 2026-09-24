@@ -83,6 +83,13 @@ it('recognizes a students NISN on the forgot password form', function () {
         ->assertSessionHas('status', 'Silakan hubungi admin untuk menyiapkan ulang password akun Anda.');
 });
 
+it('describes account recovery as admin assistance instead of an automated password reset', function () {
+    $this->get(route('password.request'))
+        ->assertOk()
+        ->assertSee('Bantuan Akses Akun')
+        ->assertSee('password tidak diatur ulang otomatis');
+});
+
 it('blocks a role from another role dashboard', function () {
     $user = User::factory()->create([
         'role' => 'guru',

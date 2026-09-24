@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
@@ -26,6 +27,9 @@ it('limits secretary journal and attendance access to assigned classes', functio
 
     $this->actingAs($data['secretary'])->get(route('jurnal.show', $otherJournal))->assertForbidden();
     $this->actingAs($data['secretary'])->post(route('jurnal.verify', $otherJournal), ['status' => 'Disetujui'])->assertForbidden();
+    $this->actingAs($data['secretary'])->post(route('absensi.store'), [
+        'jurnal_id' => $otherJournal->id, 'siswa_id' => $data['student']->id, 'status' => 'H',
+    ])->assertForbidden();
 
     $this->actingAs($data['secretary'])->post(route('jurnal.verify', $assignedJournal), ['status' => 'Disetujui'])->assertRedirect();
     $this->assertDatabaseHas('jurnals', ['id' => $assignedJournal->id, 'status_verifikasi' => 'Disetujui']);
@@ -37,6 +41,24 @@ it('limits secretary journal and attendance access to assigned classes', functio
     ])->assertRedirect();
 
     $this->assertDatabaseHas('absensis', ['jurnal_id' => $assignedJournal->id, 'siswa_id' => $data['student']->id, 'status' => 'H']);
+});
+
+it('denies piket general attendance access and teachers access to another teachers attendance', function () {
+    $data = secretaryClassSetup();
+    $otherTeacherUser = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $otherTeacher = Guru::create(['user_id' => $otherTeacherUser->id, 'nip' => 'SECRETARY-OTHER', 'nama_guru' => 'Guru Lain', 'status_kepegawaian' => 'Honorer']);
+    $otherJournal = Jurnal::create([...$data['journal'], 'guru_id' => $otherTeacher->id, 'materi' => 'Jurnal guru lain']);
+    $piket = User::factory()->create(['role' => 'piket', 'is_active' => true]);
+
+    $this->actingAs($data['teacherUser'])->post(route('absensi.store'), [
+        'jurnal_id' => $otherJournal->id, 'siswa_id' => $data['student']->id, 'status' => 'H',
+    ])->assertForbidden();
+    $this->actingAs($piket)->get(route('absensi.index'))->assertForbidden();
+    $this->post(route('absensi.store'), [
+        'jurnal_id' => $otherJournal->id, 'siswa_id' => $data['student']->id, 'status' => 'H',
+    ])->assertForbidden();
+
+    $this->assertDatabaseCount('absensis', 0);
 });
 
 it('provisions one secretary account for each scheduled class', function () {
@@ -64,7 +86,7 @@ it('scopes schedule details and dispensation exports to the secretary class', fu
     $schedule = Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['other']->id,
         'mapel_id' => $data['mapel']->id, 'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);
     $otherStudent = Siswa::create(['user_id' => User::factory()->create(['role' => 'siswa'])->id, 'kelas_id' => $data['other']->id, 'nis' => 'OTHER-SECRETARY', 'nama_siswa' => 'Rahasia kelas lain', 'jenis_kelamin' => 'L']);
-    \App\Models\Dispensasi::create(['siswa_id' => $otherStudent->id, 'tanggal' => '2026-09-14',
+    Dispensasi::create(['siswa_id' => $otherStudent->id, 'tanggal' => '2026-09-14',
         'jam_mulai_id' => $data['period']->id, 'jam_selesai_id' => $data['period']->id, 'alasan' => 'Kegiatan']);
     $this->actingAs($data['secretary'])->get(route('jadwal.show', $schedule))->assertForbidden();
     $this->get(route('jadwal.index'))->assertViewHas('jadwals', fn ($items) => $items->isEmpty());
@@ -72,7 +94,7 @@ it('scopes schedule details and dispensation exports to the secretary class', fu
     $this->get(route('laporan.dispensasi.export', ['kelas_id' => $data['other']->id]))->assertOk()->assertDontSee('Rahasia kelas lain');
 });
 
-it('shifts lesson times forward while preserving the break', function () {
+it('updates one schedule without changing global lesson period times', function () {
     $data = secretaryClassSetup();
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
     $later = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '08:00', 'jam_selesai' => '08:45', 'is_active' => true]);
@@ -81,11 +103,12 @@ it('shifts lesson times forward while preserving the break', function () {
     $this->actingAs($admin)->put(route('jadwal.update', $schedule), [
         'guru_id' => $data['guru']->id, 'kelas_id' => $data['assigned']->id, 'mapel_id' => $data['mapel']->id,
         'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => 1,
-        'jam_mulai' => '07:00', 'jam_selesai' => '07:50',
+        'jam_mulai' => '09:00', 'jam_selesai' => '09:50',
     ])->assertSessionHasNoErrors()->assertRedirect();
-    expect($data['period']->fresh()->jam_selesai)->toBe('07:50');
-    expect($later->fresh()->jam_mulai)->toBe('08:05');
-    expect($later->fresh()->jam_selesai)->toBe('08:50');
+    expect($data['period']->fresh()->jam_mulai)->toBe('07:00');
+    expect($data['period']->fresh()->jam_selesai)->toBe('07:45');
+    expect($later->fresh()->jam_mulai)->toBe('08:00');
+    expect($later->fresh()->jam_selesai)->toBe('08:45');
 });
 
 function secretaryClassSetup(): array

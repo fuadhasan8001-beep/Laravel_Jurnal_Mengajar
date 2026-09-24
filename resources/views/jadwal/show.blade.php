@@ -21,7 +21,7 @@
         <div class="panel-body">
             <dl class="detail-grid">
                 <div class="detail-item"><dt>Hari</dt><dd>{{ $jadwal->hari }}</dd></div>
-                <div class="detail-item"><dt>Jam</dt><dd>{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</dd></div>
+                <div class="detail-item"><dt>Jam</dt><dd>{{ $jadwal->jamPelajaran->timesForDay($jadwal->hari)[0] }} - {{ $jadwal->jamPelajaran->timesForDay($jadwal->hari)[1] }}</dd></div>
                 <div class="detail-item"><dt>Guru</dt><dd>{{ $jadwal->guru->nama_guru }}</dd></div>
                 <div class="detail-item"><dt>Kelas</dt><dd>{{ $jadwal->kelas->nama_kelas }}</dd></div>
             </dl>

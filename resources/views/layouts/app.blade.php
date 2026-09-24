@@ -1947,7 +1947,7 @@
                         Dashboard
                     </a>
 
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'piket'], true))
+                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"
@@ -2334,7 +2334,7 @@
                         Beranda
                     </a>
 
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'piket', 'sekretaris'], true))
+                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
                         <a
                             class="mobile-nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"

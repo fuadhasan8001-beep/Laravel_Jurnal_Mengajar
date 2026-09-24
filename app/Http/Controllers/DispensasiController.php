@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Throwable;
 
 class DispensasiController extends Controller
 {
@@ -51,6 +52,7 @@ class DispensasiController extends Controller
             ->get();
 
         return view('dispensasi.create', [
+            'hariIni' => $hari,
             'siswas' => auth()->user()->role === 'piket' ? Siswa::with('kelas')->orderBy('nama_siswa')->get() : collect(),
             'jamPelajarans' => $jamPelajarans,
             'jamTidakTersediaIds' => $jamPelajarans
@@ -103,21 +105,29 @@ class DispensasiController extends Controller
 
         $groupKey = $isPiket ? (string) Str::uuid() : null;
         $studentIds = $isPiket ? $data['siswa_ids'] : [$this->student()->id];
-        $dispensasis = DB::transaction(function () use ($data, $evidencePath, $groupKey, $studentIds, $isPiket): array {
-            return collect($studentIds)->map(function (int $siswaId) use ($data, $evidencePath, $groupKey, $isPiket): Dispensasi {
-                return Dispensasi::create([
-                    ...collect($data)->except('siswa_ids')->all(),
-                    'siswa_id' => $siswaId,
-                    'bukti' => $evidencePath,
-                    'group_key' => $groupKey,
-                    ...($isPiket ? [
-                        'piket_id' => auth()->id(),
-                        'status_piket' => 'Disetujui',
-                        'verified_piket_at' => now(),
-                    ] : []),
-                ]);
-            })->all();
-        });
+        try {
+            $dispensasis = DB::transaction(function () use ($data, $evidencePath, $groupKey, $studentIds, $isPiket): array {
+                return collect($studentIds)->map(function (int $siswaId) use ($data, $evidencePath, $groupKey, $isPiket): Dispensasi {
+                    return Dispensasi::create([
+                        ...collect($data)->except('siswa_ids')->all(),
+                        'siswa_id' => $siswaId,
+                        'bukti' => $evidencePath,
+                        'group_key' => $groupKey,
+                        ...($isPiket ? [
+                            'piket_id' => auth()->id(),
+                            'status_piket' => 'Disetujui',
+                            'verified_piket_at' => now(),
+                        ] : []),
+                    ]);
+                })->all();
+            });
+        } catch (Throwable $exception) {
+            if ($evidencePath !== null) {
+                Storage::delete($evidencePath);
+            }
+
+            throw $exception;
+        }
 
         if ($isPiket) {
             User::where('role', 'admin')->where('is_active', true)->get()
@@ -209,15 +219,15 @@ class DispensasiController extends Controller
             if ($isPiket) {
                 if ($data['status'] === 'Disetujui') {
                     User::where('role', 'admin')->where('is_active', true)->get()->each(function (User $admin) use ($dispensasi): void {
-                        $admin->notify(new DispensasiNotification($dispensasi, 'piket_approved'));
+                        $admin->notify((new DispensasiNotification($dispensasi, 'piket_approved'))->afterCommit());
                         $admin->notify((new DispensasiApprovalMail($dispensasi))->afterCommit());
                     });
                 } else {
-                    $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, 'piket_rejected'));
+                    $dispensasi->siswa->user?->notify((new DispensasiNotification($dispensasi, 'piket_rejected'))->afterCommit());
                 }
             } else {
                 $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
-                $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
+                $dispensasi->siswa->user?->notify((new DispensasiNotification($dispensasi, $event))->afterCommit());
             }
 
             if ($dispensasi->status_akhir === 'Disetujui') {
@@ -303,7 +313,7 @@ class DispensasiController extends Controller
             ->where('is_active', true)
             ->where('role', 'guru')
             ->get()
-            ->each->notify(new DispensasiNotification($dispensasi, 'teacher_approved'));
+            ->each(fn (User $user) => $user->notify((new DispensasiNotification($dispensasi, 'teacher_approved'))->afterCommit()));
     }
 
     private function periodsOverlap(JamPelajaran $lessonStart, JamPelajaran $lessonEnd, string $hari, string $start, string $end): bool

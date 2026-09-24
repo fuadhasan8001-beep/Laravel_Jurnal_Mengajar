@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lupa Password - Jurnal Guru</title>
+    <title>Bantuan Akses Akun - Jurnal Guru</title>
     @vite('resources/css/login.css')
 </head>
 <body>
@@ -38,7 +38,8 @@
             <div class="login-container">
                 <div class="login-heading">
                     <span class="heading-kicker">Akses Akun</span>
-                    <h2>Lupa Password</h2>
+                    <h2>Bantuan Akses Akun</h2>
+                    <p>Halaman ini memberi petunjuk menghubungi admin; password tidak diatur ulang otomatis.</p>
                 </div>
 
                 @if ($errors->any())
@@ -58,7 +59,7 @@
 
                     <div class="form-group">
                         <label for="login">
-                            Username atau email
+                            NIS siswa, username, atau email
                         </label>
 
                         <div class="input-container">
@@ -73,8 +74,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="login-button">
-                        Cari Akun
+                        <button type="submit" class="login-button">
+                    Lihat Petunjuk
                     </button>
 
                     <div class="forgot-password">
