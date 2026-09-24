@@ -1,8 +1,25 @@
-@import './brand.css';
-
 :root {
-    font-family: var(--font-family-ui);
-    color: var(--color-text);
+    --gold-dark: #8a6a32;
+    --gold: #a8894a;
+    --gold-soft: #c2a96b;
+    --cream: #f8f4ea;
+    --warm-white: #fffdf8;
+    --text-dark: #3f3a32;
+    --text-muted: #756d60;
+    --brand-blue: #a8894a;
+    --brand-blue-dark: #8a6a32;
+    --action-color: #a8894a;
+    --brand-blue-light: #c2a96b;
+    --brand-yellow: #f8f4ea;
+    --brand-green: #23852b;
+    --success-color: #23852b;
+    --brand-green-dark: #196622;
+    --surface-soft: #f8f4ea;
+    --surface: #fffdf8;
+    --action-background: #a8894a;
+
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: #202b27;
 }
 
 * {
@@ -18,30 +35,30 @@ body {
 .auth-shell, .registration-result {
     width: min(100% - 32px, 560px);
     margin: 48px auto;
-    color: var(--color-text);
+    color: #202b27;
 }
 
 .auth-card {
     padding: 24px;
-    border: 1px solid var(--color-border);
+    border: 1px solid #dce5e0;
     border-top: 4px solid var(--gold);
     border-radius: 8px;
-    background: var(--color-white);
+    background: #ffffff;
 }
 
-a { color: var(--color-secondary); }
-.field label { display: block; margin-bottom: 8px; color: var(--color-text); }
+a { color: var(--gold-dark); }
+.field label { display: block; margin-bottom: 8px; color: #344b3d; }
 .field input, .field select {
     width: 100%; min-height: 44px; padding: 10px;
-    border: 1px solid var(--color-border); border-radius: 6px;
-    background: var(--color-white); color: var(--color-text); font: inherit;
+    border: 1px solid #d6e1da; border-radius: 6px;
+    background: #ffffff; color: #202b27; font: inherit;
 }
 .btn {
     min-height: 44px; padding: 12px 18px; border: 0;
-    border-radius: 6px; background: var(--color-primary-dark); color: var(--color-white);
+    border-radius: 6px; background: var(--gold); color: #ffffff;
     font: inherit; cursor: pointer;
 }
-.btn:hover { background: var(--color-secondary); }
+.btn:hover { background: var(--gold-dark); }
 
 /* =================================
    MAIN
@@ -63,7 +80,7 @@ a { color: var(--color-secondary); }
     min-height: 100vh;
     overflow: hidden;
     padding: 56px 64px;
-    background: var(--color-surface-soft);
+    background: #fff9c4;
 }
 
 /* BRAND */
@@ -81,8 +98,8 @@ a { color: var(--color-secondary); }
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: var(--color-primary-dark);
-    color: var(--color-white);
+    background: var(--surface);
+    color: var(--brand-blue-dark);
     box-shadow: 0 3px 10px rgba(25, 65, 40, .16);
 }
 
@@ -121,7 +138,7 @@ a { color: var(--color-secondary); }
     margin-bottom: 32px;
     border-radius: 50%;
     background: white;
-    color: var(--color-text);
+    color: #202b27;
     box-shadow: 0 18px 35px rgba(25, 65, 40, .1);
 }
 
@@ -144,7 +161,7 @@ a { color: var(--color-secondary); }
 .left-content p {
     max-width: 440px;
     margin: 8px 0 0;
-    color: var(--color-text-muted);
+    color: #596961;
     font-size: 16px;
     line-height: 1.25;
 }
@@ -153,7 +170,7 @@ a { color: var(--color-secondary); }
 
 .left-footer {
     margin: 0;
-    color: var(--color-text-muted);
+    color: #596961;
     font-size: 14px;
     text-align: center;
 }
@@ -191,7 +208,7 @@ a { color: var(--color-secondary); }
 
 .login-heading p {
     margin: 8px 0 0;
-    color: var(--color-text-muted);
+    color: #596961;
     font-size: 16px;
 }
 
@@ -202,10 +219,10 @@ a { color: var(--color-secondary); }
 .error-message {
     margin-bottom: 20px;
     padding: 12px 16px;
-    border: 1px solid var(--color-danger);
+    border: 1px solid #fecaca;
     border-radius: 8px;
-    background: var(--color-danger-surface);
-    color: var(--color-danger);
+    background: #fef2f2;
+    color: #b91c1c;
     font-size: 14px;
 }
 
@@ -222,7 +239,7 @@ form {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: var(--color-text);
+    color: #344b3d;
     font-size: 14px;
     font-weight: 700;
 }
@@ -239,23 +256,23 @@ form {
     width: 100%;
     height: 54px;
     padding: 0 16px 0 48px;
-    border: 1px solid var(--color-border);
+    border: 1px solid #d6e1da;
     border-radius: 8px;
     outline: none;
     background: var(--surface);
-    color: var(--color-text);
+    color: #202b27;
     font-family: inherit;
     font-size: 16px;
     transition: 0.2s;
 }
 
 .input-container input:focus {
-    border-color: var(--color-primary-dark);
-    box-shadow: 0 0 0 4px rgb(85 179 53 / 20%);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(196, 154, 58, .24);
 }
 
 .input-container input::placeholder {
-    color: var(--color-disabled);
+    color: #73847a;
 }
 
 /* INPUT ICON */
@@ -267,7 +284,7 @@ form {
     left: 16px;
     display: flex;
     align-items: center;
-    color: var(--color-text-muted);
+    color: #596961;
     pointer-events: none;
 }
 
@@ -287,13 +304,13 @@ form {
     align-items: center;
     border: 0;
     background: transparent;
-    color: var(--color-text-muted);
+    color: #596961;
     cursor: pointer;
     font-size: 17px;
 }
 
 .password-toggle:hover {
-    color: var(--color-secondary);
+    color: var(--gold-dark);
 }
 
 /* =================================
@@ -306,7 +323,7 @@ form {
 }
 
 .forgot-password a {
-    color: var(--color-secondary);
+    color: var(--gold-dark);
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
@@ -326,8 +343,8 @@ form {
     margin-top: 80px;
     border: 0;
     border-radius: 8px;
-    background: var(--color-primary-dark);
-    color: var(--color-white);
+    background: var(--action-background);
+    color: #ffffff;
     cursor: pointer;
     font-family: inherit;
     font-size: 16px;
@@ -337,8 +354,8 @@ form {
 }
 
 .login-button:hover {
-    background: var(--color-secondary);
-    color: var(--color-white);
+    background: var(--gold-dark);
+    color: white;
     transform: translateY(-1px);
 }
 
@@ -348,13 +365,13 @@ form {
 
 .register-text {
     margin-top: 20px;
-    color: var(--color-text-muted);
+    color: #596961;
     font-size: 16px;
     text-align: center;
 }
 
 .register-text a {
-    color: var(--color-secondary);
+    color: var(--gold-dark);
     font-weight: 700;
     text-decoration: none;
 }

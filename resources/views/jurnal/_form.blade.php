@@ -113,7 +113,7 @@
 </form>
 
 <div id="journal-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(11,18,32,.62); z-index:1000; align-items:center; justify-content:center; padding:1rem;">
-    <div style="width:min(900px,100%); background:var(--color-white); border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.2); padding:1.5rem; max-height:80vh; overflow:auto;">
+    <div style="width:min(900px,100%); background:#fff; border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,.2); padding:1.5rem; max-height:80vh; overflow:auto;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1rem;">
             <h3 style="margin:0;">Konfirmasi simpan jurnal <span class="sr-only">Ringkasan jurnal</span></h3>
             <button type="button" class="btn btn-muted" data-close-confirmation>Keluar</button>
@@ -190,7 +190,7 @@
     };
 
     let drawing = false;
-    context.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim();
+    context.strokeStyle = '#15213b';
     context.lineWidth = 4;
     context.lineCap = 'round';
     context.lineJoin = 'round';
