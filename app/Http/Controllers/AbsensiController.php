@@ -11,7 +11,9 @@ use App\Models\Mapel;
 use App\Models\Siswa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AbsensiController extends Controller
 {
@@ -82,6 +84,16 @@ class AbsensiController extends Controller
         );
 
         return back()->with('success', 'Absensi berhasil disimpan.');
+    }
+
+    public function downloadParentLetter(Absensi $absensi): BinaryFileResponse
+    {
+        $absensi->load('jurnal');
+        $this->authorizeJurnal($absensi->jurnal);
+
+        abort_unless($absensi->surat_izin_path && Storage::exists($absensi->surat_izin_path), 404);
+
+        return response()->download(Storage::path($absensi->surat_izin_path));
     }
 
     private function authorizeJurnal(Jurnal $jurnal): void

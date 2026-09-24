@@ -65,6 +65,13 @@
                     <dd>{{ $dispensasi->status_admin }}{{ $dispensasi->admin ? ' · ' . $dispensasi->admin->name : '' }}
                     </dd>
                 </div>
+                <div class="detail-item">
+                    <dt>Disetujui oleh waka</dt>
+                    <dd>{{ $dispensasi->waka?->name ?? '-' }}</dd>
+                </div>
+                @if ($dispensasi->surat_izin_path)
+                    <div class="detail-item"><dt>Surat izin orang tua</dt><dd><a href="{{ route('dispensasi.parent-letter', $dispensasi) }}">Unduh foto surat izin ↗</a></dd></div>
+                @endif
                 @if ($dispensasi->catatan_verifikasi)
                     <div class="detail-item detail-item-full">
                         <dt>Catatan verifikasi</dt>
@@ -74,6 +81,16 @@
             </dl>
         </div>
     </section>
+
+    @if ($proofUrl)
+        <section class="panel panel-spaced">
+            <div class="panel-head"><h2>QR bukti dispensasi</h2><span class="eyebrow">Pindai atau bagikan ke siswa</span></div>
+            <div class="panel-body" style="display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&amp;data={{ urlencode($proofUrl) }}" alt="QR bukti dispensasi {{ $dispensasi->siswa->nama_siswa }}" width="240" height="240">
+                <div><p>QR ini membuka bukti dispensasi yang sudah disetujui.</p><a class="btn btn-muted" href="{{ $proofUrl }}" target="_blank" rel="noopener">Buka bukti siswa</a></div>
+            </div>
+        </section>
+    @endif
 
     @if ($dispensasi->status_akhir === 'Menunggu' &&
         ((auth()->user()->role === 'piket' && $dispensasi->status_piket === 'Menunggu') ||

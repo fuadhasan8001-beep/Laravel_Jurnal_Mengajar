@@ -102,6 +102,8 @@ class DashboardController extends Controller
 
     public function piket(): View
     {
+        abort_unless(auth()->user()->isPiketHariIni(), 403);
+
         return view('dashboard.piket', [
             'antrianBaru' => Dispensasi::where('status_akhir', 'Menunggu')->count(),
             'diverifikasiHariIni' => Dispensasi::whereDate('verified_piket_at', today())->count(),

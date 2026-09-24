@@ -73,6 +73,9 @@
                                     </td>
                                     <td>
                                         <input form="{{ $formId }}" type="text" name="catatan" value="{{ $absensi->catatan ?? '' }}" placeholder="Catatan">
+                                        @if ($absensi?->surat_izin_path)
+                                            <a href="{{ route('absensi.parent-letter', $absensi) }}">Lihat surat izin</a>
+                                        @endif
                                     </td>
                                     <td>
                                         <button class="btn" form="{{ $formId }}" type="submit">Simpan</button>

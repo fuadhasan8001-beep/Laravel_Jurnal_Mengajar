@@ -304,6 +304,11 @@
             text-decoration: none;
         }
 
+        .nav-link[aria-disabled="true"] {
+            color: rgba(255, 255, 255, .58);
+            cursor: not-allowed;
+        }
+
         .nav-link svg {
             width: 19px;
             height: 19px;
@@ -1920,6 +1925,12 @@
                 color: #fff;
             }
 
+            .mobile-nav-link[aria-disabled="true"] {
+                color: var(--muted);
+                background: var(--cream);
+                cursor: not-allowed;
+            }
+
             .mobile-nav-link:hover {
                 text-decoration: none;
             }
@@ -2015,6 +2026,14 @@
                         </a>
                     @endif
 
+                    @if (in_array(auth()->user()->role, ['guru', 'piket'], true))
+                        @if (auth()->user()->isPiketHariIni())
+                            <a class="nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}">Menu piket</a>
+                        @else
+                            <span class="nav-link" aria-disabled="true" title="Menu aktif sesuai jadwal piket">Menu piket · tidak bertugas</span>
+                        @endif
+                    @endif
+
                     @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
@@ -2034,6 +2053,7 @@
                     @endif
 
                     @if (auth()->user()->role === 'admin')
+                        <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
 
                         <a
                             class="nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}"
@@ -2221,13 +2241,13 @@
                                         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
                                     </svg>
                                     <span class="notification-label">Notifikasi</span>
-                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->count() }}</span>
+                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->count() }}</span>
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
                                 <div class="notification-list">
 
-                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->latest()->limit(5)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2305,13 +2325,13 @@
                                         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
                                     </svg>
                                     <span class="notification-label">Notifikasi</span>
-                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->count() }}</span>
+                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->count() }}</span>
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
                                 <div class="notification-list">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->notifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2409,6 +2429,14 @@
                         </a>
                     @endif
 
+                    @if (in_array(auth()->user()->role, ['guru', 'piket'], true))
+                        @if (auth()->user()->isPiketHariIni())
+                            <a class="mobile-nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}">Piket</a>
+                        @else
+                            <span class="mobile-nav-link" aria-disabled="true">Piket · tidak bertugas</span>
+                        @endif
+                    @endif
+
                     @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
                         <a
                             class="mobile-nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
@@ -2437,6 +2465,7 @@
                     @endif
 
                     @if (auth()->user()->role === 'admin')
+                        <a class="mobile-nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket</a>
 
                         <a
                             class="mobile-nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}"

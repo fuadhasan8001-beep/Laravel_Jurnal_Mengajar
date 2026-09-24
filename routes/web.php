@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminDataController;
+use App\Http\Controllers\AdminPiketController;
 use App\Http\Controllers\AdminReferenceController;
 use App\Http\Controllers\AdminRegistrationController;
 use App\Http\Controllers\DashboardController;
@@ -50,6 +51,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('role:admin')->group(function () {
     Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
+    Route::get('/admin/jadwal-piket', [AdminPiketController::class, 'index'])->name('admin.piket.index');
+    Route::post('/admin/jadwal-piket', [AdminPiketController::class, 'store'])->name('admin.piket.store');
+    Route::delete('/admin/jadwal-piket/{jadwalPiket}', [AdminPiketController::class, 'destroy'])->name('admin.piket.destroy');
 });
 
 Route::middleware('role:admin')->prefix('admin/data')->group(function () {
@@ -161,7 +165,7 @@ Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:ad
 Route::get('/guru', [DashboardController::class, 'guru'])->middleware('role:guru');
 Route::get('/siswa', [DashboardController::class, 'siswa'])->middleware('role:siswa');
 Route::get('/sekretaris', [DashboardController::class, 'sekretaris'])->middleware('role:sekretaris');
-Route::get('/piket', [DashboardController::class, 'piket'])->middleware('role:piket');
+Route::get('/piket', [DashboardController::class, 'piket'])->middleware('role:guru,piket');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -173,28 +177,38 @@ Route::get('/absensi', [AbsensiController::class, 'index'])
     ->middleware('role:admin,guru,sekretaris')
     ->name('absensi.index');
 
+Route::get('/absensi/{absensi}/surat-izin', [AbsensiController::class, 'downloadParentLetter'])
+    ->middleware('role:admin,guru,sekretaris')
+    ->name('absensi.parent-letter');
+
 Route::post('/absensi', [AbsensiController::class, 'store'])
     ->middleware('role:admin,guru,sekretaris')
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])
-    ->middleware('role:siswa,piket')
+    ->middleware('role:siswa,piket,guru')
     ->name('dispensasi.create');
 
-Route::middleware('role:siswa,piket,admin')->group(function () {
+Route::middleware('role:siswa,piket,guru,admin')->group(function () {
     Route::get('/dispensasi', [DispensasiController::class, 'index'])->name('dispensasi.index');
     Route::get('/dispensasi/{dispensasi}/bukti', [DispensasiController::class, 'downloadEvidence'])
         ->name('dispensasi.evidence');
+    Route::get('/dispensasi/{dispensasi}/surat-izin', [DispensasiController::class, 'downloadParentLetter'])
+        ->name('dispensasi.parent-letter');
     Route::get('/dispensasi/{dispensasi}', [DispensasiController::class, 'show'])->name('dispensasi.show');
 });
 
-Route::middleware('role:siswa,piket')->group(function () {
+Route::middleware('role:siswa,piket,guru')->group(function () {
     Route::post('/dispensasi', [DispensasiController::class, 'store'])->name('dispensasi.store');
 });
 
 Route::post('/dispensasi/{dispensasi}/verify', [DispensasiController::class, 'verify'])
-    ->middleware('role:piket,admin')
+    ->middleware('role:piket,guru,admin')
     ->name('dispensasi.verify');
+
+Route::get('/bukti-dispensasi/{dispensasi}', [DispensasiController::class, 'publicProof'])
+    ->middleware('signed')
+    ->name('dispensasi.public-proof');
 
 Route::get('/rekap/harian', [RekapController::class, 'harian'])
     ->middleware('role:admin')

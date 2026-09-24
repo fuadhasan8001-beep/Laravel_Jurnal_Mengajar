@@ -42,7 +42,7 @@
     @error('jadwal_id')<p class="error" role="alert">{{ $message }}</p>@enderror
     <section class="journal-detail-panel" aria-label="Detail pembelajaran dan absensi">
         <div class="journal-card-header"><h3>Detail pembelajaran dan absensi</h3></div>
-        @foreach (['materi' => 'Materi pembelajaran', 'tujuan_pembelajaran' => 'Tujuan pembelajaran', 'kegiatan' => 'Kegiatan pembelajaran', 'tugas' => 'Tugas', 'catatan' => 'Catatan'] as $field => $label)
+        @foreach (['materi' => 'Materi pembelajaran', 'kegiatan' => 'Kegiatan pembelajaran'] as $field => $label)
             <div class="field"><label for="{{ $field }}">{{ $label }}</label>
                 @if ($field === 'materi')
                     <input id="{{ $field }}" name="{{ $field }}" value="{{ old($field, $jurnal?->$field) }}" maxlength="200">
@@ -124,10 +124,7 @@
             <div><strong>Kelas:</strong> <span id="confirm-kelas">{{ $jurnal?->kelas->nama_kelas ?? $activeSession['kelas'] }}</span></div>
             <div><strong>Mata pelajaran:</strong> <span id="confirm-mapel">{{ $jurnal?->mapel->nama_mapel ?? $activeSession['mapel'] }}</span></div>
             <div style="grid-column:1/-1;"><strong>Materi:</strong> <span id="confirm-materi">{{ old('materi', $jurnal?->materi) ?: 'Belum diisi' }}</span></div>
-            <div style="grid-column:1/-1;"><strong>Tujuan pembelajaran:</strong> <span id="confirm-tujuan">{{ old('tujuan_pembelajaran', $jurnal?->tujuan_pembelajaran) ?: 'Belum diisi' }}</span></div>
             <div style="grid-column:1/-1;"><strong>Kegiatan:</strong> <span id="confirm-kegiatan">{{ old('kegiatan', $jurnal?->kegiatan) ?: 'Belum diisi' }}</span></div>
-            <div style="grid-column:1/-1;"><strong>Tugas:</strong> <span id="confirm-tugas">{{ old('tugas', $jurnal?->tugas) ?: 'Belum diisi' }}</span></div>
-            <div style="grid-column:1/-1;"><strong>Catatan:</strong> <span id="confirm-catatan">{{ old('catatan', $jurnal?->catatan) ?: 'Belum diisi' }}</span></div>
             <div style="grid-column:1/-1;"><strong>Absensi siswa:</strong> <span id="confirm-absensi">Menunggu update</span></div>
             <div style="grid-column:1/-1;"><strong>Tanda tangan:</strong> <span id="confirm-signature">Belum ada tanda tangan</span></div>
         </div>
@@ -159,10 +156,7 @@
     function updateSummary() {
         const status = document.getElementById('status_guru')?.value || 'Hadir';
         const materi = document.getElementById('materi')?.value?.trim() || 'Belum diisi';
-        const tujuan = document.getElementById('tujuan_pembelajaran')?.value?.trim() || 'Belum diisi';
         const kegiatan = document.getElementById('kegiatan')?.value?.trim() || 'Belum diisi';
-        const tugas = document.getElementById('tugas')?.value?.trim() || 'Belum diisi';
-        const catatan = document.getElementById('catatan')?.value?.trim() || 'Belum diisi';
 
         const counts = { H: 0, S: 0, I: 0, A: 0, D: 0 };
         form.querySelectorAll('.attendance-status').forEach((select) => {
@@ -173,10 +167,7 @@
         const absensiText = `Hadir ${counts.H}, Sakit ${counts.S}, Izin ${counts.I}, Alpa ${counts.A}, Dispen ${counts.D}`;
         document.getElementById('confirm-status').textContent = status;
         document.getElementById('confirm-materi').textContent = materi;
-        document.getElementById('confirm-tujuan').textContent = tujuan;
         document.getElementById('confirm-kegiatan').textContent = kegiatan;
-        document.getElementById('confirm-tugas').textContent = tugas;
-        document.getElementById('confirm-catatan').textContent = catatan;
         document.getElementById('confirm-absensi').textContent = absensiText;
         document.getElementById('confirm-signature').textContent = hiddenInput.value ? 'Sudah ada tanda tangan' : 'Belum ada tanda tangan';
     }
@@ -266,7 +257,7 @@
         button.addEventListener('click', closeConfirmModal);
     });
 
-    ['status_guru', 'materi', 'tujuan_pembelajaran', 'kegiatan', 'tugas', 'catatan'].forEach((id) => {
+    ['status_guru', 'materi', 'kegiatan'].forEach((id) => {
         const element = document.getElementById(id);
         if (element) {
             element.addEventListener('input', updateSummary);

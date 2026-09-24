@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>{{ auth()->user()->role === 'piket' ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
+            <h1>{{ auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
             <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
         </div><a
             class="btn btn-muted"
@@ -23,11 +23,9 @@
                 enctype="multipart/form-data"
             >
                 @csrf
-                @if (auth()->user()->role === 'piket')
+                @if (auth()->user()->isPiketHariIni())
                     <div class="field">
-                        <label for="student-search">Cari siswa berdasarkan nama, NIS, atau kelas</label>
-                        <input id="student-search" type="search" autocomplete="off" placeholder="Cari siswa">
-                        <label for="student-picker">Siswa</label><select id="student-picker"></select>
+                        <label for="student-picker">Pilih siswa</label><select id="student-picker"></select>
                         <button type="button" class="btn btn-muted" id="add-student">+ Tambahkan siswa</button>
                         <p>Siswa meminta dispensasi kepada piket. Tambahkan siswa satu per satu, lalu kirim pernyataan untuk diverifikasi admin.</p>
                         <ul id="selected-students"></ul><p id="student-count" aria-live="polite"></p>
@@ -93,12 +91,22 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
+                    @unless (auth()->user()->isPiketHariIni())
                     <div class="field full"><label for="bukti">Bukti foto <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input
                             id="bukti"
                             type="file"
                             name="bukti"
                             accept="image/jpeg,image/png,image/webp"
                         >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
+                    @endunless
+                    @if (auth()->user()->isPiketHariIni())
+                        <div class="field"><label for="attendance_status">Status presensi</label><select id="attendance_status" name="attendance_status" required>
+                            <option value="I" @selected(old('attendance_status', 'I') === 'I')>Izin</option>
+                            <option value="S" @selected(old('attendance_status') === 'S')>Sakit</option>
+                            <option value="A" @selected(old('attendance_status') === 'A')>Alpa</option>
+                        </select>@error('attendance_status')<small class="error">{{ $message }}</small>@enderror</div>
+                        <div class="field"><label for="surat_izin">Foto surat izin dari orang tua <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input id="surat_izin" type="file" name="surat_izin" accept="image/jpeg,image/png,image/webp">@error('surat_izin')<small class="error">{{ $message }}</small>@enderror</div>
+                    @endif
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"
@@ -110,18 +118,17 @@
             </form>
         </div>
     </section>
-    @if (auth()->user()->role === 'piket')
+    @if (auth()->user()->isPiketHariIni())
     <script>
     (() => {
         const students = {{ Illuminate\Support\Js::from($siswas) }};
         const selected = new Set({{ Illuminate\Support\Js::from(old('siswa_ids', [])) }}.map(String));
         const picker = document.getElementById('student-picker');
-        const search = document.getElementById('student-search');
         const list = document.getElementById('selected-students');
         const label = student => `${student.nama_siswa} · ${student.nis} · ${student.kelas?.nama_kelas ?? ''}`;
         function render() {
             picker.replaceChildren(new Option('Pilih siswa', ''));
-            students.filter(student => !selected.has(String(student.id)) && label(student).toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+            students.filter(student => !selected.has(String(student.id)))
                 .forEach(student => picker.add(new Option(label(student), student.id)));
             list.replaceChildren();
             students.filter(student => selected.has(String(student.id))).forEach(student => {
@@ -134,7 +141,6 @@
             });
             document.getElementById('student-count').textContent = selected.size + ' siswa ditambahkan';
         }
-        search.addEventListener('input', render);
         document.getElementById('add-student').addEventListener('click', () => { if (picker.value) { selected.add(picker.value); render(); } });
         render();
     })();

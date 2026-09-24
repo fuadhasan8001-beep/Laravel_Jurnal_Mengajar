@@ -10,13 +10,13 @@ use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Siswa;
 use App\Models\User;
-use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -25,6 +25,7 @@ class DispensasiController extends Controller
 {
     public function index(): View
     {
+        $this->authorizePiketAccess();
         $query = Dispensasi::with(['siswa', 'jamMulai', 'jamSelesai'])
             ->latest();
 
@@ -43,13 +44,14 @@ class DispensasiController extends Controller
 
     public function create(): View
     {
+        $this->authorizePiketAccess();
         $hari = today()->locale('id')->translatedFormat('l');
         $waktuSekarang = now()->format('H:i:s');
         $jamPelajarans = JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get();
 
         return view('dispensasi.create', [
             'hariIni' => $hari,
-            'siswas' => auth()->user()->role === 'piket' ? Siswa::with('kelas')->orderBy('nama_siswa')->get() : collect(),
+            'siswas' => auth()->user()->isPiketHariIni() ? Siswa::with('kelas')->orderBy('nama_siswa')->get() : collect(),
             'jamPelajarans' => $jamPelajarans,
             'jamTidakTersediaIds' => $jamPelajarans
                 ->filter(fn (JamPelajaran $jam): bool => $jam->timesForDay($hari)[1] <= $waktuSekarang)
@@ -59,17 +61,21 @@ class DispensasiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        abort_if(auth()->user()->role !== 'piket' && $request->filled('siswa_ids'), 403);
+        $this->authorizePiketAccess();
+        $isPiket = auth()->user()->isPiketHariIni();
+        abort_if(! $isPiket && ($request->filled('siswa_ids') || $request->hasFile('surat_izin') || $request->filled('attendance_status')), 403);
         $request->merge(['tanggal' => today()->toDateString()]);
 
         $data = $request->validate([
-            'siswa_ids' => [auth()->user()->role === 'piket' ? 'required' : 'exclude', 'array', 'min:1', 'max:100'],
+            'siswa_ids' => [$isPiket ? 'required' : 'exclude', 'array', 'min:1', 'max:100'],
             'siswa_ids.*' => ['integer', 'distinct', 'exists:siswas,id'],
             'tanggal' => ['required', 'date'],
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
             'alasan' => ['required', 'string', 'max:5000'],
             'bukti' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'surat_izin' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'attendance_status' => [$isPiket ? 'required' : 'exclude', 'in:H,S,I,A'],
         ]);
 
         $jamMulai = JamPelajaran::findOrFail($data['jam_mulai_id']);
@@ -97,7 +103,6 @@ class DispensasiController extends Controller
             ]);
         }
 
-        $isPiket = auth()->user()->role === 'piket';
         $studentIds = $isPiket ? $data['siswa_ids'] : [$this->student()->id];
 
         abort_if(
@@ -110,9 +115,12 @@ class DispensasiController extends Controller
             'Siswa sudah memiliki pengajuan dispensasi aktif pada tanggal yang sama.'
         );
 
-        unset($data['siswa_ids'], $data['bukti']);
+        unset($data['siswa_ids'], $data['bukti'], $data['surat_izin']);
         if ($request->hasFile('bukti')) {
             $data['bukti'] = $request->file('bukti')->store('dispensasi/bukti');
+        }
+        if ($request->hasFile('surat_izin')) {
+            $data['surat_izin_path'] = $request->file('surat_izin')->store('dispensasi/surat');
         }
 
         $groupKey = $isPiket ? (string) Str::uuid() : null;
@@ -130,15 +138,11 @@ class DispensasiController extends Controller
                 return $first;
             });
         } catch (\Throwable $exception) {
-            if (isset($data['bukti'])) {
-                Storage::delete($data['bukti']);
-            }
+            Storage::delete(array_filter([$data['bukti'] ?? null, $data['surat_izin_path'] ?? null]));
             throw $exception;
         }
 
-        if ($isPiket && $first) {
-            $this->notifyAdmins($first);
-        } elseif ($first) {
+        if ($first && ! $isPiket) {
             User::where('role', 'piket')->where('is_active', true)->get()
                 ->each->notify((new DispensasiNotification($first, 'submitted'))->afterCommit());
         }
@@ -149,6 +153,7 @@ class DispensasiController extends Controller
 
     public function show(Dispensasi $dispensasi): View
     {
+        $this->authorizePiketAccess();
         $this->authorizeView($dispensasi);
 
         return view('dispensasi.show', [
@@ -159,7 +164,20 @@ class DispensasiController extends Controller
                 'jamSelesai',
                 'piket',
                 'admin',
+                'waka',
             ]),
+            'proofUrl' => $dispensasi->status_akhir === 'Disetujui'
+                ? URL::temporarySignedRoute('dispensasi.public-proof', now()->addYear(), ['dispensasi' => $dispensasi->id])
+                : null,
+        ]);
+    }
+
+    public function publicProof(Dispensasi $dispensasi): View
+    {
+        abort_unless($dispensasi->status_akhir === 'Disetujui', 404);
+
+        return view('dispensasi.public-proof', [
+            'dispensasi' => $dispensasi->load(['siswa.kelas', 'jamMulai', 'jamSelesai', 'piket', 'waka']),
         ]);
     }
 
@@ -172,8 +190,18 @@ class DispensasiController extends Controller
         return response()->download(Storage::path($dispensasi->bukti));
     }
 
+    public function downloadParentLetter(Dispensasi $dispensasi): BinaryFileResponse
+    {
+        $this->authorizeView($dispensasi);
+
+        abort_unless($dispensasi->surat_izin_path && Storage::exists($dispensasi->surat_izin_path), 404);
+
+        return response()->download(Storage::path($dispensasi->surat_izin_path));
+    }
+
     public function verify(Request $request, Dispensasi $dispensasi): RedirectResponse
     {
+        $this->authorizePiketAccess();
         $data = $request->validate([
             'status' => ['required', 'in:Disetujui,Ditolak'],
             'catatan_verifikasi' => ['nullable', 'string', 'max:5000'],
@@ -181,9 +209,14 @@ class DispensasiController extends Controller
 
         DB::transaction(function () use ($dispensasi, $data): void {
             $dispensasi = Dispensasi::whereKey($dispensasi->id)->lockForUpdate()->firstOrFail();
-            abort_if($dispensasi->status_akhir !== 'Menunggu', 422, 'Dispensasi sudah memiliki keputusan akhir.');
+            $alreadyApprovedWithStatus = $dispensasi->status_akhir === 'Disetujui'
+                && $dispensasi->status_piket === 'Disetujui'
+                && $dispensasi->status_admin === 'Disetujui'
+                && filled($dispensasi->attendance_status);
+
+            abort_if($dispensasi->status_akhir !== 'Menunggu' && ! $alreadyApprovedWithStatus, 422, 'Dispensasi sudah memiliki keputusan akhir.');
             $user = auth()->user();
-            $isPiket = $user->role === 'piket';
+            $isPiket = $user->isPiketHariIni();
 
             if (! $isPiket && $dispensasi->status_piket !== 'Disetujui') {
                 abort(422, 'Dispensasi harus disetujui piket terlebih dahulu.');
@@ -198,6 +231,8 @@ class DispensasiController extends Controller
                 $dispensasi->status_admin = $data['status'];
                 $dispensasi->admin_id = $user->id;
                 $dispensasi->verified_admin_at = Carbon::now();
+                $dispensasi->waka_id = $user->id;
+                $dispensasi->verified_waka_at = Carbon::now();
             }
 
             $dispensasi->catatan_verifikasi = $data['catatan_verifikasi'] ?? null;
@@ -217,6 +252,8 @@ class DispensasiController extends Controller
                 $item->status_admin = $dispensasi->status_admin;
                 $item->admin_id = $dispensasi->admin_id;
                 $item->verified_admin_at = $dispensasi->verified_admin_at;
+                $item->waka_id = $dispensasi->waka_id;
+                $item->verified_waka_at = $dispensasi->verified_waka_at;
                 $item->status_akhir = $dispensasi->status_akhir;
                 $item->catatan_verifikasi = $dispensasi->catatan_verifikasi;
                 $item->save();
@@ -224,9 +261,7 @@ class DispensasiController extends Controller
 
             if ($isPiket) {
                 $event = $data['status'] === 'Disetujui' ? 'piket_approved' : 'piket_rejected';
-                if ($data['status'] === 'Disetujui') {
-                    $this->notifyAdmins($dispensasi);
-                } else {
+                if ($data['status'] !== 'Disetujui') {
                     $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
                 }
             } else {
@@ -242,14 +277,6 @@ class DispensasiController extends Controller
 
         return redirect()->route('dispensasi.show', $dispensasi)
             ->with('success', 'Verifikasi dispensasi berhasil disimpan.');
-    }
-
-    private function notifyAdmins(Dispensasi $dispensasi): void
-    {
-        User::where('role', 'admin')->where('is_active', true)->get()->each(function (User $admin) use ($dispensasi): void {
-            $admin->notify(new DispensasiNotification($dispensasi, 'piket_approved'));
-            $admin->notify((new DispensasiApprovalMail($dispensasi))->afterCommit());
-        });
     }
 
     private function notifyTeachers(Dispensasi $dispensasi): void
@@ -278,6 +305,13 @@ class DispensasiController extends Controller
     {
         if (auth()->user()->role === 'siswa' && $dispensasi->siswa_id !== $this->student()->id) {
             abort(403);
+        }
+    }
+
+    private function authorizePiketAccess(): void
+    {
+        if (auth()->user()->role === 'guru') {
+            abort_unless(auth()->user()->isPiketHariIni(), 403);
         }
     }
 
@@ -320,8 +354,9 @@ class DispensasiController extends Controller
             Absensi::updateOrCreate(
                 ['jurnal_id' => $jurnal->id, 'siswa_id' => $dispensasi->siswa_id],
                 [
-                    'status' => 'D',
-                    'catatan' => 'Dispensasi disetujui.',
+                    'status' => $dispensasi->attendance_status ?? 'D',
+                    'catatan' => $dispensasi->surat_izin_path ? 'Izin orang tua / surat dispensasi terlampir.' : 'Dispensasi disetujui.',
+                    'surat_izin_path' => $dispensasi->surat_izin_path,
                 ]
             );
         }

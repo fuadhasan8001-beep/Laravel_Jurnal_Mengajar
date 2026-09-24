@@ -46,4 +46,19 @@ class User extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
+
+    public function isPiketHariIni(): bool
+    {
+        if ($this->role === 'piket') {
+            return true;
+        }
+
+        if ($this->role !== 'guru') {
+            return false;
+        }
+
+        $guruId = Guru::where('user_id', $this->id)->value('id');
+
+        return $guruId !== null && JadwalPiket::where('guru_id', $guruId)->whereDate('tanggal', today())->exists();
+    }
 }

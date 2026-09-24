@@ -221,6 +221,27 @@ it('uses approved dispensations on later journal creation and preserves them on 
     $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
 });
 
+it('records piket-selected attendance status for approved dispensation', function () {
+    $this->freezeTime();
+    $data = dispensasiSetup();
+    $student = $data['students']->first();
+    $journal = Jurnal::create($data['journal']);
+
+    $dispensasi = Dispensasi::create([
+        ...$data['payload'],
+        'siswa_id' => $student->id,
+        'status_piket' => 'Disetujui',
+        'status_admin' => 'Disetujui',
+        'status_akhir' => 'Disetujui',
+        'attendance_status' => 'I',
+    ]);
+
+    $this->actingAs($data['admin'])->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
+
+    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'I']);
+    $this->assertDatabaseHas('dispensasis', ['id' => $dispensasi->id, 'attendance_status' => 'I']);
+});
+
 it('rejects manually forged dispensation attendance', function () {
     $data = dispensasiSetup();
     $student = $data['students']->first();

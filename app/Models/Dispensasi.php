@@ -17,6 +17,8 @@ class Dispensasi extends Model
         'jam_selesai_id',
         'alasan',
         'bukti',
+        'surat_izin_path',
+        'attendance_status',
         'status_piket',
         'piket_id',
         'verified_piket_at',
@@ -25,6 +27,8 @@ class Dispensasi extends Model
         'verified_admin_at',
         'status_akhir',
         'catatan_verifikasi',
+        'waka_id',
+        'verified_waka_at',
     ];
 
     protected function casts(): array
@@ -33,6 +37,7 @@ class Dispensasi extends Model
             'tanggal' => 'date',
             'verified_piket_at' => 'datetime',
             'verified_admin_at' => 'datetime',
+            'verified_waka_at' => 'datetime',
         ];
     }
 
@@ -79,6 +84,11 @@ class Dispensasi extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function waka(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'waka_id');
     }
 
     public function groupStudents(): HasMany
