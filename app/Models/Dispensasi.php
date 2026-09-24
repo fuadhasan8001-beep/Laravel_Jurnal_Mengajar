@@ -39,15 +39,21 @@ class Dispensasi extends Model
     public static function approvedForJournal(Jurnal $jurnal): Collection
     {
         $jurnal->loadMissing(['jamMulai', 'jamSelesai']);
+        $hari = $jurnal->tanggal->locale('id')->translatedFormat('l');
+        [$journalStart] = $jurnal->jamMulai->timesForDay($hari);
+        [, $journalEnd] = $jurnal->jamSelesai->timesForDay($hari);
 
         return static::with(['jamMulai', 'jamSelesai'])
             ->where('status_akhir', 'Disetujui')
             ->whereDate('tanggal', $jurnal->tanggal)
             ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $jurnal->kelas_id))
             ->get()
-            ->filter(fn (self $dispensasi): bool => $dispensasi->jamMulai->jam_ke <= $jurnal->jamSelesai->jam_ke
-                && $dispensasi->jamSelesai->jam_ke >= $jurnal->jamMulai->jam_ke
-            );
+            ->filter(function (self $dispensasi) use ($hari, $journalStart, $journalEnd): bool {
+                [$dispensationStart] = $dispensasi->jamMulai->timesForDay($hari);
+                [, $dispensationEnd] = $dispensasi->jamSelesai->timesForDay($hari);
+
+                return $dispensationStart < $journalEnd && $dispensationEnd > $journalStart;
+            });
     }
 
     public function siswa(): BelongsTo

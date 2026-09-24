@@ -46,7 +46,7 @@ Route::get('/register', [RegistrationController::class, 'create'])->name('regist
 Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
 Route::get('/register/success', [RegistrationController::class, 'success'])->name('register.success');
 
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
@@ -340,7 +340,7 @@ Route::post('/absensi', [AbsensiController::class, 'store'])
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])
-    ->middleware('role:piket')
+    ->middleware('role:siswa,piket')
     ->name('dispensasi.create');
 
 Route::middleware('role:siswa,piket,admin')->group(function () {
@@ -350,7 +350,7 @@ Route::middleware('role:siswa,piket,admin')->group(function () {
     Route::get('/dispensasi/{dispensasi}', [DispensasiController::class, 'show'])->name('dispensasi.show');
 });
 
-Route::middleware('role:piket')->group(function () {
+Route::middleware('role:siswa,piket')->group(function () {
     Route::post('/dispensasi', [DispensasiController::class, 'store'])->name('dispensasi.store');
 });
 

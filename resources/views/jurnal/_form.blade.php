@@ -56,8 +56,15 @@
         <div class="table-wrap"><table><thead><tr><th>No</th><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>
             @forelse ($kelas->first()?->siswas ?? [] as $student)
                 @php
-                    $dispensed = $approvedDispensasis->contains(fn ($item) => $item->siswa_id === $student->id
-                        && $item->jamMulai->jam_ke <= $end->jam_ke && $item->jamSelesai->jam_ke >= $start->jam_ke);
+                    [$journalStart] = $start->timesForDay($hari);
+                    [, $journalEnd] = $end->timesForDay($hari);
+                    $dispensed = $approvedDispensasis->contains(function ($item) use ($student, $hari, $journalStart, $journalEnd) {
+                        [$dispensationStart] = $item->jamMulai->timesForDay($hari);
+                        [, $dispensationEnd] = $item->jamSelesai->timesForDay($hari);
+
+                        return $item->siswa_id === $student->id
+                            && $dispensationStart < $journalEnd && $dispensationEnd > $journalStart;
+                    });
                     $saved = collect($attendance)->firstWhere('siswa_id', $student->id) ?? $attendance[$student->id] ?? [];
                 @endphp
                 <tr>

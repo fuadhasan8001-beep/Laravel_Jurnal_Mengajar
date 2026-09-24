@@ -171,6 +171,17 @@ it('saves status only with server derived dates and lesson boundaries', function
     expect(Jurnal::firstOrFail()->tanggal->toDateString())->toBe('2026-09-14');
 });
 
+it('prevents a teacher from creating a duplicate journal for the same lesson and date', function () {
+    $data = activeJournalSchedule();
+    $this->travelTo(Carbon::parse('2026-09-14 13:20:00', 'Asia/Jakarta'));
+    $payload = ['jadwal_id' => $data['schedules']->first()->id, 'status_guru' => 'Hadir'];
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), $payload)->assertRedirect();
+    $this->post(route('jurnal.store'), $payload)->assertSessionHasErrors('jadwal_id');
+
+    $this->assertDatabaseCount('jurnals', 1);
+});
+
 it('does not permit journals before during breaks or after teaching', function (string $time) {
     $data = activeJournalSchedule();
     $this->travelTo(Carbon::parse($time, 'Asia/Jakarta'));
@@ -189,6 +200,55 @@ it('uses the Friday timetable instead of weekday times', function () {
 
     $this->actingAs($data['user'])->get(route('jurnal.create'))
         ->assertSee('10:20 (jam ke-7)')->assertSee('11:20 (jam ke-8)');
+});
+
+it('validates journal boundaries using Friday times', function () {
+    $data = activeJournalSchedule();
+    $start = JamPelajaran::create([
+        'jam_ke' => 10,
+        'jam_mulai' => '14:20:00',
+        'jam_selesai' => '15:00:00',
+        'jam_mulai_jumat' => '10:20:00',
+        'jam_selesai_jumat' => '10:50:00',
+        'is_active' => true,
+    ]);
+    $end = JamPelajaran::create([
+        'jam_ke' => 11,
+        'jam_mulai' => '13:00:00',
+        'jam_selesai' => '14:00:00',
+        'jam_mulai_jumat' => '10:50:00',
+        'jam_selesai_jumat' => '11:20:00',
+        'is_active' => true,
+    ]);
+    $startSchedule = Jadwal::create([
+        'guru_id' => $data['guru']->id,
+        'kelas_id' => $data['kelas']->id,
+        'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $start->id,
+        'hari' => 'Jumat',
+        'is_active' => true,
+    ]);
+    Jadwal::create([
+        'guru_id' => $data['guru']->id,
+        'kelas_id' => $data['kelas']->id,
+        'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $end->id,
+        'hari' => 'Jumat',
+        'is_active' => true,
+    ]);
+    $this->travelTo(Carbon::parse('2026-09-18 10:30:00', 'Asia/Jakarta'));
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'jadwal_id' => $startSchedule->id,
+        'status_guru' => 'Hadir',
+    ])->assertRedirect();
+
+    $this->assertDatabaseHas('jurnals', [
+        'guru_id' => $data['guru']->id,
+        'jam_mulai_id' => $start->id,
+        'jam_selesai_id' => $end->id,
+    ]);
+    expect(Jurnal::firstOrFail()->tanggal->toDateString())->toBe('2026-09-18');
 });
 
 it('rejects a form from an earlier lesson when another lesson has begun', function () {

@@ -21,24 +21,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Akun Admin
-        $userAdmin = User::updateOrCreate(
+        $userAdmin = $this->seedUser(
             ['email' => 'admin@test.com'],
             [
                 'name' => 'Admin Testing',
                 'username' => 'admin',
-                'password' => Hash::make('password123'),
                 'role' => 'admin',
                 'is_active' => true,
             ]
         );
 
         // Akun Guru
-        $userGuru = User::updateOrCreate(
+        $userGuru = $this->seedUser(
             ['email' => 'guru@test.com'],
             [
                 'name' => 'Guru Testing',
                 'username' => 'guru.testing',
-                'password' => Hash::make('password123'),
                 'role' => 'guru',
                 'is_active' => true,
             ]
@@ -226,12 +224,11 @@ class DatabaseSeeder extends Seeder
                 ->trim('.')
                 ->toString();
             $email = $username.'@guru.smkn1boyolangu.sch.id';
-            $userJadwal = User::updateOrCreate(
+            $userJadwal = $this->seedUser(
                 ['email' => $email],
                 [
                     'name' => $namaGuru,
                     'username' => $username,
-                    'password' => Hash::make('password123'),
                     'role' => 'guru',
                     'is_active' => true,
                 ]
@@ -276,35 +273,32 @@ class DatabaseSeeder extends Seeder
         }
 
         // Akun Piket
-        $userPiket = User::updateOrCreate(
+        $userPiket = $this->seedUser(
             ['email' => 'piket@test.com'],
             [
                 'name' => 'Piket Testing',
                 'username' => 'piket',
-                'password' => Hash::make('password123'),
                 'role' => 'piket',
                 'is_active' => true,
             ]
         );
 
-        User::updateOrCreate(
+        $this->seedUser(
             ['email' => 'sekretaris@test.com'],
             [
                 'name' => 'Sekretaris Testing',
                 'username' => 'sekretaris',
-                'password' => Hash::make('password123'),
                 'role' => 'sekretaris',
                 'is_active' => true,
             ]
         );
 
         // Akun Siswa
-        $userSiswa = User::updateOrCreate(
+        $userSiswa = $this->seedUser(
             ['email' => 'siswa@test.com'],
             [
                 'name' => 'Siswa Testing',
                 'username' => 'siswa.testing',
-                'password' => Hash::make('password123'),
                 'role' => 'siswa',
                 'is_active' => true,
             ]
@@ -329,12 +323,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $userSiswaDua = User::updateOrCreate(
+        $userSiswaDua = $this->seedUser(
             ['email' => 'siswa2@test.com'],
             [
                 'name' => 'Siswa Dua Testing',
                 'username' => 'siswa.dua.testing',
-                'password' => Hash::make('password123'),
                 'role' => 'siswa',
                 'is_active' => true,
             ]
@@ -436,5 +429,27 @@ class DatabaseSeeder extends Seeder
         $dispensasi->save();
 
         $this->call(JadwalSemesterSeeder::class);
+    }
+
+    /**
+     * @param  array<string, mixed>  $identity
+     * @param  array<string, mixed>  $attributes
+     */
+    private function seedUser(array $identity, array $attributes): User
+    {
+        $user = User::firstOrNew($identity);
+        $isNew = ! $user->exists;
+        $user->fill($attributes);
+
+        if ($isNew) {
+            $defaultPassword = config('seeding.default_password');
+            $user->password = Hash::make(is_string($defaultPassword) && $defaultPassword !== ''
+                ? $defaultPassword
+                : Str::random(64));
+        }
+
+        $user->save();
+
+        return $user;
     }
 }

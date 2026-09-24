@@ -1,0 +1,23 @@
+<?php
+
+use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+
+uses(RefreshDatabase::class);
+
+it('uses the configured development seed password and preserves existing credentials', function () {
+    config(['seeding.default_password' => 'configured-development-password']);
+
+    $this->seed(DatabaseSeeder::class);
+
+    $admin = User::where('email', 'admin@test.com')->firstOrFail();
+    expect(Hash::check('configured-development-password', $admin->password))->toBeTrue();
+    $admin->update(['password' => Hash::make('manually-changed-password')]);
+    $changedPasswordHash = $admin->fresh()->password;
+
+    $this->seed(DatabaseSeeder::class);
+
+    expect($admin->fresh()->password)->toBe($changedPasswordHash);
+});

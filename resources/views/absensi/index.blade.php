@@ -91,4 +91,5 @@
             <div class="empty">Belum ada jurnal yang tersedia.</div>
         </section>
     @endforelse
+    {{ $jurnals->links() }}
 @endsection
