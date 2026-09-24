@@ -1025,6 +1025,48 @@
             gap: 18px;
         }
 
+        .detail-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            gap: 18px 20px;
+
+            margin: 0;
+        }
+
+        .detail-item {
+            display: flex;
+
+            min-width: 0;
+
+            flex-direction: column;
+
+            gap: 6px;
+        }
+
+        .detail-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .detail-grid dt {
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .detail-grid dd {
+            margin: 0;
+
+            color: var(--ink);
+
+            font-size: 15px;
+            line-height: 1.5;
+
+            overflow-wrap: anywhere;
+        }
+
         .field {
             display: flex;
 
