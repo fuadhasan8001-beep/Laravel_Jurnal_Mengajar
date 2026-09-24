@@ -15,7 +15,7 @@
 - [x] Signature jurnal disimpan privat, hanya guru pemilik yang dapat mengubahnya, dan diuji bersama alur edit.
 - [x] Activity log tersedia untuk perubahan data guru; log hanya dapat dilihat admin dan memiliki pagination.
 - [x] Build aset Vite berhasil; Composer audit bersih; npm audit melaporkan 0 kerentanan (pemeriksaan sebelum rebase).
-- [x] Setelah integrasi dan audit lanjutan: seluruh suite 169 tes / 601 assertion lulus; Pint, lint PHP (95 file), `optimize:clear`, dan `git diff --check` lulus.
+- [x] Setelah audit lanjutan: seluruh suite 171 tes / 606 assertion lulus; Pint, lint PHP (97 file), `optimize:clear`, dan `git diff --check` lulus.
 
 ## Masih menunggu akses atau keputusan di luar repo
 
@@ -35,7 +35,7 @@
 - [x] **#6 FIXED:** edit jadwal tidak menggeser jam global; perubahan waktu dilakukan melalui master jam.
 - [x] **#7 FIXED BY DESIGN:** satu jurnal dibuat untuk sesi jadwal aktif (termasuk beberapa jam berurutan); status Izin/Sakit menerima data sesi yang sama dan materi boleh kosong.
 - [x] **#8 FIXED:** guru dibatasi pada jurnalnya, sekretaris pada kelas penugasan; piket tidak mendapat akses tulis/rekap absensi umum.
-- [ ] **#9 NOT IN USE / DEPLOYMENT CHECK PENDING:** tidak ada kode aplikasi yang memakai `alokasi_jam_pelajarans`; migration historis dipertahankan dan data deployment perlu diperiksa sebelum tabel dihapus. Skema tabel disertakan dalam SQL dump.
+- [x] **#9 FIXED SAFELY:** tidak ada kode aplikasi yang memakai `alokasi_jam_pelajarans`; migration baru menghapus tabel hanya bila kosong dan sengaja gagal tanpa menghapus data bila tabel masih berisi baris. Kedua kondisi diuji. SQL dump mengikuti skema setelah migration.
 - [x] **#10 ALREADY FIXED:** urutan waktu divalidasi memakai waktu aktual hari terkait; tes mencakup sesi satu jam, multi-jam, konflik, dan Jumat.
 - [x] **#11 ALREADY FIXED IN ACTIVE FLOW:** form/request hanya menerima Hadir, Izin, Sakit. Nilai lama Dinas/Tanpa Keterangan dipertahankan dalam migration historis untuk kompatibilitas data.
 - [x] **#12 FIXED:** notifikasi guru dibatasi overlap jadwal/jurnal dan pesan menampilkan waktu lokal Jumat bila berlaku.

@@ -3122,10 +3122,6 @@ CREATE UNIQUE INDEX "users_username_unique" on "users" ("username");
 
 CREATE TABLE "activity_logs" ("id" integer primary key autoincrement not null, "user_id" integer, "action" varchar not null, "description" text not null, "metadata" text, "created_at" datetime, "updated_at" datetime, foreign key("user_id") references "users"("id") on delete set null);
 
-CREATE TABLE "alokasi_jam_pelajarans" ("id" integer primary key autoincrement not null, "kelas_id" integer not null, "jam_pelajaran_id" integer not null, "hari" varchar check ("hari" in ('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')) not null, "jam_mulai" time not null, "jam_selesai" time not null, "created_at" datetime, "updated_at" datetime, foreign key("kelas_id") references "kelas"("id") on delete cascade, foreign key("jam_pelajaran_id") references "jam_pelajarans"("id") on delete cascade, unique ("kelas_id", "jam_pelajaran_id", "hari"));
-
-CREATE INDEX "alokasi_jam_pelajarans_kelas_id_hari_index" on "alokasi_jam_pelajarans" ("kelas_id", "hari");
-
 ALTER TABLE "jurnals" ADD "attendance_witnesses" text;
 
 COMMIT;
