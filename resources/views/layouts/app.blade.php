@@ -223,7 +223,7 @@
             left: 0;
 
             display: flex;
-            width: 250px;
+            width: 270px;
             height: 100vh;
 
             flex-direction: column;
@@ -383,6 +383,31 @@
             padding: 18px 10px 0;
         }
 
+        .sidebar-datetime {
+            display: grid;
+            gap: 3px;
+            margin-top: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .sidebar-date {
+            color: #f0e6d2;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .sidebar-clock {
+            color: #fff;
+            font-size: 20px;
+            font-variant-numeric: tabular-nums;
+            font-weight: 800;
+            letter-spacing: .04em;
+        }
+
         .user-mini {
             display: flex;
             align-items: center;
@@ -456,8 +481,8 @@
         ========================================================= */
 
         .main {
-            width: calc(100% - 250px);
-            margin-left: 250px;
+            width: calc(100% - 270px);
+            margin-left: 270px;
             min-width: 0;
         }
 
@@ -693,6 +718,10 @@
         }
 
         .mobile-top-actions {
+            display: none;
+        }
+
+        .mobile-datetime {
             display: none;
         }
 
@@ -1774,17 +1803,26 @@
             }
 
             .topbar {
-                min-height: 66px;
-
-                padding: 0 12px;
+                min-height: 0;
+                flex-wrap: wrap;
+                padding: 10px 12px;
                 gap: 8px;
                 background: #fffdf8;
             }
 
             .topbar-brand {
-                flex: 1 1 auto;
+                flex: 1 1 100%;
                 min-width: 0;
                 gap: 8px;
+            }
+
+            .topbar-heading {
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                align-items: center;
+                justify-content: space-between;
+                gap: 3px;
             }
 
             .topbar-brand .eyebrow {
@@ -1794,8 +1832,8 @@
             .topbar-title {
                 margin: 0;
                 max-width: none;
-                font-size: 16px;
-                line-height: 1.15;
+                font-size: 17px;
+                line-height: 1.2;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -1806,17 +1844,32 @@
             }
 
             .mobile-top-actions {
-                display: flex;
-                width: auto;
-                min-width: 0;
+                display: grid;
+                width: 100%;
+                min-width: 100%;
+                grid-template-columns: auto auto;
                 align-items: center;
-                justify-content: flex-end;
-                gap: 6px;
+                justify-content: end;
+                gap: 6px 8px;
+            }
+
+            .topbar-heading .mobile-datetime {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 3px;
+            }
+
+            .mobile-date {
+                color: var(--text-dark);
+                font-size: 10px;
+                font-weight: 600;
+                text-transform: capitalize;
             }
 
             .mobile-live-clock {
                 flex: 0 0 auto;
-                font-size: 13px;
+                font-size: 17px;
                 font-weight: 800;
                 line-height: 1;
             }
@@ -1849,7 +1902,7 @@
             .mobile-top-actions .notification-list {
                 position: fixed;
 
-                top: 72px;
+                top: 132px;
                 right: 16px;
                 left: 16px;
 
@@ -1859,13 +1912,14 @@
             }
 
             .mobile-notification-button {
-                width: 42px;
+                width: auto;
                 min-height: 40px;
-                padding: 7px;
+                gap: 7px;
+                padding: 7px 10px;
             }
 
             .mobile-notification-button .notification-label {
-                display: none;
+                display: inline;
             }
 
             .page-head {
@@ -2011,10 +2065,6 @@
             .content {
                 padding-right: 14px;
                 padding-left: 14px;
-            }
-
-            .mobile-live-clock {
-                display: none;
             }
 
             .journal-card-header {
@@ -2233,6 +2283,17 @@
 
                     </div>
 
+                    <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
+                        <span class="sidebar-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
+                        <time
+                            class="sidebar-clock"
+                            data-live-clock
+                            data-server-time="{{ now()->getTimestampMs() }}"
+                            data-timezone="{{ config('app.timezone') }}"
+                            datetime="{{ now()->toIso8601String() }}"
+                        >{{ now()->format('H:i:s') }}</time>
+                    </div>
+
                     <form
                         action="{{ route('logout') }}"
                         method="POST"
@@ -2267,12 +2328,22 @@
                             ☰
                         </button>
 
-                        <div class="eyebrow">
-                            Ruang kerja digital
-                        </div>
-
-                        <div class="topbar-title">
-                            Jurnal Guru
+                        <div class="topbar-heading">
+                            <div class="topbar-title">
+                                Jurnal Guru
+                            </div>
+                            <div class="mobile-datetime">
+                                <time
+                                    class="live-clock mobile-live-clock"
+                                    data-live-clock
+                                    data-server-time="{{ now()->getTimestampMs() }}"
+                                    data-timezone="{{ config('app.timezone') }}"
+                                    datetime="{{ now()->toIso8601String() }}"
+                                >
+                                    {{ now()->format('H:i:s') }}
+                                </time>
+                                <span class="mobile-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
+                            </div>
                         </div>
 
                     </div>
@@ -2381,16 +2452,6 @@
                     </div>
 
                     <div class="mobile-top-actions">
-
-                        <time
-                            class="live-clock mobile-live-clock"
-                            data-live-clock
-                            data-server-time="{{ now()->getTimestampMs() }}"
-                            data-timezone="{{ config('app.timezone') }}"
-                            datetime="{{ now()->toIso8601String() }}"
-                        >
-                            {{ now()->format('H:i:s') }}
-                        </time>
 
                         <div class="notification-menu">
 
