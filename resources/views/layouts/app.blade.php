@@ -615,7 +615,6 @@
 
             background: var(--warm-white, #fffdf8);
             color: var(--ink);
-
             cursor: pointer;
 
             font-size: 13px;
@@ -1347,6 +1346,7 @@
         }
 
         .journal-main > .journal-card:first-child > .field {
+            display: flex;
             margin-top: 16px;
         }
 
@@ -1739,6 +1739,10 @@
         ========================================================= */
 
         @media (max-width: 680px) {
+            .sidebar-datetime {
+                display: none;
+            }
+
             .submit-summary dl {
                 grid-template-columns: 1fr;
             }
@@ -2247,6 +2251,17 @@
                         </nav>
                     </details>
 
+                    <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
+                        <span class="sidebar-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
+                        <time
+                            class="sidebar-clock"
+                            data-live-clock
+                            data-server-time="{{ now()->getTimestampMs() }}"
+                            data-timezone="{{ config('app.timezone') }}"
+                            datetime="{{ now()->toIso8601String() }}"
+                        >{{ now()->format('H:i:s') }}</time>
+                    </div>
+
                     <div class="nav-label nav-label-account">Akun</div>
                     <nav class="nav-list" aria-label="Menu akun">
                     <a
@@ -2281,17 +2296,6 @@
                             <small>{{ auth()->user()->role }}</small>
                         </span>
 
-                    </div>
-
-                    <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
-                        <span class="sidebar-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
-                        <time
-                            class="sidebar-clock"
-                            data-live-clock
-                            data-server-time="{{ now()->getTimestampMs() }}"
-                            data-timezone="{{ config('app.timezone') }}"
-                            datetime="{{ now()->toIso8601String() }}"
-                        >{{ now()->format('H:i:s') }}</time>
                     </div>
 
                     <form
@@ -2349,36 +2353,6 @@
                     </div>
 
                     <div class="topbar-actions">
-
-                        <div class="date-chip">
-
-                            <svg
-                                width="17"
-                                height="17"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                            >
-                                <rect x="3" y="4" width="18" height="17" rx="2" />
-                                <path d="M16 2v4M8 2v4M3 10h18" />
-                            </svg>
-
-                            <div>
-                                <span>{{ now()->translatedFormat('l, d F Y') }}</span>
-                                <time
-                                    class="live-clock"
-                                    data-live-clock
-                                    data-server-time="{{ now()->getTimestampMs() }}"
-                                    data-timezone="{{ config('app.timezone') }}"
-                                    datetime="{{ now()->toIso8601String() }}"
-                                >
-                                    {{ now()->format('H:i:s') }}
-                                </time>
-                            </div>
-
-                        </div>
-
                         <div class="notification-menu">
 
                             <details>
@@ -2388,13 +2362,13 @@
                                         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
                                     </svg>
                                     <span class="notification-label">Notifikasi</span>
-                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->count() }}</span>
+                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->count() }}</span>
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
                                 <div class="notification-list">
 
-                                    @forelse (auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->latest()->limit(5)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2462,13 +2436,13 @@
                                         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
                                     </svg>
                                     <span class="notification-label">Notifikasi</span>
-                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->count() }}</span>
+                                    <span class="notification-badge">{{ auth()->user()->unreadNotifications()->count() }}</span>
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
                                 <div class="notification-list">
 
-                                    @forelse (auth()->user()->notifications()->where(function ($query) { $query->whereNull('data->event')->orWhere('data->event', '!=', 'piket_approved'); })->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"

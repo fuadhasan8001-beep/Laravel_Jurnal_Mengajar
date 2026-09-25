@@ -14,6 +14,7 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Services\SchoolLocationVerifier;
+use App\Notifications\JurnalNotification;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -192,6 +193,12 @@ class JurnalController extends Controller
                 'catatan' => $data['catatan'] ?? null,
                 'verified_at' => now(),
             ]);
+            $jurnal->loadMissing(['guru.user', 'kelas', 'mapel']);
+            $jurnal->guru->user?->notify(new JurnalNotification(
+                'journal_verified',
+                'Jurnal '.$jurnal->kelas->nama_kelas.' untuk '.$jurnal->mapel->nama_mapel.' telah '.$data['status'].' oleh sekretaris.',
+                route('jurnal.show', $jurnal),
+            ));
         });
 
         return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');

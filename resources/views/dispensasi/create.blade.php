@@ -5,8 +5,8 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>{{ auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
-            <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
+            <h1>{{ ($uploadMode ?? false) ? 'Upload surat izin siswa' : (auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi') }}</h1>
+            <p>{{ ($uploadMode ?? false) ? 'Pilih siswa dan unggah surat izin dari orang tua.' : 'Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.' }}</p>
         </div><a
             class="btn btn-muted"
             href="{{ route('dispensasi.index') }}"
@@ -17,6 +17,9 @@
             <h2>Detail pengajuan</h2><span class="eyebrow">Semua field bertanda wajib diisi</span>
         </div>
         <div class="panel-body">
+            @if ($errors->has('siswa_ids'))
+                <div class="alert error" role="alert">{{ $errors->first('siswa_ids') }}</div>
+            @endif
             <form
                 action="{{ route('dispensasi.store') }}"
                 method="POST"

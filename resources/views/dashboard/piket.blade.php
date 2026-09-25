@@ -7,11 +7,25 @@
         <div>
             <h1>Meja piket</h1>
             <p>Pengajuan dispensasi siswa.</p>
-        </div><a
-            class="btn"
-            href="{{ route('dispensasi.create') }}"
-        >Buat pengajuan</a>
+        </div>
     </div>
+    <section class="panel panel-spaced">
+        <div class="panel-head"><h2>Menu piket hari ini</h2><span class="eyebrow">Pilih tugas</span></div>
+        <div class="panel-body quick-grid">
+            <a class="quick-card" href="{{ route('dispensasi.create') }}">
+                <strong>Ajukan dispensasi</strong>
+                <span>Pilih siswa, isi alasan, dan kirim pengajuan ke admin.</span>
+            </a>
+            <a class="quick-card" href="{{ route('dispensasi.create', ['mode' => 'surat-izin']) }}">
+                <strong>Upload surat izin</strong>
+                <span>Input siswa yang izin dan simpan foto surat dari orang tua.</span>
+            </a>
+            <a class="quick-card" href="{{ route('dispensasi.index') }}">
+                <strong>Riwayat dispensasi</strong>
+                <span>Lihat pengajuan piket dan status keputusan admin.</span>
+            </a>
+        </div>
+    </section>
     <div class="stats">
         <div class="stat-card"><span class="stat-icon amber"><svg
                     width="21"

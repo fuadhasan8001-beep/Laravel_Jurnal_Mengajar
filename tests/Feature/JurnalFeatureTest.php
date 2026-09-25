@@ -178,7 +178,7 @@ it('orders the teacher dashboard schedule by lesson number ascending', function 
     $this->actingAs($data['user'])
         ->get('/guru')
         ->assertOk()
-        ->assertSee('Tambah jurnal')
+        ->assertSee('Isi jurnal')
         ->assertSeeInOrder(['Jam 1', 'Jam 5']);
 });
 

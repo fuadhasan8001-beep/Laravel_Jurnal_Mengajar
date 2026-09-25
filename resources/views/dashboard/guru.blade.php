@@ -13,7 +13,7 @@
             class="btn"
             href="{{ route('jurnal.create') }}"
         >
-            Tambah jurnal
+            Isi jurnal
         </a>
     </div>
 

@@ -86,7 +86,44 @@ it('lets piket submit multiple students while leaving attendance pending admin a
             'status_piket' => 'Disetujui', 'status_admin' => 'Menunggu', 'status_akhir' => 'Menunggu']);
     }
     Notification::assertSentToTimes($data['admin'], DispensasiApprovalMail::class, 1);
+    Notification::assertSentTo($data['admin'], DispensasiNotification::class, fn ($notification) => $notification->event === 'piket_approved');
     Notification::assertNotSentTo($data['teacher'], DispensasiNotification::class);
+});
+
+it('blocks only overlapping dispensasi hours for the same student', function () {
+    $data = dispensasiSetup();
+    $student = $data['students']->first();
+    Dispensasi::create([
+        ...$data['payload'],
+        'siswa_id' => $student->id,
+        'status_piket' => 'Disetujui',
+        'status_akhir' => 'Disetujui',
+    ]);
+
+    $this->actingAs($data['piket'])
+        ->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => [$student->id]])
+        ->assertSessionHasErrors('siswa_ids');
+
+    $this->assertDatabaseCount('dispensasis', 1);
+});
+
+it('allows another dispensasi window for the same student on the same date', function () {
+    $data = dispensasiSetup();
+    $student = $data['students']->first();
+    Dispensasi::create([
+        ...$data['payload'],
+        'jam_mulai_id' => $data['end']->id,
+        'jam_selesai_id' => $data['end']->id,
+        'siswa_id' => $student->id,
+        'status_piket' => 'Disetujui',
+        'status_akhir' => 'Disetujui',
+    ]);
+
+    $this->actingAs($data['piket'])
+        ->post(route('dispensasi.store'), [...$data['payload'], 'siswa_ids' => [$student->id]])
+        ->assertRedirect(route('dispensasi.index'));
+
+    $this->assertDatabaseCount('dispensasis', 2);
 });
 
 it('rejects missing duplicate and nonexistent students without partial requests', function (array $ids) {
