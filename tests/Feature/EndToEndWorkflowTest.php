@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Notification;
 uses(RefreshDatabase::class);
 
 it('completes the full admin, teacher, secretary, student, and duty-teacher workflow over HTTP', function () {
+    config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => 100, 'school.max_gps_accuracy' => 25]);
     $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
     Notification::fake();
 
@@ -71,7 +72,8 @@ it('completes the full admin, teacher, secretary, student, and duty-teacher work
     $this->post('/login', ['login' => $teacherUser->username, 'password' => 'password'])->assertRedirect('/guru');
     $this->get('/guru')->assertOk();
     $this->get(route('jurnal.create'))->assertOk();
-    $this->post(route('jurnal.store'), ['status_guru' => 'Hadir', 'materi' => 'Materi uji end to end'])
+    $this->post(route('jurnal.store'), ['status_guru' => 'Hadir', 'materi' => 'Materi uji end to end',
+        'latitude' => 0, 'longitude' => 0.00005, 'location_accuracy' => 10])
         ->assertRedirect();
     $journal = Jurnal::firstOrFail();
     $this->post(route('logout'))->assertRedirect('/login');

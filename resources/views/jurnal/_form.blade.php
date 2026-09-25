@@ -35,7 +35,7 @@
         <div class="field"><label for="jam_selesai">Jam selesai</label><input id="jam_selesai" value="{{ substr($end->timesForDay($hari)[1], 0, 5) }} (jam ke-{{ $end->jam_ke }})" readonly></div>
         <div class="field"><label for="status_guru">Kehadiran guru</label><select id="status_guru" name="status_guru">
             @foreach (['Hadir', 'Izin', 'Sakit'] as $status)
-                <option value="{{ $status }}" @selected((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === $status)>{{ $status }}</option>
+                <option value="{{ $status }}" @selected((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === $status)>{{ $status === 'Hadir' ? 'Hadir di Sekolah' : $status }}</option>
             @endforeach
         </select>@error('status_guru')<small class="error">{{ $message }}</small>@enderror</div>
     </div>
@@ -88,28 +88,19 @@
             @endforelse
         </tbody></table></div>
     </section>
-    <section class="signature-card" aria-labelledby="signature-title">
-        <div class="journal-card-header">
-            <div>
-                <h3 id="signature-title">Tanda tangan guru</h3>
-                <p>Bubuhkan tanda tangan dengan mouse atau jari Anda.</p>
-            </div>
-            <button class="btn btn-muted" type="button" id="clear-signature">Bersihkan</button>
-        </div>
-        <div class="signature-space">
-            @if ($isEdit && $jurnal->tanda_tangan)
-                <div class="signature-info">
-                    <strong>Tanda tangan tersimpan</strong>
-                    <img class="saved-signature" src="{{ route('jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
-                </div>
-            @endif
-            <canvas id="signature-canvas" class="signature-canvas" width="900" height="250" aria-label="Area tanda tangan"></canvas>
-            <input id="tanda_tangan" name="tanda_tangan" type="hidden">
-            @error('tanda_tangan')<small class="error">{{ $message }}</small>@enderror
-        </div>
+    <section class="journal-detail-panel" aria-labelledby="location-title" data-school-latitude="{{ config('school.latitude') }}" data-school-longitude="{{ config('school.longitude') }}" data-school-radius="{{ config('school.radius_meters') }}" data-max-gps-accuracy="{{ config('school.max_gps_accuracy') }}">
+        <div class="journal-card-header"><div><h3 id="location-title">Verifikasi lokasi sekolah</h3><p>Status Hadir memerlukan verifikasi GPS di area sekolah.</p></div></div>
+        <p id="location-status" role="status" aria-live="polite">Pilih Hadir untuk memeriksa lokasi.</p>
+        <input type="hidden" name="latitude" id="location-latitude" value="{{ old('latitude') }}">
+        <input type="hidden" name="longitude" id="location-longitude" value="{{ old('longitude') }}">
+        <input type="hidden" name="location_accuracy" id="location-accuracy" value="{{ old('location_accuracy') }}">
+        <button type="button" class="btn btn-muted" id="check-location">Periksa lokasi</button>
+        @error('location')<small class="error">{{ $message }}</small>@enderror
+        @error('location_latitude')<small class="error">{{ $message }}</small>@enderror
+        @error('location_longitude')<small class="error">{{ $message }}</small>@enderror
+        @error('location_accuracy')<small class="error">{{ $message }}</small>@enderror
     </section>
-
-    <div class="form-actions"><a class="btn btn-muted" href="{{ route('jurnal.index') }}">Batal</a><button class="btn" type="button" id="confirm-save-trigger">{{ $isEdit ? 'Simpan perubahan' : 'Simpan jurnal' }}</button></div>
+    <div class="form-actions"><a class="btn btn-muted" href="{{ route('jurnal.index') }}">Batal</a><button class="btn" type="button" id="confirm-save-trigger" disabled>{{ $isEdit ? 'Simpan perubahan' : 'Kirim Jurnal' }}</button></div>
 </form>
 
 <div id="journal-confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(11,18,32,.62); z-index:1000; align-items:center; justify-content:center; padding:1rem;">
@@ -126,157 +117,150 @@
             <div style="grid-column:1/-1;"><strong>Materi:</strong> <span id="confirm-materi">{{ old('materi', $jurnal?->materi) ?: 'Belum diisi' }}</span></div>
             <div style="grid-column:1/-1;"><strong>Kegiatan:</strong> <span id="confirm-kegiatan">{{ old('kegiatan', $jurnal?->kegiatan) ?: 'Belum diisi' }}</span></div>
             <div style="grid-column:1/-1;"><strong>Absensi siswa:</strong> <span id="confirm-absensi">Menunggu update</span></div>
-            <div style="grid-column:1/-1;"><strong>Tanda tangan:</strong> <span id="confirm-signature">Belum ada tanda tangan</span></div>
+            <div style="grid-column:1/-1;"><strong>Verifikasi lokasi:</strong> <span id="confirm-location">Belum diperiksa</span></div>
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
             <button type="button" class="btn btn-muted" data-close-confirmation>Batal</button>
-            <button type="button" class="btn" id="final-submit-journal">Simpan sekarang</button>
+            <button type="button" class="btn" id="final-submit-journal" disabled>Kirim Jurnal</button>
         </div>
     </div>
 </div>
 <script>
 (function () {
     const form = document.getElementById('journal-form');
-    const canvas = document.getElementById('signature-canvas');
-    const hiddenInput = document.getElementById('tanda_tangan');
-    const clearButton = document.getElementById('clear-signature');
+    const statusSelect = document.getElementById('status_guru');
+    const locationPanel = document.querySelector('[data-school-latitude]');
+    const locationStatus = document.getElementById('location-status');
+    const checkLocationButton = document.getElementById('check-location');
     const saveTrigger = document.getElementById('confirm-save-trigger');
     const finalSubmit = document.getElementById('final-submit-journal');
     const confirmModal = document.getElementById('journal-confirm-modal');
+    const latitudeInput = document.getElementById('location-latitude');
+    const longitudeInput = document.getElementById('location-longitude');
+    const accuracyInput = document.getElementById('location-accuracy');
+    if (!form) return;
 
-    if (!form || !canvas || !hiddenInput) {
-        return;
+    let locationValid = false;
+    const schoolLatitude = Number(locationPanel.dataset.schoolLatitude);
+    const schoolLongitude = Number(locationPanel.dataset.schoolLongitude);
+    const radius = Number(locationPanel.dataset.schoolRadius);
+    const maximumAccuracy = Number(locationPanel.dataset.maxGpsAccuracy);
+    const hasSchoolConfig = locationPanel.dataset.schoolLatitude.trim() !== '' && locationPanel.dataset.schoolLongitude.trim() !== '' && locationPanel.dataset.schoolRadius.trim() !== '' && locationPanel.dataset.maxGpsAccuracy.trim() !== '' && Number.isFinite(schoolLatitude) && Math.abs(schoolLatitude) <= 90 && Number.isFinite(schoolLongitude) && Math.abs(schoolLongitude) <= 180 && Number.isFinite(radius) && radius > 0 && Number.isFinite(maximumAccuracy) && maximumAccuracy >= 0;
+
+    function updateButtons() {
+        const canSubmit = statusSelect.value !== 'Hadir' || locationValid;
+        saveTrigger.disabled = !canSubmit;
+        finalSubmit.disabled = !canSubmit;
+        checkLocationButton.hidden = statusSelect.value !== 'Hadir';
     }
 
-    const context = canvas.getContext('2d');
-    if (!context) {
-        return;
+    function distanceMeters(latitude, longitude) {
+        const radians = (degrees) => degrees * Math.PI / 180;
+        const deltaLatitude = radians(schoolLatitude - latitude);
+        const deltaLongitude = radians(schoolLongitude - longitude);
+        const a = Math.sin(deltaLatitude / 2) ** 2 + Math.cos(radians(latitude)) * Math.cos(radians(schoolLatitude)) * Math.sin(deltaLongitude / 2) ** 2;
+        return 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function checkLocation() {
+        locationValid = false;
+        latitudeInput.value = '';
+        longitudeInput.value = '';
+        accuracyInput.value = '';
+        updateButtons();
+        if (!hasSchoolConfig) {
+            locationStatus.textContent = 'Koordinat sekolah belum dikonfigurasi.';
+            return;
+        }
+        if (!navigator.geolocation) {
+            locationStatus.textContent = 'GPS tidak tersedia pada browser ini.';
+            return;
+        }
+        locationStatus.textContent = 'Memeriksa lokasi...';
+        navigator.geolocation.getCurrentPosition((position) => {
+            const { latitude, longitude, accuracy } = position.coords;
+            if (!Number.isFinite(latitude) || Math.abs(latitude) > 90 || !Number.isFinite(longitude) || Math.abs(longitude) > 180 || !Number.isFinite(accuracy) || accuracy < 0) {
+                locationStatus.textContent = 'Koordinat GPS tidak valid. Coba periksa lokasi kembali.';
+                return;
+            }
+            if (accuracy > maximumAccuracy) {
+                locationStatus.textContent = `Akurasi GPS buruk (${Math.round(accuracy)} meter). Batas akurasi ${maximumAccuracy} meter. Coba periksa kembali.`;
+                return;
+            }
+            const distance = distanceMeters(latitude, longitude);
+            if (distance > radius) {
+                locationStatus.textContent = `Di luar area sekolah — Jarak ${Math.round(distance)} meter, batas ${Math.round(radius)} meter.`;
+                return;
+            }
+            latitudeInput.value = latitude;
+            longitudeInput.value = longitude;
+            accuracyInput.value = accuracy;
+            locationValid = true;
+            locationStatus.textContent = 'Lokasi valid — Anda berada di area sekolah.';
+            updateButtons();
+        }, (error) => {
+            const messages = {
+                1: 'Izin lokasi ditolak. Aktifkan izin lokasi browser untuk mengirim jurnal Hadir.',
+                2: 'GPS tidak tersedia. Periksa pengaturan lokasi perangkat dan coba kembali.',
+                3: 'Waktu pemeriksaan GPS habis. Coba periksa lokasi kembali.',
+            };
+            locationStatus.textContent = messages[error.code] || 'Lokasi tidak dapat diperiksa. Coba kembali.';
+        }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
     }
 
     function updateSummary() {
-        const status = document.getElementById('status_guru')?.value || 'Hadir';
+        const status = statusSelect.value || 'Hadir';
         const materi = document.getElementById('materi')?.value?.trim() || 'Belum diisi';
         const kegiatan = document.getElementById('kegiatan')?.value?.trim() || 'Belum diisi';
-
         const counts = { H: 0, S: 0, I: 0, A: 0, D: 0 };
         form.querySelectorAll('.attendance-status').forEach((select) => {
             const value = select.value || 'H';
             if (counts[value] !== undefined) counts[value] += 1;
         });
-
-        const absensiText = `Hadir ${counts.H}, Sakit ${counts.S}, Izin ${counts.I}, Alpa ${counts.A}, Dispen ${counts.D}`;
-        document.getElementById('confirm-status').textContent = status;
+        document.getElementById('confirm-status').textContent = status === 'Hadir' ? 'Hadir di Sekolah' : status;
         document.getElementById('confirm-materi').textContent = materi;
         document.getElementById('confirm-kegiatan').textContent = kegiatan;
-        document.getElementById('confirm-absensi').textContent = absensiText;
-        document.getElementById('confirm-signature').textContent = hiddenInput.value ? 'Sudah ada tanda tangan' : 'Belum ada tanda tangan';
+        document.getElementById('confirm-absensi').textContent = `Hadir ${counts.H}, Sakit ${counts.S}, Izin ${counts.I}, Alpa ${counts.A}, Dispen ${counts.D}`;
+        document.getElementById('confirm-location').textContent = status !== 'Hadir' ? 'Tidak diwajibkan untuk status ini' : (locationValid ? locationStatus.textContent : 'Belum valid');
     }
 
-    const point = (event) => {
-        const bounds = canvas.getBoundingClientRect();
-        return {
-            x: (event.clientX - bounds.left) * (canvas.width / bounds.width),
-            y: (event.clientY - bounds.top) * (canvas.height / bounds.height),
-        };
-    };
+    function openConfirmModal() {
+        updateSummary();
+        if (confirmModal) confirmModal.style.display = 'flex';
+    }
+    function closeConfirmModal() {
+        if (confirmModal) confirmModal.style.display = 'none';
+    }
 
-    let drawing = false;
-    context.strokeStyle = '#15213b';
-    context.lineWidth = 4;
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    canvas.style.touchAction = 'none';
-
-    canvas.addEventListener('pointerdown', (event) => {
-        drawing = true;
-        const start = point(event);
-        context.beginPath();
-        context.moveTo(start.x, start.y);
-        canvas.setPointerCapture(event.pointerId);
-    });
-
-    canvas.addEventListener('pointermove', (event) => {
-        if (!drawing) {
-            return;
+    statusSelect.addEventListener('change', () => {
+        if (statusSelect.value === 'Hadir') checkLocation();
+        else {
+            locationValid = false;
+            latitudeInput.value = '';
+            longitudeInput.value = '';
+            accuracyInput.value = '';
+            locationStatus.textContent = 'GPS tidak diwajibkan untuk status Izin atau Sakit.';
         }
-        const next = point(event);
-        context.lineTo(next.x, next.y);
-        context.stroke();
-    });
-
-    const stopDrawing = () => {
-        drawing = false;
-    };
-
-    canvas.addEventListener('pointerup', stopDrawing);
-    canvas.addEventListener('pointerleave', stopDrawing);
-    canvas.addEventListener('pointercancel', stopDrawing);
-
-    clearButton?.addEventListener('click', () => {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        hiddenInput.value = '';
+        updateButtons();
         updateSummary();
     });
-
-    form.addEventListener('submit', () => {
-        const hasSignature = hiddenInput.value.trim().length > 0;
-        if (hasSignature) {
-            hiddenInput.value = canvas.toDataURL('image/png');
-            return;
-        }
-
-        hiddenInput.value = canvas.toDataURL('image/png');
-    });
-
-    const openConfirmModal = () => {
-        updateSummary();
-        if (confirmModal) {
-            confirmModal.style.display = 'flex';
-        }
-    };
-
-    const closeConfirmModal = () => {
-        if (confirmModal) {
-            confirmModal.style.display = 'none';
-        }
-    };
-
-    saveTrigger?.addEventListener('click', openConfirmModal);
-    finalSubmit?.addEventListener('click', () => {
-        hiddenInput.value = canvas.toDataURL('image/png');
+    checkLocationButton.addEventListener('click', checkLocation);
+    saveTrigger.addEventListener('click', openConfirmModal);
+    finalSubmit.addEventListener('click', () => {
+        if (statusSelect.value === 'Hadir' && !locationValid) return;
         form.submit();
     });
-
-    confirmModal?.addEventListener('click', (event) => {
-        if (event.target === confirmModal) {
-            closeConfirmModal();
-        }
-    });
-
-    document.querySelectorAll('[data-close-confirmation]').forEach((button) => {
-        button.addEventListener('click', closeConfirmModal);
-    });
-
-    ['status_guru', 'materi', 'kegiatan'].forEach((id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', updateSummary);
-            element.addEventListener('change', updateSummary);
-        }
-    });
-
-    form.querySelectorAll('.attendance-status').forEach((select) => {
-        select.addEventListener('change', updateSummary);
-    });
-
+    confirmModal?.addEventListener('click', (event) => { if (event.target === confirmModal) closeConfirmModal(); });
+    document.querySelectorAll('[data-close-confirmation]').forEach((button) => button.addEventListener('click', closeConfirmModal));
+    ['materi', 'kegiatan'].forEach((id) => document.getElementById(id)?.addEventListener('input', updateSummary));
+    form.querySelectorAll('.attendance-status').forEach((select) => select.addEventListener('change', updateSummary));
     document.getElementById('btn-hadir-semua')?.addEventListener('click', () => {
-        document.querySelectorAll('#journal-form .attendance-status').forEach((select) => {
-            select.value = 'H';
-        });
+        form.querySelectorAll('.attendance-status').forEach((select) => { select.value = 'H'; });
         updateSummary();
     });
-
+    updateButtons();
     updateSummary();
+    if (statusSelect.value === 'Hadir') checkLocation();
 })();
 </script>
 @if (! $isEdit && $sessions->where('active', true)->count() > 1)

@@ -48,6 +48,7 @@ it('shows todays date as readonly even after validation fails with old input', f
 
 function dispensasiSetup(): array
 {
+    config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => 100, 'school.max_gps_accuracy' => 25]);
     test()->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
     $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
     $guru = Guru::create(['user_id' => $teacher->id, 'nip' => '12345', 'nama_guru' => 'Guru Uji', 'status_kepegawaian' => 'Honorer']);
@@ -65,7 +66,8 @@ function dispensasiSetup(): array
         'jam_pelajaran_id' => $start->id, 'hari' => now()->locale('id')->translatedFormat('l'), 'is_active' => true]);
     $payload = ['tanggal' => today()->toDateString(), 'jam_mulai_id' => $start->id, 'jam_selesai_id' => $start->id, 'alasan' => 'Lomba sekolah'];
     $journal = ['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
-        'tanggal' => today()->toDateString(), 'jam_mulai_id' => $start->id, 'jam_selesai_id' => $start->id, 'status_guru' => 'Hadir', 'materi' => 'Aljabar'];
+        'tanggal' => today()->toDateString(), 'jam_mulai_id' => $start->id, 'jam_selesai_id' => $start->id, 'status_guru' => 'Hadir', 'materi' => 'Aljabar',
+        'latitude' => 0, 'longitude' => 0.00005, 'location_accuracy' => 10];
 
     return compact('teacher', 'guru', 'piket', 'admin', 'kelas', 'mapel', 'start', 'end', 'students', 'schedule', 'payload', 'journal');
 }
@@ -213,7 +215,7 @@ it('uses approved dispensations on later journal creation and preserves them on 
     $student = $data['students']->first();
     Dispensasi::create([...$data['payload'], 'siswa_id' => $student->id, 'status_piket' => 'Disetujui', 'status_admin' => 'Disetujui', 'status_akhir' => 'Disetujui']);
 
-    $this->actingAs($data['teacher'])->post(route('jurnal.store'), ['jadwal_id' => $data['schedule']->id, 'status_guru' => 'Hadir', 'materi' => 'Aljabar'])->assertRedirect();
+    $this->actingAs($data['teacher'])->post(route('jurnal.store'), [...$data['journal'], 'jadwal_id' => $data['schedule']->id])->assertRedirect();
     $journal = Jurnal::firstOrFail();
     $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
 
@@ -255,8 +257,8 @@ it('derives journal fields from the authenticated teachers schedule', function (
     $this->freezeTime();
     $data = dispensasiSetup();
 
-    $this->actingAs($data['teacher'])->post(route('jurnal.store'), ['jadwal_id' => $data['schedule']->id,
-        'tanggal' => '2000-01-01', 'kelas_id' => 99999, 'jam_mulai_id' => $data['end']->id, 'status_guru' => 'Hadir', 'materi' => 'Aljabar'])->assertRedirect();
+    $this->actingAs($data['teacher'])->post(route('jurnal.store'), [...$data['journal'], 'jadwal_id' => $data['schedule']->id,
+        'tanggal' => '2000-01-01', 'kelas_id' => 99999, 'jam_mulai_id' => $data['end']->id])->assertRedirect();
 
     $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id,
         'mapel_id' => $data['mapel']->id, 'jam_mulai_id' => $data['start']->id, 'jam_selesai_id' => $data['start']->id,

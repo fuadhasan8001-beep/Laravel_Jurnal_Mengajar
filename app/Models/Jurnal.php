@@ -24,6 +24,11 @@ class Jurnal extends Model
         'status_verifikasi',
         'tanda_tangan',
         'attendance_witnesses',
+        'latitude',
+        'longitude',
+        'location_accuracy',
+        'location_distance',
+        'location_verified_at',
     ];
 
     protected function casts(): array
@@ -31,6 +36,7 @@ class Jurnal extends Model
         return [
             'tanggal' => 'date',
             'attendance_witnesses' => 'array',
+            'location_verified_at' => 'datetime',
         ];
     }
 

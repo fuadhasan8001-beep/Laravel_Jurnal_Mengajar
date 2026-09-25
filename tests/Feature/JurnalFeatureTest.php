@@ -14,6 +14,22 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+function schoolLocationPayload(array $overrides = []): array
+{
+    config([
+        'school.latitude' => 0,
+        'school.longitude' => 0,
+        'school.radius_meters' => 100,
+        'school.max_gps_accuracy' => 25,
+    ]);
+
+    return array_merge([
+        'latitude' => 0,
+        'longitude' => 0.00005,
+        'location_accuracy' => 10,
+    ], $overrides);
+}
+
 function journalSetup(): array
 {
     test()->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
@@ -40,7 +56,7 @@ function journalSetup(): array
 it('allows a teacher to create a journal', function () {
     $data = journalSetup();
 
-    $response = $this->actingAs($data['user'])->post(route('jurnal.store'), [
+    $response = $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(),
         'tanggal' => '2026-09-08',
         'kelas_id' => $data['kelas']->id,
         'mapel_id' => $data['mapel']->id,
@@ -79,7 +95,7 @@ it('stores at most three server-selected present student witnesses', function ()
         ]);
     }
 
-    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(),
         'status_guru' => 'Hadir',
         'absensi' => Siswa::query()->pluck('id')->mapWithKeys(fn (int $id, int $index): array => [
             $index => ['siswa_id' => $id, 'status' => $index === 0 ? 'S' : 'H'],
@@ -182,6 +198,7 @@ it('defaults teacher attendance to hadir when status is omitted', function () {
     $data = journalSetup();
 
     $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        ...schoolLocationPayload(),
         'kelas_id' => $data['kelas']->id,
         'mapel_id' => $data['mapel']->id,
         'jam_mulai_id' => $data['jamMulai']->id,
@@ -192,6 +209,64 @@ it('defaults teacher attendance to hadir when status is omitted', function () {
 
     $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Hadir']);
 });
+
+it('accepts a teacher location inside the school radius', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(), 'status_guru' => 'Hadir'])
+        ->assertRedirect();
+
+    expect(Jurnal::sole()->location_verified_at)->not->toBeNull();
+});
+
+it('accepts a teacher location exactly on the school radius', function () {
+    $data = journalSetup();
+    $longitude = 0.001;
+    $distance = 6371000 * 2 * atan2(sqrt(sin(deg2rad($longitude) / 2) ** 2), sqrt(1 - sin(deg2rad($longitude) / 2) ** 2));
+    config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => $distance, 'school.max_gps_accuracy' => 25]);
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'status_guru' => 'Hadir', 'latitude' => 0, 'longitude' => $longitude, 'location_accuracy' => 10,
+    ])->assertRedirect();
+
+    expect(Jurnal::sole()->location_distance)->toBeGreaterThan(0);
+});
+
+it('rejects a teacher location outside the school radius even when the client says it is valid', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload([
+        'longitude' => 0.01, 'location_valid' => true,
+    ]), 'status_guru' => 'Hadir'])->assertSessionHasErrors('location');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('rejects inaccurate GPS readings', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(['location_accuracy' => 26]), 'status_guru' => 'Hadir'])
+        ->assertSessionHasErrors('location_accuracy');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('rejects invalid GPS coordinates', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(['latitude' => 91]), 'status_guru' => 'Hadir'])
+        ->assertSessionHasErrors('location_latitude');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('does not require GPS for izin or sakit journals', function (string $status) {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => $status])->assertRedirect();
+
+    expect(Jurnal::sole()->location_verified_at)->toBeNull();
+})->with(['Izin', 'Sakit']);
 
 it('prevents a teacher from viewing another teachers journal', function () {
     $owner = journalSetup();

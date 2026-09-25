@@ -13,13 +13,12 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
+use App\Services\SchoolLocationVerifier;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -57,15 +56,15 @@ class JurnalController extends Controller
         return view('jurnal.create', $this->formData());
     }
 
-    public function store(StoreJurnalRequest $request): RedirectResponse
+    public function store(StoreJurnalRequest $request, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        $signature = $data['tanda_tangan'] ?? null;
         unset($data['absensi'], $data['tanda_tangan'], $data['jadwal_id']);
+        $data = [...$data, ...$this->locationData($data, $locationVerifier)];
         $this->validatePeriodOrder($data);
 
-        $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
+        $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
             $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
             $existingJournal = Jurnal::query()
                 ->where('guru_id', $guru->id)
@@ -83,7 +82,6 @@ class JurnalController extends Controller
             $jurnal = Jurnal::create([
                 ...$data,
                 'guru_id' => $guru->id,
-                'tanda_tangan' => $this->saveSignature($signature),
             ]);
             $this->syncAbsensis($jurnal, $absensis);
 
@@ -133,21 +131,20 @@ class JurnalController extends Controller
         ]);
     }
 
-    public function update(UpdateJurnalRequest $request, Jurnal $jurnal): RedirectResponse
+    public function update(UpdateJurnalRequest $request, Jurnal $jurnal, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $this->authorizeJournal($jurnal, true);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        $signature = $data['tanda_tangan'] ?? null;
         unset($data['absensi'], $data['tanda_tangan']);
+        $data = [...$data, ...$this->locationData($data, $locationVerifier)];
         unset($data['tanggal']);
         $this->validatePeriodOrder($data, $jurnal->tanggal->toDateString());
-        DB::transaction(function () use ($data, $absensis, $jurnal, $signature): void {
+        DB::transaction(function () use ($data, $absensis, $jurnal): void {
             $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
             abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
-            $data['tanda_tangan'] = $this->saveSignature($signature, $jurnal->tanda_tangan);
             $jurnal->update($data);
             $this->syncAbsensis($jurnal, $absensis);
         });
@@ -205,6 +202,34 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
+    /** @return array<string, mixed> */
+    private function locationData(array $data, SchoolLocationVerifier $locationVerifier): array
+    {
+        if ($data['status_guru'] !== 'Hadir') {
+            return [
+                'latitude' => null,
+                'longitude' => null,
+                'location_accuracy' => null,
+                'location_distance' => null,
+                'location_verified_at' => null,
+            ];
+        }
+
+        $verifiedLocation = $locationVerifier->verify(
+            $data['latitude'] ?? null,
+            $data['longitude'] ?? null,
+            $data['location_accuracy'] ?? null,
+        );
+
+        return [
+            'latitude' => $verifiedLocation['latitude'],
+            'longitude' => $verifiedLocation['longitude'],
+            'location_accuracy' => $verifiedLocation['accuracy'],
+            'location_distance' => $verifiedLocation['distance'],
+            'location_verified_at' => $verifiedLocation['verified_at'],
+        ];
+    }
+
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
     {
         abort_unless(in_array(auth()->user()->role, ['guru', 'admin', 'sekretaris'], true), 403);
@@ -227,36 +252,6 @@ class JurnalController extends Controller
         [, $endTime] = $end->timesForDay($hari);
 
         abort_if($startTime >= $endTime, 422, 'Jam selesai harus setelah jam mulai.');
-    }
-
-    private function saveSignature(?string $signature, ?string $previousSignature = null): ?string
-    {
-        if (blank($signature)) {
-            return $previousSignature;
-        }
-
-        if (! preg_match('/^data:image\\/png;base64,([A-Za-z0-9+\\/=]+)$/', $signature, $matches)) {
-            throw ValidationException::withMessages([
-                'tanda_tangan' => 'Tanda tangan harus berupa gambar PNG.',
-            ]);
-        }
-
-        $image = base64_decode($matches[1], true);
-        $imageInfo = $image === false ? false : @getimagesizefromstring($image);
-        if ($image === false || strlen($image) > 512000 || $imageInfo === false || $imageInfo[2] !== IMAGETYPE_PNG) {
-            throw ValidationException::withMessages([
-                'tanda_tangan' => 'Tanda tangan tidak valid atau ukurannya melebihi 500 KB.',
-            ]);
-        }
-
-        $path = 'jurnal/tanda-tangan/'.Str::uuid().'.png';
-        Storage::put($path, $image);
-
-        if ($previousSignature) {
-            DB::afterCommit(fn () => Storage::delete($previousSignature));
-        }
-
-        return $path;
     }
 
     /**
