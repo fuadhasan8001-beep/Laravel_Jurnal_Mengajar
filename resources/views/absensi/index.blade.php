@@ -10,7 +10,7 @@
         </div><span class="status approved">Status D = dispensasi</span>
     </div>
     @forelse ($jurnals as $jurnal)
-                        <section class="panel panel-spaced">
+        <section class="panel panel-spaced">
             <div class="panel-head">
                 <div>
                     <h2>{{ $jurnal->tanggal->format('d M Y') }}</h2>
@@ -18,6 +18,9 @@
                 </div><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa tercatat</span>
             </div>
             @if ($jurnal->kelas->siswas->count())
+                <form action="{{ route('absensi.store') }}" method="POST" data-absence-form>
+                    @csrf
+                    <input type="hidden" name="jurnal_id" value="{{ $jurnal->id }}">
                 <div class="panel-body">
                     <button
                         class="btn btn-muted"
@@ -32,7 +35,6 @@
                                 <th>Siswa</th>
                                 <th>Status</th>
                                 <th>Catatan</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,29 +43,17 @@
                                     $absensi = $jurnal->absensis->firstWhere('siswa_id', $siswa->id);
                                 @endphp
                                 <tr>
-                                    @php
-                                        $formId = 'absence-form-' . $jurnal->id . '-' . $siswa->id;
-                                    @endphp
                                     <td>
-                                        <form
-                                            id="{{ $formId }}"
-                                            action="{{ route('absensi.store') }}"
-                                            method="POST"
-                                        >
-                                            @csrf
-                                        </form>
-                                        <input form="{{ $formId }}" type="hidden" name="jurnal_id" value="{{ $jurnal->id }}">
-                                        <input form="{{ $formId }}" type="hidden" name="siswa_id" value="{{ $siswa->id }}">
+                                        <input type="hidden" name="absensis[{{ $siswa->id }}][siswa_id]" value="{{ $siswa->id }}">
                                         <strong>{{ $siswa->nama_siswa }}</strong>
                                     </td>
                                     <td>
                                             @if ($absensi?->status === 'D')
-                                                <input form="{{ $formId }}" type="hidden" name="status" value="D">
+                                                <input type="hidden" name="absensis[{{ $siswa->id }}][status]" value="D">
                                             @endif
                                             <select
                                                 data-absence-status
-                                                form="{{ $formId }}"
-                                                name="status"
+                                                name="absensis[{{ $siswa->id }}][status]"
                                                 @disabled($absensi?->status === 'D')
                                             >
                                                 @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $status => $label)
@@ -72,19 +62,20 @@
                                             </select>
                                     </td>
                                     <td>
-                                        <input form="{{ $formId }}" type="text" name="catatan" value="{{ $absensi->catatan ?? '' }}" placeholder="Catatan">
+                                        <input type="text" name="absensis[{{ $siswa->id }}][catatan]" value="{{ $absensi->catatan ?? '' }}" placeholder="Catatan">
                                         @if ($absensi?->surat_izin_path)
                                             <a href="{{ route('absensi.parent-letter', $absensi) }}">Lihat surat izin</a>
                                         @endif
-                                    </td>
-                                    <td>
-                                        <button class="btn" form="{{ $formId }}" type="submit">Simpan</button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
             </div>
+                    <div class="form-actions">
+                        <button class="btn" type="submit">Simpan absensi</button>
+                    </div>
+                </form>
             @else
                 <div class="empty">Belum ada siswa dalam kelas jurnal ini.</div>
             @endif
@@ -95,4 +86,13 @@
         </section>
     @endforelse
     {{ $jurnals->links() }}
+    <script>
+        document.querySelectorAll('[data-absence-form]').forEach((form) => {
+            form.querySelector('[data-mark-present]')?.addEventListener('click', () => {
+                form.querySelectorAll('[data-absence-status]').forEach((select) => {
+                    select.value = 'H';
+                });
+            });
+        });
+    </script>
 @endsection

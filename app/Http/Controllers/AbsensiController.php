@@ -11,6 +11,7 @@ use App\Models\Mapel;
 use App\Models\Siswa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -49,6 +50,10 @@ class AbsensiController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('absensis')) {
+            return $this->storeMultiple($request);
+        }
+
         $data = $request->validate([
             'jurnal_id' => ['required', 'exists:jurnals,id'],
             'siswa_id' => ['required', 'exists:siswas,id'],
@@ -82,6 +87,46 @@ class AbsensiController extends Controller
                 'catatan' => $data['catatan'] ?? null,
             ]
         );
+
+        return back()->with('success', 'Absensi berhasil disimpan.');
+    }
+
+    private function storeMultiple(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'jurnal_id' => ['required', 'exists:jurnals,id'],
+            'absensis' => ['required', 'array', 'min:1'],
+            'absensis.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
+            'absensis.*.status' => ['required', 'in:H,S,I,A,D'],
+            'absensis.*.catatan' => ['nullable', 'string'],
+        ]);
+
+        $jurnal = Jurnal::with(['jamMulai', 'jamSelesai'])->findOrFail($data['jurnal_id']);
+        $this->authorizeJurnal($jurnal);
+
+        $records = collect($data['absensis']);
+        $studentIds = $records->pluck('siswa_id');
+        $studentsInClass = Siswa::where('kelas_id', $jurnal->kelas_id)
+            ->whereIn('id', $studentIds)
+            ->pluck('id');
+        abort_unless($studentIds->diff($studentsInClass)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
+
+        $approvedDispensations = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
+        DB::transaction(function () use ($records, $jurnal, $approvedDispensations): void {
+            foreach ($records as $record) {
+                $studentId = (int) $record['siswa_id'];
+                $hasApprovedDispensation = $approvedDispensations->contains($studentId);
+                abort_if($record['status'] === 'D' && ! $hasApprovedDispensation, 422, 'Status dispensasi memerlukan persetujuan admin.');
+
+                Absensi::updateOrCreate(
+                    ['jurnal_id' => $jurnal->id, 'siswa_id' => $studentId],
+                    [
+                        'status' => $hasApprovedDispensation ? 'D' : $record['status'],
+                        'catatan' => $hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null),
+                    ]
+                );
+            }
+        });
 
         return back()->with('success', 'Absensi berhasil disimpan.');
     }
