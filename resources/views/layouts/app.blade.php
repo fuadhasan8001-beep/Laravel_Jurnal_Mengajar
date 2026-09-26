@@ -2366,7 +2366,7 @@
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
-                                <div class="notification-list">
+                                <div class="notification-list" data-notification-list data-notification-mode="desktop">
 
                                     @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
 
@@ -2440,7 +2440,7 @@
                                     <span class="sr-only">Notifikasi ({{ auth()->user()->unreadNotifications()->count() }})</span>
                                 </summary>
 
-                                <div class="notification-list">
+                                <div class="notification-list" data-notification-list data-notification-mode="mobile">
 
                                     @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
 
@@ -2735,6 +2735,47 @@
                 }
             });
         });
+
+        const refreshNotifications = async () => {
+            try {
+                const response = await fetch('{{ route('notifications.feed') }}', {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) return;
+
+                const feed = await response.json();
+                document.querySelectorAll('.notification-badge').forEach((badge) => {
+                    badge.textContent = feed.unread;
+                });
+                document.querySelectorAll('.notification-list[data-notification-list]').forEach((list) => {
+                    const mode = list.dataset.notificationMode;
+                    const limit = mode === 'mobile' ? 20 : 5;
+                    list.querySelectorAll('form[data-live-notification], .notification-empty[data-live-notification]').forEach((item) => item.remove());
+                    const items = feed.items.slice(0, limit);
+                    if (!items.length) {
+                        const empty = document.createElement('div');
+                        empty.className = 'notification-empty';
+                        empty.dataset.liveNotification = 'true';
+                        empty.textContent = mode === 'mobile' ? 'Belum ada notifikasi.' : 'Tidak ada notifikasi baru.';
+                        list.prepend(empty);
+                        return;
+                    }
+                    items.slice().reverse().forEach((item) => {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = item.url;
+                        form.dataset.liveNotification = 'true';
+                        form.innerHTML = `<input type="hidden" name="_token" value="{{ csrf_token() }}"><button class="notification-item" type="submit">${item.message}${mode === 'mobile' ? `<br><small>${item.read ? 'Sudah dibaca' : 'Belum dibaca'} · ${item.created_at}</small>` : ''}</button>`;
+                        list.prepend(form);
+                    });
+                });
+            } catch (error) {
+                // Notifications remain usable through the normal page-rendered list.
+            }
+        };
+
+        window.setInterval(refreshNotifications, 10000);
 
         applySearchableSelects();
     </script>

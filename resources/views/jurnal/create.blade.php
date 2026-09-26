@@ -6,7 +6,6 @@
     <div class="page-head">
         <div>
             <h1>Isi jurnal</h1>
-            <p>{{ now()->translatedFormat('l, d F Y') }}</p>
         </div>
     </div>
 

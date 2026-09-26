@@ -16,6 +16,18 @@
     @else
         <input type="hidden" name="jadwal_id" value="{{ $activeSession['id'] }}">
     @endif
+    <fieldset id="status_guru" style="border:0;padding:0;margin:0 0 24px;">
+        <legend style="font-weight:600;margin-bottom:12px;">Kehadiran guru</legend>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;">
+            @foreach (['Hadir', 'Izin', 'Sakit'] as $status)
+                <label style="display:flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;">
+                    <input type="radio" name="status_guru" value="{{ $status }}" style="width:20px;height:20px;margin:0;" @checked((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === $status) required>
+                    {{ $status === 'Hadir' ? 'Hadir di sekolah' : $status }}
+                </label>
+            @endforeach
+        </div>
+        @error('status_guru')<small class="error">{{ $message }}</small>@enderror
+    </fieldset>
     <div class="form-grid">
         <div class="field"><label for="guru_nama">Guru</label><input id="guru_nama" value="{{ auth()->user()->name }}" readonly></div>
         <div class="field"><label for="tanggal">Tanggal</label><input id="tanggal" value="{{ $date->translatedFormat('l, d F Y') }}" readonly></div>
@@ -33,11 +45,6 @@
         <div class="field"><label for="mapel_nama">Mata pelajaran</label><input id="mapel_nama" value="{{ $jurnal?->mapel->nama_mapel ?? $activeSession['mapel'] }}" readonly></div>
         <div class="field"><label for="jam_mulai">Jam mulai</label><input id="jam_mulai" value="{{ substr($start->timesForDay($hari)[0], 0, 5) }} (jam ke-{{ $start->jam_ke }})" readonly></div>
         <div class="field"><label for="jam_selesai">Jam selesai</label><input id="jam_selesai" value="{{ substr($end->timesForDay($hari)[1], 0, 5) }} (jam ke-{{ $end->jam_ke }})" readonly></div>
-        <div class="field"><label for="status_guru">Kehadiran guru</label><select id="status_guru" name="status_guru">
-            @foreach (['Hadir', 'Izin', 'Sakit'] as $status)
-                <option value="{{ $status }}" @selected((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === $status)>{{ $status === 'Hadir' ? 'Hadir di Sekolah' : $status }}</option>
-            @endforeach
-        </select>@error('status_guru')<small class="error">{{ $message }}</small>@enderror</div>
     </div>
     @error('jadwal_id')<p class="error" role="alert">{{ $message }}</p>@enderror
     <section class="journal-detail-panel" aria-label="Detail pembelajaran dan absensi">
@@ -53,6 +60,7 @@
             </div>
         @endforeach
         <div class="journal-card-header"><h3>Absensi siswa</h3><button type="button" class="btn btn-muted" id="btn-hadir-semua">Tandai hadir semua</button></div>
+        <div class="field"><label for="attendance-search">Cari siswa</label><input type="search" id="attendance-search" placeholder="Nama atau NIS" autocomplete="off"></div>
         <div class="table-wrap"><table><thead><tr><th>No</th><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>
             @forelse ($kelas->first()?->siswas ?? [] as $student)
                 @php
@@ -67,7 +75,7 @@
                     });
                     $saved = collect($attendance)->firstWhere('siswa_id', $student->id) ?? $attendance[$student->id] ?? [];
                 @endphp
-                <tr>
+                <tr data-attendance-student="{{ $student->nama_siswa }} {{ $student->nis }}">
                     <td>{{ $loop->iteration }}<input type="hidden" name="absensi[{{ $student->id }}][siswa_id]" value="{{ $student->id }}"></td>
                     <td>{{ $student->nama_siswa }} ({{ $student->nis }})</td>
                     <td>
@@ -87,6 +95,11 @@
                 <tr><td colspan="4">Belum ada siswa di kelas ini.</td></tr>
             @endforelse
         </tbody></table></div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px;">
+            <button type="button" class="btn btn-muted" id="attendance-prev" aria-label="Halaman siswa sebelumnya" title="Halaman sebelumnya">&larr;</button>
+            <span id="attendance-page" role="status" aria-live="polite"></span>
+            <button type="button" class="btn btn-muted" id="attendance-next" aria-label="Halaman siswa berikutnya" title="Halaman berikutnya">&rarr;</button>
+        </div>
     </section>
     <section class="journal-detail-panel" aria-labelledby="location-title" data-school-latitude="{{ config('school.latitude') }}" data-school-longitude="{{ config('school.longitude') }}" data-school-radius="{{ config('school.radius_meters') }}" data-max-gps-accuracy="{{ config('school.max_gps_accuracy') }}">
         <div class="journal-card-header"><div><h3 id="location-title">Verifikasi lokasi sekolah</h3><p>Status Hadir memerlukan verifikasi GPS di area sekolah.</p></div></div>
@@ -129,6 +142,7 @@
 (function () {
     const form = document.getElementById('journal-form');
     const statusSelect = document.getElementById('status_guru');
+    const selectedStatus = () => form.querySelector('input[name="status_guru"]:checked')?.value;
     const locationPanel = document.querySelector('[data-school-latitude]');
     const locationStatus = document.getElementById('location-status');
     const checkLocationButton = document.getElementById('check-location');
@@ -140,6 +154,30 @@
     const accuracyInput = document.getElementById('location-accuracy');
     if (!form) return;
 
+    const studentRows = Array.from(form.querySelectorAll('[data-attendance-student]'));
+    const search = document.getElementById('attendance-search');
+    const previousPage = document.getElementById('attendance-prev');
+    const nextPage = document.getElementById('attendance-next');
+    const pageLabel = document.getElementById('attendance-page');
+    let studentPage = 0;
+    function renderStudents() {
+        const query = search.value.trim().toLocaleLowerCase('id');
+        const matching = studentRows.filter(row => row.dataset.attendanceStudent.toLocaleLowerCase('id').includes(query));
+        const pages = Math.max(1, Math.ceil(matching.length / 10));
+        studentPage = Math.min(studentPage, pages - 1);
+        const visible = new Set(matching.slice(studentPage * 10, (studentPage + 1) * 10));
+        studentRows.forEach(row => { row.style.display = visible.has(row) ? '' : 'none'; });
+        previousPage.disabled = studentPage === 0;
+        nextPage.disabled = studentPage >= pages - 1;
+        pageLabel.textContent = matching.length
+            ? `${studentPage * 10 + 1}-${Math.min((studentPage + 1) * 10, matching.length)} dari ${matching.length} siswa`
+            : 'Tidak ada siswa yang cocok';
+    }
+    search.addEventListener('input', () => { studentPage = 0; renderStudents(); });
+    previousPage.addEventListener('click', () => { studentPage--; renderStudents(); });
+    nextPage.addEventListener('click', () => { studentPage++; renderStudents(); });
+    renderStudents();
+
     let locationValid = false;
     const schoolLatitude = Number(locationPanel.dataset.schoolLatitude);
     const schoolLongitude = Number(locationPanel.dataset.schoolLongitude);
@@ -148,10 +186,13 @@
     const hasSchoolConfig = locationPanel.dataset.schoolLatitude.trim() !== '' && locationPanel.dataset.schoolLongitude.trim() !== '' && locationPanel.dataset.schoolRadius.trim() !== '' && locationPanel.dataset.maxGpsAccuracy.trim() !== '' && Number.isFinite(schoolLatitude) && Math.abs(schoolLatitude) <= 90 && Number.isFinite(schoolLongitude) && Math.abs(schoolLongitude) <= 180 && Number.isFinite(radius) && radius > 0 && Number.isFinite(maximumAccuracy) && maximumAccuracy >= 0;
 
     function updateButtons() {
-        const canSubmit = statusSelect.value !== 'Hadir' || locationValid;
+        const canSubmit = selectedStatus() !== 'Hadir' || locationValid;
         saveTrigger.disabled = !canSubmit;
         finalSubmit.disabled = !canSubmit;
-        checkLocationButton.hidden = statusSelect.value !== 'Hadir';
+        locationPanel.hidden = selectedStatus() !== 'Hadir';
+        locationPanel.style.display = selectedStatus() === 'Hadir' ? '' : 'none';
+        checkLocationButton.hidden = selectedStatus() !== 'Hadir';
+        document.getElementById('confirm-location').parentElement.hidden = selectedStatus() !== 'Hadir';
     }
 
     function distanceMeters(latitude, longitude) {
@@ -178,6 +219,7 @@
         }
         locationStatus.textContent = 'Memeriksa lokasi...';
         navigator.geolocation.getCurrentPosition((position) => {
+            if (selectedStatus() !== 'Hadir') return;
             const { latitude, longitude, accuracy } = position.coords;
             if (!Number.isFinite(latitude) || Math.abs(latitude) > 90 || !Number.isFinite(longitude) || Math.abs(longitude) > 180 || !Number.isFinite(accuracy) || accuracy < 0) {
                 locationStatus.textContent = 'Koordinat GPS tidak valid. Coba periksa lokasi kembali.';
@@ -209,7 +251,7 @@
     }
 
     function updateSummary() {
-        const status = statusSelect.value || 'Hadir';
+        const status = selectedStatus() || 'Hadir';
         const materi = document.getElementById('materi')?.value?.trim() || 'Belum diisi';
         const kegiatan = document.getElementById('kegiatan')?.value?.trim() || 'Belum diisi';
         const counts = { H: 0, S: 0, I: 0, A: 0, D: 0 };
@@ -233,7 +275,7 @@
     }
 
     statusSelect.addEventListener('change', () => {
-        if (statusSelect.value === 'Hadir') checkLocation();
+        if (selectedStatus() === 'Hadir') checkLocation();
         else {
             locationValid = false;
             latitudeInput.value = '';
@@ -247,7 +289,7 @@
     checkLocationButton.addEventListener('click', checkLocation);
     saveTrigger.addEventListener('click', openConfirmModal);
     finalSubmit.addEventListener('click', () => {
-        if (statusSelect.value === 'Hadir' && !locationValid) return;
+        if (selectedStatus() === 'Hadir' && !locationValid) return;
         form.submit();
     });
     confirmModal?.addEventListener('click', (event) => { if (event.target === confirmModal) closeConfirmModal(); });
@@ -260,7 +302,7 @@
     });
     updateButtons();
     updateSummary();
-    if (statusSelect.value === 'Hadir') checkLocation();
+    if (selectedStatus() === 'Hadir') checkLocation();
 })();
 </script>
 @if (! $isEdit && $sessions->where('active', true)->count() > 1)
