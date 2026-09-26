@@ -17,6 +17,18 @@ use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class);
 
+it('saves and displays assignments when the teacher is absent', function (string $status) {
+    $data = dispensasiSetup();
+    $this->actingAs($data['teacher'])->post(route('jurnal.store'), [
+        ...$data['journal'], 'jadwal_id' => $data['schedule']->id,
+        'status_guru' => $status, 'tugas' => 'Kerjakan latihan halaman 25.',
+    ])->assertSessionHasNoErrors()->assertRedirect();
+    $journal = Jurnal::firstOrFail();
+    expect($journal->tugas)->toBe('Kerjakan latihan halaman 25.');
+    $this->get(route('jurnal.show', $journal))->assertOk()->assertSee('Kerjakan latihan halaman 25.');
+    $this->get(route('jurnal.edit', $journal))->assertOk()->assertSee('name="tugas"', false)->assertSee('Kerjakan latihan halaman 25.');
+})->with(['Sakit', 'Izin']);
+
 it('always dates a new dispensation today regardless of submitted date', function (mixed $submittedDate) {
     $data = dispensasiSetup();
     $this->travelTo(Carbon::parse('2026-09-15 00:05:00', 'Asia/Jakarta'));
@@ -260,7 +272,7 @@ it('uses approved dispensations on later journal creation and preserves them on 
     $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
 });
 
-it('records piket-selected attendance status for approved dispensation', function () {
+it('uses dispensation attendance even when a legacy request has an izin status', function () {
     $this->freezeTime();
     $data = dispensasiSetup();
     $student = $data['students']->first();
@@ -270,14 +282,14 @@ it('records piket-selected attendance status for approved dispensation', functio
         ...$data['payload'],
         'siswa_id' => $student->id,
         'status_piket' => 'Disetujui',
-        'status_admin' => 'Disetujui',
-        'status_akhir' => 'Disetujui',
+        'status_admin' => 'Menunggu',
+        'status_akhir' => 'Menunggu',
         'attendance_status' => 'I',
     ]);
 
     $this->actingAs($data['admin'])->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
 
-    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'I']);
+    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
     $this->assertDatabaseHas('dispensasis', ['id' => $dispensasi->id, 'attendance_status' => 'I']);
 });
 

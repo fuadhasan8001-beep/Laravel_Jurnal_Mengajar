@@ -10,8 +10,8 @@ use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Siswa;
 use App\Models\User;
-use App\Notifications\DispensasiNotification;
 use App\Notifications\DispensasiApprovalMail;
+use App\Notifications\DispensasiNotification;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,9 +65,6 @@ class DispensasiController extends Controller
     {
         $this->authorizePiketAccess();
         $isPiket = auth()->user()->isPiketHariIni();
-        if ($isPiket && ! $request->filled('attendance_status')) {
-            $request->merge(['attendance_status' => 'I']);
-        }
         abort_if(! $isPiket && ($request->filled('siswa_ids') || $request->hasFile('surat_izin') || $request->filled('attendance_status')), 403);
         $request->merge(['tanggal' => today()->toDateString()]);
 
@@ -80,7 +77,7 @@ class DispensasiController extends Controller
             'alasan' => ['required', 'string', 'max:5000'],
             'bukti' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'surat_izin' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'attendance_status' => [$isPiket ? 'required' : 'exclude', 'in:H,S,I,A'],
+            'attendance_status' => ['exclude'],
         ]);
 
         $jamMulai = JamPelajaran::findOrFail($data['jam_mulai_id']);
@@ -224,12 +221,7 @@ class DispensasiController extends Controller
 
         DB::transaction(function () use ($dispensasi, $data): void {
             $dispensasi = Dispensasi::whereKey($dispensasi->id)->lockForUpdate()->firstOrFail();
-            $alreadyApprovedWithStatus = $dispensasi->status_akhir === 'Disetujui'
-                && $dispensasi->status_piket === 'Disetujui'
-                && $dispensasi->status_admin === 'Disetujui'
-                && filled($dispensasi->attendance_status);
-
-            abort_if($dispensasi->status_akhir !== 'Menunggu' && ! $alreadyApprovedWithStatus, 422, 'Dispensasi sudah memiliki keputusan akhir.');
+            abort_if($dispensasi->status_akhir !== 'Menunggu', 422, 'Dispensasi sudah memiliki keputusan akhir.');
             $user = auth()->user();
             $isPiket = $user->isPiketHariIni();
 
@@ -379,7 +371,7 @@ class DispensasiController extends Controller
             Absensi::updateOrCreate(
                 ['jurnal_id' => $jurnal->id, 'siswa_id' => $dispensasi->siswa_id],
                 [
-                    'status' => $dispensasi->attendance_status ?? 'D',
+                    'status' => 'D',
                     'catatan' => $dispensasi->surat_izin_path ? 'Izin orang tua / surat dispensasi terlampir.' : 'Dispensasi disetujui.',
                     'surat_izin_path' => $dispensasi->surat_izin_path,
                 ]

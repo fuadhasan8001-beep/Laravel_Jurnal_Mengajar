@@ -1,3 +1,4 @@
+@include('absensi._styles')
 @php
     $isEdit = isset($jurnal);
     $jurnal = $jurnal ?? null;
@@ -59,9 +60,14 @@
                 @error($field)<small class="error">{{ $message }}</small>@enderror
             </div>
         @endforeach
+        <div class="field" id="teacher-assignment" @if ((old('status_guru', $jurnal?->status_guru) ?: 'Hadir') === 'Hadir') hidden @endif>
+            <label for="tugas">Tugas untuk siswa (opsional)</label>
+            <textarea id="tugas" name="tugas" rows="3" maxlength="5000">{{ old('tugas', $jurnal?->tugas) }}</textarea>
+            @error('tugas')<small class="error">{{ $message }}</small>@enderror
+        </div>
         <div class="journal-card-header"><h3>Absensi siswa</h3><button type="button" class="btn btn-muted" id="btn-hadir-semua">Tandai hadir semua</button></div>
         <div class="field"><label for="attendance-search">Cari siswa</label><input type="search" id="attendance-search" placeholder="Nama atau NIS" autocomplete="off"></div>
-        <div class="table-wrap"><table><thead><tr><th>No</th><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>
+        <div class="table-wrap attendance-editor"><table><thead><tr><th class="attendance-number">No</th><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>
             @forelse ($kelas->first()?->siswas ?? [] as $student)
                 @php
                     [$journalStart] = $start->timesForDay($hari);
@@ -76,20 +82,22 @@
                     $saved = collect($attendance)->firstWhere('siswa_id', $student->id) ?? $attendance[$student->id] ?? [];
                 @endphp
                 <tr data-attendance-student="{{ $student->nama_siswa }} {{ $student->nis }}">
-                    <td>{{ $loop->iteration }}<input type="hidden" name="absensi[{{ $student->id }}][siswa_id]" value="{{ $student->id }}"></td>
-                    <td>{{ $student->nama_siswa }} ({{ $student->nis }})</td>
+                    <td class="attendance-number">{{ $loop->iteration }}<input type="hidden" name="absensi[{{ $student->id }}][siswa_id]" value="{{ $student->id }}"></td>
+                    <td class="attendance-name"><strong>{{ $student->nama_siswa }}</strong><small>{{ $student->nis }}</small></td>
                     <td>
                         @if ($dispensed)
-                            <span class="status approved">Dispen</span><input type="hidden" name="absensi[{{ $student->id }}][status]" value="D">
-                        @else
-                            <select name="absensi[{{ $student->id }}][status]" class="attendance-status" aria-label="Status {{ $student->nama_siswa }}">
-                                @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa'] as $value => $label)
-                                    <option value="{{ $value }}" @selected(($saved['status'] ?? 'H') === $value)>{{ $label }}</option>
-                                @endforeach
-                            </select>
+                            <input type="hidden" name="absensi[{{ $student->id }}][status]" value="D" class="attendance-dispensed">
                         @endif
+                        <div class="attendance-options" role="group" aria-label="Status {{ $student->nama_siswa }}">
+                            @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $value => $label)
+                                <label @if ($value === 'D') title="Dispensasi mengikuti persetujuan admin" @endif>
+                                    <input type="radio" class="attendance-status" name="absensi[{{ $student->id }}][status]" value="{{ $value }}" style="width:18px;height:18px;margin:0;" @checked(($dispensed ? 'D' : ($saved['status'] ?? 'H')) === $value) @disabled($dispensed || $value === 'D')>
+                                    {{ $label }}
+                                </label>
+                            @endforeach
+                        </div>
                     </td>
-                    <td><input name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($saved['catatan'] ?? '') }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($dispensed)></td>
+                    <td><input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($saved['catatan'] ?? '') }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($dispensed)></td>
                 </tr>
             @empty
                 <tr><td colspan="4">Belum ada siswa di kelas ini.</td></tr>
@@ -129,6 +137,7 @@
             <div><strong>Mata pelajaran:</strong> <span id="confirm-mapel">{{ $jurnal?->mapel->nama_mapel ?? $activeSession['mapel'] }}</span></div>
             <div style="grid-column:1/-1;"><strong>Materi:</strong> <span id="confirm-materi">{{ old('materi', $jurnal?->materi) ?: 'Belum diisi' }}</span></div>
             <div style="grid-column:1/-1;"><strong>Kegiatan:</strong> <span id="confirm-kegiatan">{{ old('kegiatan', $jurnal?->kegiatan) ?: 'Belum diisi' }}</span></div>
+            <div id="confirm-assignment-row" style="grid-column:1/-1;"><strong>Tugas:</strong> <span id="confirm-tugas"></span></div>
             <div style="grid-column:1/-1;"><strong>Absensi siswa:</strong> <span id="confirm-absensi">Menunggu update</span></div>
             <div style="grid-column:1/-1;"><strong>Verifikasi lokasi:</strong> <span id="confirm-location">Belum diperiksa</span></div>
         </div>
@@ -186,6 +195,9 @@
     const hasSchoolConfig = locationPanel.dataset.schoolLatitude.trim() !== '' && locationPanel.dataset.schoolLongitude.trim() !== '' && locationPanel.dataset.schoolRadius.trim() !== '' && locationPanel.dataset.maxGpsAccuracy.trim() !== '' && Number.isFinite(schoolLatitude) && Math.abs(schoolLatitude) <= 90 && Number.isFinite(schoolLongitude) && Math.abs(schoolLongitude) <= 180 && Number.isFinite(radius) && radius > 0 && Number.isFinite(maximumAccuracy) && maximumAccuracy >= 0;
 
     function updateButtons() {
+        const assignment = document.getElementById('teacher-assignment');
+        assignment.hidden = selectedStatus() === 'Hadir';
+        assignment.style.display = selectedStatus() === 'Hadir' ? 'none' : '';
         const canSubmit = selectedStatus() !== 'Hadir' || locationValid;
         saveTrigger.disabled = !canSubmit;
         finalSubmit.disabled = !canSubmit;
@@ -255,13 +267,15 @@
         const materi = document.getElementById('materi')?.value?.trim() || 'Belum diisi';
         const kegiatan = document.getElementById('kegiatan')?.value?.trim() || 'Belum diisi';
         const counts = { H: 0, S: 0, I: 0, A: 0, D: 0 };
-        form.querySelectorAll('.attendance-status').forEach((select) => {
+        form.querySelectorAll('.attendance-status:checked').forEach((select) => {
             const value = select.value || 'H';
             if (counts[value] !== undefined) counts[value] += 1;
         });
         document.getElementById('confirm-status').textContent = status === 'Hadir' ? 'Hadir di Sekolah' : status;
         document.getElementById('confirm-materi').textContent = materi;
         document.getElementById('confirm-kegiatan').textContent = kegiatan;
+        document.getElementById('confirm-assignment-row').hidden = status === 'Hadir';
+        document.getElementById('confirm-tugas').textContent = document.getElementById('tugas').value.trim() || 'Tidak ada tugas';
         document.getElementById('confirm-absensi').textContent = `Hadir ${counts.H}, Sakit ${counts.S}, Izin ${counts.I}, Alpa ${counts.A}, Dispen ${counts.D}`;
         document.getElementById('confirm-location').textContent = status !== 'Hadir' ? 'Tidak diwajibkan untuk status ini' : (locationValid ? locationStatus.textContent : 'Belum valid');
     }
@@ -294,12 +308,23 @@
     });
     confirmModal?.addEventListener('click', (event) => { if (event.target === confirmModal) closeConfirmModal(); });
     document.querySelectorAll('[data-close-confirmation]').forEach((button) => button.addEventListener('click', closeConfirmModal));
-    ['materi', 'kegiatan'].forEach((id) => document.getElementById(id)?.addEventListener('input', updateSummary));
-    form.querySelectorAll('.attendance-status').forEach((select) => select.addEventListener('change', updateSummary));
+    ['materi', 'kegiatan', 'tugas'].forEach((id) => document.getElementById(id)?.addEventListener('input', updateSummary));
+    function updateAttendanceNotes() {
+        studentRows.forEach(row => {
+            const note = row.querySelector('[data-attendance-note]');
+            const present = row.querySelector('.attendance-status:checked')?.value === 'H';
+            note.hidden = present;
+            note.style.display = present ? 'none' : '';
+            note.disabled = present;
+        });
+    }
+    form.querySelectorAll('.attendance-status').forEach((radio) => radio.addEventListener('change', () => { updateAttendanceNotes(); updateSummary(); }));
     document.getElementById('btn-hadir-semua')?.addEventListener('click', () => {
-        form.querySelectorAll('.attendance-status').forEach((select) => { select.value = 'H'; });
+        form.querySelectorAll('.attendance-status[value="H"]:not(:disabled)').forEach((radio) => { radio.checked = true; });
+        updateAttendanceNotes();
         updateSummary();
     });
+    updateAttendanceNotes();
     updateButtons();
     updateSummary();
     if (selectedStatus() === 'Hadir') checkLocation();

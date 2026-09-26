@@ -2736,6 +2736,11 @@
             });
         });
 
+        document.addEventListener('scroll', (event) => {
+            if (event.target instanceof Element && event.target.closest('.notification-list')) return;
+            document.querySelectorAll('.notification-menu details[open]').forEach(details => { details.open = false; });
+        }, { capture: true, passive: true });
+
         const refreshNotifications = async () => {
             try {
                 const response = await fetch('{{ route('notifications.feed') }}', {
@@ -2751,8 +2756,11 @@
                 document.querySelectorAll('.notification-list[data-notification-list]').forEach((list) => {
                     const mode = list.dataset.notificationMode;
                     const limit = mode === 'mobile' ? 20 : 5;
-                    list.querySelectorAll('form[data-live-notification], .notification-empty[data-live-notification]').forEach((item) => item.remove());
-                    const items = feed.items.slice(0, limit);
+                    list.querySelectorAll('form').forEach(item => {
+                        if (item.querySelector('.notification-item')) item.remove();
+                    });
+                    list.querySelectorAll('.notification-empty').forEach(item => item.remove());
+                    const items = feed.items.filter(item => mode === 'mobile' || !item.read).slice(0, limit);
                     if (!items.length) {
                         const empty = document.createElement('div');
                         empty.className = 'notification-empty';
@@ -2766,7 +2774,20 @@
                         form.method = 'POST';
                         form.action = item.url;
                         form.dataset.liveNotification = 'true';
-                        form.innerHTML = `<input type="hidden" name="_token" value="{{ csrf_token() }}"><button class="notification-item" type="submit">${item.message}${mode === 'mobile' ? `<br><small>${item.read ? 'Sudah dibaca' : 'Belum dibaca'} · ${item.created_at}</small>` : ''}</button>`;
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = '{{ csrf_token() }}';
+                        const button = document.createElement('button');
+                        button.type = 'submit';
+                        button.className = 'notification-item';
+                        button.textContent = item.message;
+                        if (mode === 'mobile') {
+                            const time = document.createElement('small');
+                            time.textContent = `${item.read ? 'Sudah dibaca' : 'Belum dibaca'} · ${item.created_at}`;
+                            button.append(document.createElement('br'), time);
+                        }
+                        form.append(token, button);
                         list.prepend(form);
                     });
                 });

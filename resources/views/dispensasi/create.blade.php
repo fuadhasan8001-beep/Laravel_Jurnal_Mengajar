@@ -103,11 +103,6 @@
                         >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
                     @endunless
                     @if (auth()->user()->isPiketHariIni())
-                        <div class="field"><label for="attendance_status">Status presensi</label><select id="attendance_status" name="attendance_status" required>
-                            <option value="I" @selected(old('attendance_status', 'I') === 'I')>Izin</option>
-                            <option value="S" @selected(old('attendance_status') === 'S')>Sakit</option>
-                            <option value="A" @selected(old('attendance_status') === 'A')>Alpa</option>
-                        </select>@error('attendance_status')<small class="error">{{ $message }}</small>@enderror</div>
                         <div class="field"><label for="surat_izin">Foto surat izin dari orang tua <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input id="surat_izin" type="file" name="surat_izin" accept="image/jpeg,image/png,image/webp">@error('surat_izin')<small class="error">{{ $message }}</small>@enderror</div>
                     @endif
                 </div>
