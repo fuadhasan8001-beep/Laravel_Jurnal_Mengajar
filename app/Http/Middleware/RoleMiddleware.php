@@ -11,7 +11,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (! auth()->check()) {
-            return redirect()->route('login');
+            return redirect()->guest(route('login'));
         }
 
         if (! auth()->user()->is_active || ! in_array(auth()->user()->role, $roles, true)) {

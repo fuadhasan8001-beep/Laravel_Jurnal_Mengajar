@@ -16,10 +16,11 @@ it('rejects a dispensation for a lesson that has already ended', function () {
     $currentLesson = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '07:45:00', 'jam_selesai' => '08:30:00', 'is_active' => true]);
     $this->travelTo(Carbon::parse('2026-09-14 08:00:00', 'Asia/Jakarta'));
 
-    $this->actingAs($student->user)->post(route('dispensasi.store'), [
+    $this->actingAs(User::factory()->create(['role' => 'piket', 'is_active' => true]))->post(route('dispensasi.store'), [
         'jam_mulai_id' => $pastLesson->id,
         'jam_selesai_id' => $currentLesson->id,
         'alasan' => 'Kegiatan sekolah',
+        'siswa_ids' => [$student->id],
     ])->assertSessionHasErrors('jam_mulai_id');
 
     $this->assertDatabaseCount('dispensasis', 0);
@@ -30,10 +31,11 @@ it('rejects a non-image file as dispensation evidence', function () {
     $lesson = JamPelajaran::create(['jam_ke' => 1, 'jam_mulai' => '07:00:00', 'jam_selesai' => '07:45:00', 'is_active' => true]);
     $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
 
-    $this->actingAs($student->user)->post(route('dispensasi.store'), [
+    $this->actingAs(User::factory()->create(['role' => 'piket', 'is_active' => true]))->post(route('dispensasi.store'), [
         'jam_mulai_id' => $lesson->id,
         'jam_selesai_id' => $lesson->id,
         'alasan' => 'Kegiatan sekolah',
+        'siswa_ids' => [$student->id],
         'bukti' => UploadedFile::fake()->create('surat.pdf', 100, 'application/pdf'),
     ])->assertSessionHasErrors('bukti');
 
@@ -43,12 +45,13 @@ it('rejects a non-image file as dispensation evidence', function () {
 it('allows a dispensation to end in the same lesson that it starts', function () {
     $student = dispensasiValidationStudent();
     $lesson = JamPelajaran::create(['jam_ke' => 1, 'jam_mulai' => '07:00:00', 'jam_selesai' => '07:45:00', 'is_active' => true]);
-    $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
+    $this->travelTo(Carbon::parse('2026-09-14 06:30:00', 'Asia/Jakarta'));
 
-    $this->actingAs($student->user)->post(route('dispensasi.store'), [
+    $this->actingAs(User::factory()->create(['role' => 'piket', 'is_active' => true]))->post(route('dispensasi.store'), [
         'jam_mulai_id' => $lesson->id,
         'jam_selesai_id' => $lesson->id,
         'alasan' => 'Kegiatan sekolah',
+        'siswa_ids' => [$student->id],
     ])->assertRedirect(route('dispensasi.index'));
 
     $this->assertDatabaseHas('dispensasis', [
@@ -64,10 +67,11 @@ it('rejects an ending lesson before the dispensation starts', function () {
     $secondLesson = JamPelajaran::create(['jam_ke' => 2, 'jam_mulai' => '07:45:00', 'jam_selesai' => '08:30:00', 'is_active' => true]);
     $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
 
-    $this->actingAs($student->user)->post(route('dispensasi.store'), [
+    $this->actingAs(User::factory()->create(['role' => 'piket', 'is_active' => true]))->post(route('dispensasi.store'), [
         'jam_mulai_id' => $secondLesson->id,
         'jam_selesai_id' => $firstLesson->id,
         'alasan' => 'Kegiatan sekolah',
+        'siswa_ids' => [$student->id],
     ])->assertSessionHasErrors('jam_selesai_id');
 
     $this->assertDatabaseCount('dispensasis', 0);

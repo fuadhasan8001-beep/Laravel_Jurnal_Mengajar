@@ -9,7 +9,7 @@
             <p>Catat dan pantau kegiatan pembelajaran.</p>
         </div>
         @if (auth()->user()->role === 'guru')
-            <a class="btn" href="{{ route('jurnal.create') }}">Tambah jurnal</a>
+            <a class="btn" href="{{ route('jurnal.create') }}">Isi jurnal</a>
         @endif
     </div>
 

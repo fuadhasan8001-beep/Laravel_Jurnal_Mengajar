@@ -63,7 +63,7 @@
                         @foreach ($jadwals as $jadwal)
                             <tr>
                                 <td>{{ $jadwal->hari }}</td>
-                                <td>{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</td>
+                                <td>{{ $jadwal->jamPelajaran->timesForDay($jadwal->hari)[0] }} - {{ $jadwal->jamPelajaran->timesForDay($jadwal->hari)[1] }}</td>
                                 <td>{{ $jadwal->guru->nama_guru }}</td>
                                 <td>{{ $jadwal->kelas->nama_kelas }}</td>
                                 <td>{{ $jadwal->mapel->nama_mapel }}</td>

@@ -10,6 +10,11 @@ class UpdateJurnalRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $jurnal = $this->route('jurnal');
+
+        if ($this->input('status_guru') === null || $this->input('status_guru') === '') {
+            $this->merge(['status_guru' => 'Hadir']);
+        }
+
         $this->merge([
             ...$jurnal->only(['kelas_id', 'mapel_id', 'jam_mulai_id', 'jam_selesai_id']),
             'tanggal' => $jurnal->tanggal->toDateString(), 'materi' => $this->input('materi') ?? '',
@@ -37,13 +42,15 @@ class UpdateJurnalRequest extends FormRequest
             'mapel_id' => ['required', 'exists:mapels,id'],
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
-            'status_guru' => ['required', 'in:Hadir,Izin,Sakit,Dinas,Tanpa Keterangan'],
+            'status_guru' => ['required', 'in:Hadir,Izin,Sakit'],
+            'latitude' => ['nullable'],
+            'longitude' => ['nullable'],
+            'location_accuracy' => ['nullable'],
             'materi' => ['nullable', 'string', 'max:200'],
             'tujuan_pembelajaran' => ['nullable', 'string', 'max:5000'],
             'kegiatan' => ['nullable', 'string', 'max:5000'],
             'tugas' => ['nullable', 'string', 'max:5000'],
             'catatan' => ['nullable', 'string', 'max:5000'],
-            'tanda_tangan' => ['nullable', 'string', 'max:1048576'],
             'absensi' => ['nullable', 'array'],
             'absensi.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
             'absensi.*.status' => ['required', 'in:H,S,I,A,D'],

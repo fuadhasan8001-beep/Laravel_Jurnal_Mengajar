@@ -27,6 +27,22 @@ function navigationLesson(): array
     return compact('teacher', 'guru', 'kelas', 'mapel', 'period', 'journal');
 }
 
+it('renders every role dashboard without undefined view data', function (string $role) {
+    $user = User::factory()->create(['role' => $role, 'is_active' => true]);
+    $this->actingAs($user)->get('/'.$role)->assertOk();
+})->with(['admin', 'guru', 'piket', 'siswa', 'sekretaris']);
+
+it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {
+    $data = navigationLesson();
+    $this->travelTo(\Carbon\Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
+    $data['period']->update(['is_active' => false]);
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id,
+        'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);
+    $this->actingAs($data['teacher'])->get('/guru')->assertOk()
+        ->assertViewHas('jadwalHariIni', fn ($items) => $items->isEmpty())
+        ->assertViewHas('activeJadwalIds', fn ($items) => $items->isEmpty());
+});
+
 it('opens the dashboard belonging to the logged in role', function (string $role) {
     $user = User::factory()->create(['role' => $role, 'is_active' => true]);
     $this->actingAs($user)->get('/')->assertRedirect('/'.$role);
@@ -38,7 +54,19 @@ it('shows mobile notification and logout controls in the app shell', function ()
     $this->actingAs($user)
         ->get('/guru')
         ->assertSee('mobile-notification-button')
-        ->assertSee('mobile-logout-button');
+        ->assertSee('mobile-logout-button')
+        ->assertSee('data-live-clock')
+        ->assertSee('Asia/Jakarta');
+});
+
+it('shows the configured admin WhatsApp contact', function () {
+    config(['app.admin_whatsapp' => '+62 812-3456-7890']);
+    $user = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+
+    $this->actingAs($user)
+        ->get('/guru')
+        ->assertSee('Hubungi Admin')
+        ->assertSee('https://wa.me/6281234567890', false);
 });
 
 it('creates unique teacher usernames and retains an activity log entry', function () {
@@ -68,7 +96,8 @@ it('shows teaching detail and attendance summary on the teacher dashboard', func
         'jam_pelajaran_id' => $period->id, 'hari' => 'Senin', 'is_active' => true]);
     $jurnal = Jurnal::create(['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
         'jam_mulai_id' => $period->id, 'jam_selesai_id' => $period->id, 'tanggal' => '2026-09-15',
-        'materi' => 'Pengukuran dan data', 'status_guru' => 'Hadir']);
+        'materi' => 'Pengukuran dan data', 'tujuan_pembelajaran' => 'Menganalisis data', 'kegiatan' => 'Praktik pengukuran',
+        'tugas' => 'Laporan praktikum', 'catatan' => 'Bawa alat ukur', 'status_guru' => 'Hadir']);
 
     Siswa::create(['user_id' => User::factory()->create(['role' => 'siswa'])->id, 'kelas_id' => $kelas->id,
         'nis' => 'DASH-1', 'nama_siswa' => 'Siswa Dashboard', 'jenis_kelamin' => 'P']);
@@ -79,7 +108,68 @@ it('shows teaching detail and attendance summary on the teacher dashboard', func
         ->get('/guru')
         ->assertSee('Detail pembelajaran')
         ->assertSee('Absensi siswa')
-        ->assertSee('Pengukuran dan data');
+        ->assertSee('Pengukuran dan data')
+        ->assertSee('15 Sep 2026')
+        ->assertSee('Guru Dashboard')
+        ->assertSee('XI IPA')
+        ->assertSee('Biologi')
+        ->assertSee('08:00 - 08:40')
+        ->assertSee('Menganalisis data')
+        ->assertSee('Praktik pengukuran')
+        ->assertSee('Laporan praktikum')
+        ->assertSee('Bawa alat ukur');
+});
+
+it('only shows journals belonging to the logged in teacher', function () {
+    $first = navigationLesson();
+    $secondTeacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $secondGuru = Guru::create(['user_id' => $secondTeacher->id, 'nip' => 'NAV-2', 'nama_guru' => 'Guru Lain', 'status_kepegawaian' => 'Honorer']);
+    Jurnal::create([
+        'guru_id' => $secondGuru->id,
+        'kelas_id' => $first['kelas']->id,
+        'mapel_id' => $first['mapel']->id,
+        'jam_mulai_id' => $first['period']->id,
+        'jam_selesai_id' => $first['period']->id,
+        'tanggal' => '2026-09-16',
+        'materi' => 'Materi guru lain',
+        'status_guru' => 'Hadir',
+    ]);
+
+    $this->actingAs($first['teacher'])
+        ->get('/guru')
+        ->assertSee('Materi guru')
+        ->assertDontSee('Materi guru lain');
+});
+
+it('only shows schedules belonging to the logged in teacher', function () {
+    $first = navigationLesson();
+    $ownSchedule = Jadwal::create([
+        'guru_id' => $first['guru']->id,
+        'kelas_id' => $first['kelas']->id,
+        'mapel_id' => $first['mapel']->id,
+        'jam_pelajaran_id' => $first['period']->id,
+        'hari' => 'Senin',
+        'is_active' => true,
+    ]);
+    $secondTeacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $secondGuru = Guru::create(['user_id' => $secondTeacher->id, 'nip' => 'NAV-3', 'nama_guru' => 'Guru Lain', 'status_kepegawaian' => 'Honorer']);
+    $otherClass = Kelas::create(['nama_kelas' => 'X JADWAL LAIN', 'tingkat' => 'X']);
+    $otherSchedule = Jadwal::create([
+        'guru_id' => $secondGuru->id,
+        'kelas_id' => $otherClass->id,
+        'mapel_id' => $first['mapel']->id,
+        'jam_pelajaran_id' => $first['period']->id,
+        'hari' => 'Senin',
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($first['teacher'])
+        ->get(route('jadwal.index'))
+        ->assertSee('X UJI')
+        ->assertDontSee('X JADWAL LAIN');
+
+    $this->get(route('jadwal.show', $ownSchedule))->assertOk();
+    $this->get(route('jadwal.show', $otherSchedule))->assertForbidden();
 });
 
 it('does not redirect an inactive account into a dashboard', function () {

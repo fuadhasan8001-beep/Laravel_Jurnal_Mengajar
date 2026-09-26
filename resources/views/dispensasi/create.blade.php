@@ -5,8 +5,8 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>{{ auth()->user()->role === 'piket' ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
-            <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
+            <h1>{{ ($uploadMode ?? false) ? 'Upload surat izin siswa' : (auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi') }}</h1>
+            <p>{{ ($uploadMode ?? false) ? 'Pilih siswa dan unggah surat izin dari orang tua.' : 'Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.' }}</p>
         </div><a
             class="btn btn-muted"
             href="{{ route('dispensasi.index') }}"
@@ -17,17 +17,18 @@
             <h2>Detail pengajuan</h2><span class="eyebrow">Semua field bertanda wajib diisi</span>
         </div>
         <div class="panel-body">
+            @if ($errors->has('siswa_ids'))
+                <div class="alert error" role="alert">{{ $errors->first('siswa_ids') }}</div>
+            @endif
             <form
                 action="{{ route('dispensasi.store') }}"
                 method="POST"
                 enctype="multipart/form-data"
             >
                 @csrf
-                @if (auth()->user()->role === 'piket')
+                @if (auth()->user()->isPiketHariIni())
                     <div class="field">
-                        <label for="student-search">Cari siswa berdasarkan nama, NIS, atau kelas</label>
-                        <input id="student-search" type="search" autocomplete="off" placeholder="Cari siswa">
-                        <label for="student-picker">Siswa</label><select id="student-picker"></select>
+                        <label for="student-picker">Pilih siswa</label><select id="student-picker"></select>
                         <button type="button" class="btn btn-muted" id="add-student">+ Tambahkan siswa</button>
                         <p>Siswa meminta dispensasi kepada piket. Tambahkan siswa satu per satu, lalu kirim pernyataan untuk diverifikasi admin.</p>
                         <ul id="selected-students"></ul><p id="student-count" aria-live="polite"></p>
@@ -35,9 +36,6 @@
                     </div>
                 @endif
                 <div class="form-grid">
-                    @if (auth()->user()->role === 'piket')
-                        <div class="field full"><label for="siswa_id">Siswa</label><select id="siswa_id" name="siswa_id" required><option value="">Pilih siswa</option>@foreach ($siswas as $siswa)<option value="{{ $siswa->id }}" @selected(old('siswa_id') == $siswa->id)>{{ $siswa->nama_siswa }} — {{ $siswa->kelas->nama_kelas }}</option>@endforeach</select></div>
-                    @endif
                     <div class="field"><label for="tanggal">Tanggal dispensasi</label><input
                             id="tanggal"
                             type="date"
@@ -56,12 +54,14 @@
                                 <option
                                     value="{{ $jam->id }}"
                                     data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-start-time="{{ $jam->timesForDay($hariIni)[0] }}"
+                                    data-end-time="{{ $jam->timesForDay($hariIni)[1] }}"
                                     data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
                                     @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_mulai_id') == $jam->id)
                                 >
-                                    Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
-                                    {{ $jam->jam_selesai }})
+                                    Jam {{ $jam->jam_ke }} ({{ $jam->timesForDay($hariIni)[0] }} -
+                                    {{ $jam->timesForDay($hariIni)[1] }})
                                 </option>
                             @endforeach
                         </select>@error('jam_mulai_id')<small class="error">{{ $message }}</small>@enderror</div>
@@ -75,12 +75,14 @@
                                 <option
                                     value="{{ $jam->id }}"
                                     data-jam-ke="{{ $jam->jam_ke }}"
+                                    data-start-time="{{ $jam->timesForDay($hariIni)[0] }}"
+                                    data-end-time="{{ $jam->timesForDay($hariIni)[1] }}"
                                     data-unavailable="{{ in_array($jam->id, $jamTidakTersediaIds, true) ? 'true' : 'false' }}"
                                     @disabled(in_array($jam->id, $jamTidakTersediaIds, true))
                                     @selected(old('jam_selesai_id') == $jam->id)
                                 >
-                                    Jam {{ $jam->jam_ke }} ({{ $jam->jam_mulai }} -
-                                    {{ $jam->jam_selesai }})
+                                    Jam {{ $jam->jam_ke }} ({{ $jam->timesForDay($hariIni)[0] }} -
+                                    {{ $jam->timesForDay($hariIni)[1] }})
                                 </option>
                             @endforeach
                         </select>@error('jam_selesai_id')<small class="error">{{ $message }}</small>@enderror</div>
@@ -92,12 +94,17 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
+                    @unless (auth()->user()->isPiketHariIni())
                     <div class="field full"><label for="bukti">Bukti foto <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input
                             id="bukti"
                             type="file"
                             name="bukti"
                             accept="image/jpeg,image/png,image/webp"
                         >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
+                    @endunless
+                    @if (auth()->user()->isPiketHariIni())
+                        <div class="field"><label for="surat_izin">Foto surat izin dari orang tua <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input id="surat_izin" type="file" name="surat_izin" accept="image/jpeg,image/png,image/webp">@error('surat_izin')<small class="error">{{ $message }}</small>@enderror</div>
+                    @endif
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"
@@ -109,18 +116,17 @@
             </form>
         </div>
     </section>
-    @if (auth()->user()->role === 'piket')
+    @if (auth()->user()->isPiketHariIni())
     <script>
     (() => {
         const students = {{ Illuminate\Support\Js::from($siswas) }};
         const selected = new Set({{ Illuminate\Support\Js::from(old('siswa_ids', [])) }}.map(String));
         const picker = document.getElementById('student-picker');
-        const search = document.getElementById('student-search');
         const list = document.getElementById('selected-students');
         const label = student => `${student.nama_siswa} · ${student.nis} · ${student.kelas?.nama_kelas ?? ''}`;
         function render() {
             picker.replaceChildren(new Option('Pilih siswa', ''));
-            students.filter(student => !selected.has(String(student.id)) && label(student).toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))
+            students.filter(student => !selected.has(String(student.id)))
                 .forEach(student => picker.add(new Option(label(student), student.id)));
             list.replaceChildren();
             students.filter(student => selected.has(String(student.id))).forEach(student => {
@@ -133,7 +139,6 @@
             });
             document.getElementById('student-count').textContent = selected.size + ' siswa ditambahkan';
         }
-        search.addEventListener('input', render);
         document.getElementById('add-student').addEventListener('click', () => { if (picker.value) { selected.add(picker.value); render(); } });
         render();
     })();
@@ -146,7 +151,7 @@
 
         const updateEndTimes = () => {
             const selectedStart = start.options[start.selectedIndex];
-            const startPeriod = Number(selectedStart?.dataset.jamKe ?? 0);
+            const selectedStartTime = selectedStart?.dataset.startTime;
 
             [...end.options].forEach((option) => {
                 if (!option.value) {
@@ -154,7 +159,7 @@
                 }
 
                 option.disabled = option.dataset.unavailable === 'true'
-                    || (startPeriod > 0 && Number(option.dataset.jamKe) < startPeriod);
+                    || (selectedStartTime && option.dataset.endTime <= selectedStartTime);
             });
 
             if (end.selectedOptions[0]?.disabled) {

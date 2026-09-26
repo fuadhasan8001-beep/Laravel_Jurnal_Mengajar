@@ -17,6 +17,8 @@ class Dispensasi extends Model
         'jam_selesai_id',
         'alasan',
         'bukti',
+        'surat_izin_path',
+        'attendance_status',
         'status_piket',
         'piket_id',
         'verified_piket_at',
@@ -25,6 +27,8 @@ class Dispensasi extends Model
         'verified_admin_at',
         'status_akhir',
         'catatan_verifikasi',
+        'waka_id',
+        'verified_waka_at',
     ];
 
     protected function casts(): array
@@ -33,21 +37,28 @@ class Dispensasi extends Model
             'tanggal' => 'date',
             'verified_piket_at' => 'datetime',
             'verified_admin_at' => 'datetime',
+            'verified_waka_at' => 'datetime',
         ];
     }
 
     public static function approvedForJournal(Jurnal $jurnal): Collection
     {
         $jurnal->loadMissing(['jamMulai', 'jamSelesai']);
+        $hari = $jurnal->tanggal->locale('id')->translatedFormat('l');
+        [$journalStart] = $jurnal->jamMulai->timesForDay($hari);
+        [, $journalEnd] = $jurnal->jamSelesai->timesForDay($hari);
 
         return static::with(['jamMulai', 'jamSelesai'])
             ->where('status_akhir', 'Disetujui')
             ->whereDate('tanggal', $jurnal->tanggal)
             ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $jurnal->kelas_id))
             ->get()
-            ->filter(fn (self $dispensasi): bool => $dispensasi->jamMulai->jam_ke <= $jurnal->jamSelesai->jam_ke
-                && $dispensasi->jamSelesai->jam_ke >= $jurnal->jamMulai->jam_ke
-            );
+            ->filter(function (self $dispensasi) use ($hari, $journalStart, $journalEnd): bool {
+                [$dispensationStart] = $dispensasi->jamMulai->timesForDay($hari);
+                [, $dispensationEnd] = $dispensasi->jamSelesai->timesForDay($hari);
+
+                return $dispensationStart < $journalEnd && $dispensationEnd > $journalStart;
+            });
     }
 
     public function siswa(): BelongsTo
@@ -73,6 +84,11 @@ class Dispensasi extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function waka(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'waka_id');
     }
 
     public function groupStudents(): HasMany

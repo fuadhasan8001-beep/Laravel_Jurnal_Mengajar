@@ -11,9 +11,9 @@
 
         <a
             class="btn"
-            href="{{ route('absensi.index') }}"
+            href="{{ route('jurnal.create') }}"
         >
-            Lihat absensi
+            Isi jurnal
         </a>
     </div>
 
@@ -113,11 +113,21 @@
             </div>
             <div class="panel-body">
                 <dl class="detail-grid">
+                    <div class="detail-item"><dt>Tanggal</dt><dd>{{ $jurnalTerbaru->tanggal->format('d M Y') }}</dd></div>
+                    <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnalTerbaru->guru->nama_guru }}</dd></div>
+                    <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnalTerbaru->kelas->nama_kelas }}</dd></div>
+                    <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnalTerbaru->mapel->nama_mapel }}</dd></div>
+                    <div class="detail-item"><dt>Jam pelajaran</dt><dd>{{ $jurnalTerbaru->jamMulai->timesForDay($jurnalTerbaru->tanggal->locale('id')->translatedFormat('l'))[0] }} - {{ $jurnalTerbaru->jamSelesai->timesForDay($jurnalTerbaru->tanggal->locale('id')->translatedFormat('l'))[1] }}</dd></div>
                     <div class="detail-item"><dt>Materi</dt><dd>{{ $jurnalTerbaru->materi ?: '-' }}</dd></div>
                     <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnalTerbaru->status_guru ?: '-' }}</dd></div>
                     <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnalTerbaru->tujuan_pembelajaran ?: '-' }}</dd></div>
                     <div class="detail-item detail-item-full"><dt>Kegiatan</dt><dd>{{ $jurnalTerbaru->kegiatan ?: '-' }}</dd></div>
+                    <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnalTerbaru->tugas ?: '-' }}</dd></div>
+                    <div class="detail-item detail-item-full"><dt>Catatan</dt><dd>{{ $jurnalTerbaru->catatan ?: '-' }}</dd></div>
                 </dl>
+                @if ($jurnalTerbaru->tanda_tangan)
+                    <p><a href="{{ route('jurnal.signature', $jurnalTerbaru) }}">Lihat tanda tangan guru</a></p>
+                @endif
                 <div class="attendance-section attendance-card">
                     <div class="journal-card-header">
                         <div>
@@ -173,13 +183,14 @@
                     <tbody>
                         @foreach ($jadwalHariIni as $jadwal)
                             @php
+                                [$jamMulai, $jamSelesai] = $jadwal->jamPelajaran->timesForDay($jadwal->hari);
                                 $jurnal = $jurnalHariIni->first(fn ($item) => (int) $item->kelas_id === (int) $jadwal->kelas_id
                                     && (int) $item->mapel_id === (int) $jadwal->mapel_id
                                     && $item->jamMulai->jam_ke <= $jadwal->jamPelajaran->jam_ke
                                     && $item->jamSelesai->jam_ke >= $jadwal->jamPelajaran->jam_ke);
                             @endphp
                             <tr>
-                                <td>Jam {{ $jadwal->jamPelajaran->jam_ke }}<br><span class="eyebrow">{{ $jadwal->jamPelajaran->jam_mulai }} - {{ $jadwal->jamPelajaran->jam_selesai }}</span></td>
+                                <td>Jam {{ $jadwal->jamPelajaran->jam_ke }}<br><span class="eyebrow">{{ substr($jamMulai, 0, 5) }} - {{ substr($jamSelesai, 0, 5) }}</span></td>
                                 <td>{{ $jadwal->kelas->nama_kelas }}</td>
                                 <td>{{ $jadwal->mapel->nama_mapel }}</td>
                                 <td>

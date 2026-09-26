@@ -23,12 +23,23 @@ class Jurnal extends Model
         'catatan',
         'status_verifikasi',
         'tanda_tangan',
+        'bukti_kehadiran',
+        'lokasi_latitude',
+        'lokasi_longitude',
+        'attendance_witnesses',
+        'latitude',
+        'longitude',
+        'location_accuracy',
+        'location_distance',
+        'location_verified_at',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal' => 'date',
+            'attendance_witnesses' => 'array',
+            'location_verified_at' => 'datetime',
         ];
     }
 

@@ -13,12 +13,13 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
+use App\Services\SchoolLocationVerifier;
+use App\Notifications\JurnalNotification;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -31,6 +32,10 @@ class JurnalController extends Controller
 
         if (auth()->user()->role === 'guru') {
             $query->where('guru_id', $this->currentGuru()->id);
+        }
+
+        if (auth()->user()->role === 'sekretaris') {
+            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
         }
 
         $query
@@ -52,27 +57,40 @@ class JurnalController extends Controller
         return view('jurnal.create', $this->formData());
     }
 
-    public function store(StoreJurnalRequest $request): RedirectResponse
+    public function store(StoreJurnalRequest $request, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        $signature = $data['tanda_tangan'] ?? null;
-        unset($data['absensi'], $data['tanda_tangan']);
+        unset($data['absensi'], $data['tanda_tangan'], $data['jadwal_id']);
+        $data = [...$data, ...$this->locationData($data, $locationVerifier)];
         $this->validatePeriodOrder($data);
 
-        $jurnal = DB::transaction(function () use ($data, $absensis, $signature): Jurnal {
+        $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
+            $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
+            $existingJournal = Jurnal::query()
+                ->where('guru_id', $guru->id)
+                ->whereDate('tanggal', $data['tanggal'])
+                ->where('kelas_id', $data['kelas_id'])
+                ->where('mapel_id', $data['mapel_id'])
+                ->where('jam_mulai_id', $data['jam_mulai_id'])
+                ->where('jam_selesai_id', $data['jam_selesai_id'])
+                ->lockForUpdate()->first();
+
+            if ($existingJournal) {
+                return $existingJournal;
+            }
+
             $jurnal = Jurnal::create([
                 ...$data,
-                'guru_id' => $this->currentGuru()->id,
-                'tanda_tangan' => $this->saveSignature($signature),
+                'guru_id' => $guru->id,
             ]);
             $this->syncAbsensis($jurnal, $absensis);
 
             return $jurnal;
-        });
+        }, 5);
 
         return redirect()->route('jurnal.show', $jurnal)
-            ->with('success', 'Jurnal berhasil disimpan.');
+            ->with('success', $jurnal->wasRecentlyCreated ? 'Jurnal berhasil disimpan.' : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
     }
 
     public function show(Jurnal $jurnal): View
@@ -114,19 +132,20 @@ class JurnalController extends Controller
         ]);
     }
 
-    public function update(UpdateJurnalRequest $request, Jurnal $jurnal): RedirectResponse
+    public function update(UpdateJurnalRequest $request, Jurnal $jurnal, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $this->authorizeJournal($jurnal, true);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
         $absensis = $data['absensi'] ?? [];
-        $signature = $data['tanda_tangan'] ?? null;
         unset($data['absensi'], $data['tanda_tangan']);
+        $data = [...$data, ...$this->locationData($data, $locationVerifier)];
         unset($data['tanggal']);
-        $this->validatePeriodOrder($data);
-        DB::transaction(function () use ($data, $absensis, $jurnal, $signature): void {
-            $data['tanda_tangan'] = $this->saveSignature($signature, $jurnal->tanda_tangan);
+        $this->validatePeriodOrder($data, $jurnal->tanggal->toDateString());
+        DB::transaction(function () use ($data, $absensis, $jurnal): void {
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
             $jurnal->update($data);
             $this->syncAbsensis($jurnal, $absensis);
         });
@@ -140,8 +159,15 @@ class JurnalController extends Controller
         $this->authorizeJournal($jurnal, true);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat dihapus.');
 
-        Storage::delete($jurnal->tanda_tangan);
-        $jurnal->delete();
+        DB::transaction(function () use ($jurnal): void {
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat dihapus.');
+            $signature = $jurnal->tanda_tangan;
+            $jurnal->delete();
+            if ($signature) {
+                DB::afterCommit(fn () => Storage::delete($signature));
+            }
+        });
 
         return redirect()->route('jurnal.index')
             ->with('success', 'Jurnal berhasil dihapus.');
@@ -149,6 +175,7 @@ class JurnalController extends Controller
 
     public function verify(Request $request, Jurnal $jurnal): RedirectResponse
     {
+        $this->authorizeJournal($jurnal);
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
 
         $data = $request->validate([
@@ -156,13 +183,23 @@ class JurnalController extends Controller
             'catatan' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        $jurnal->update(['status_verifikasi' => $data['status']]);
-        $jurnal->verifikasiJurnals()->create([
-            'verifikator_id' => auth()->id(),
-            'status' => $data['status'],
-            'catatan' => $data['catatan'] ?? null,
-            'verified_at' => now(),
-        ]);
+        DB::transaction(function () use ($jurnal, $data): void {
+            $jurnal = Jurnal::whereKey($jurnal->id)->lockForUpdate()->firstOrFail();
+            abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal sudah diverifikasi.');
+            $jurnal->update(['status_verifikasi' => $data['status']]);
+            $jurnal->verifikasiJurnals()->create([
+                'verifikator_id' => auth()->id(),
+                'status' => $data['status'],
+                'catatan' => $data['catatan'] ?? null,
+                'verified_at' => now(),
+            ]);
+            $jurnal->loadMissing(['guru.user', 'kelas', 'mapel']);
+            $jurnal->guru->user?->notify(new JurnalNotification(
+                'journal_verified',
+                'Jurnal '.$jurnal->kelas->nama_kelas.' untuk '.$jurnal->mapel->nama_mapel.' telah '.$data['status'].' oleh sekretaris.',
+                route('jurnal.show', $jurnal),
+            ));
+        });
 
         return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');
     }
@@ -172,6 +209,34 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
+    /** @return array<string, mixed> */
+    private function locationData(array $data, SchoolLocationVerifier $locationVerifier): array
+    {
+        if ($data['status_guru'] !== 'Hadir') {
+            return [
+                'latitude' => null,
+                'longitude' => null,
+                'location_accuracy' => null,
+                'location_distance' => null,
+                'location_verified_at' => null,
+            ];
+        }
+
+        $verifiedLocation = $locationVerifier->verify(
+            $data['latitude'] ?? null,
+            $data['longitude'] ?? null,
+            $data['location_accuracy'] ?? null,
+        );
+
+        return [
+            'latitude' => $verifiedLocation['latitude'],
+            'longitude' => $verifiedLocation['longitude'],
+            'location_accuracy' => $verifiedLocation['accuracy'],
+            'location_distance' => $verifiedLocation['distance'],
+            'location_verified_at' => $verifiedLocation['verified_at'],
+        ];
+    }
+
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
     {
         abort_unless(in_array(auth()->user()->role, ['guru', 'admin', 'sekretaris'], true), 403);
@@ -179,44 +244,21 @@ class JurnalController extends Controller
         if ($mustOwn || auth()->user()->role === 'guru') {
             abort_unless($jurnal->guru_id === $this->currentGuru()->id, 403);
         }
+
+        if (auth()->user()->role === 'sekretaris') {
+            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jurnal->kelas_id)->exists(), 403);
+        }
     }
 
-    private function validatePeriodOrder(array $data): void
+    private function validatePeriodOrder(array $data, ?string $tanggal = null): void
     {
         $start = JamPelajaran::findOrFail($data['jam_mulai_id']);
         $end = JamPelajaran::findOrFail($data['jam_selesai_id']);
+        $hari = Carbon::parse($tanggal ?? $data['tanggal'])->locale('id')->translatedFormat('l');
+        [$startTime] = $start->timesForDay($hari);
+        [, $endTime] = $end->timesForDay($hari);
 
-        abort_if($start->jam_mulai >= $end->jam_selesai, 422, 'Jam selesai harus setelah jam mulai.');
-    }
-
-    private function saveSignature(?string $signature, ?string $previousSignature = null): ?string
-    {
-        if (blank($signature)) {
-            return $previousSignature;
-        }
-
-        if (! preg_match('/^data:image\\/png;base64,([A-Za-z0-9+\\/=]+)$/', $signature, $matches)) {
-            throw ValidationException::withMessages([
-                'tanda_tangan' => 'Tanda tangan harus berupa gambar PNG.',
-            ]);
-        }
-
-        $image = base64_decode($matches[1], true);
-        $imageInfo = $image === false ? false : @getimagesizefromstring($image);
-        if ($image === false || strlen($image) > 512000 || $imageInfo === false || $imageInfo[2] !== IMAGETYPE_PNG) {
-            throw ValidationException::withMessages([
-                'tanda_tangan' => 'Tanda tangan tidak valid atau ukurannya melebihi 500 KB.',
-            ]);
-        }
-
-        $path = 'jurnal/tanda-tangan/'.Str::uuid().'.png';
-        Storage::put($path, $image);
-
-        if ($previousSignature) {
-            Storage::delete($previousSignature);
-        }
-
-        return $path;
+        abort_if($startTime >= $endTime, 422, 'Jam selesai harus setelah jam mulai.');
     }
 
     /**
@@ -230,15 +272,14 @@ class JurnalController extends Controller
             ->get(['id']);
         $studentIds = $students->pluck('id');
         $submittedAbsensis = collect($absensis)->keyBy('siswa_id');
-        $dispensedStudentIds = Dispensasi::query()
-            ->whereIn('siswa_id', $studentIds)
-            ->whereDate('tanggal', $jurnal->tanggal)
-            ->where('status_akhir', 'Disetujui')
-            ->where('jam_mulai_id', '<=', $jurnal->jam_selesai_id)
-            ->where('jam_selesai_id', '>=', $jurnal->jam_mulai_id)
-            ->pluck('siswa_id');
+        $dispensedStudentIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
+        abort_if(
+            $submittedAbsensis->where('status', 'D')->keys()->diff($dispensedStudentIds)->isNotEmpty(),
+            422,
+            'Status dispensasi memerlukan persetujuan admin.'
+        );
 
         $timestamp = now();
         $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds): array {
@@ -265,6 +306,17 @@ class JurnalController extends Controller
         if ($records !== []) {
             Absensi::upsert($records, ['jurnal_id', 'siswa_id'], ['status', 'catatan', 'updated_at']);
         }
+
+        $jurnal->update([
+            'attendance_witnesses' => Absensi::query()
+                ->where('jurnal_id', $jurnal->id)
+                ->where('status', 'H')
+                ->inRandomOrder()
+                ->limit(3)
+                ->pluck('siswa_id')
+                ->values()
+                ->all(),
+        ]);
     }
 
     /**
@@ -284,7 +336,16 @@ class JurnalController extends Controller
         return [
             'sessions' => $sessions,
             'activeSession' => $jurnal ? null : $activeSession,
-            'existingJournal' => null,
+            'existingJournal' => $activeSession
+                ? Jurnal::query()
+                    ->where('guru_id', $this->currentGuru()->id)
+                    ->whereDate('tanggal', today())
+                    ->where('kelas_id', $activeSession['kelas_id'])
+                    ->where('mapel_id', $activeSession['mapel_id'])
+                    ->where('jam_mulai_id', $activeSession['jam_mulai_id'])
+                    ->where('jam_selesai_id', $activeSession['jam_selesai_id'])
+                    ->first()
+                : null,
             'scheduleConflict' => $activeSessions->count() > 1,
             'approvedDispensasis' => Dispensasi::with(['jamMulai', 'jamSelesai'])
                 ->whereDate('tanggal', $tanggal)

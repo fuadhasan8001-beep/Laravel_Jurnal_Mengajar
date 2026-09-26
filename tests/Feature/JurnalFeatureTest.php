@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Absensi;
 use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
@@ -12,6 +13,22 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+function schoolLocationPayload(array $overrides = []): array
+{
+    config([
+        'school.latitude' => 0,
+        'school.longitude' => 0,
+        'school.radius_meters' => 100,
+        'school.max_gps_accuracy' => 25,
+    ]);
+
+    return array_merge([
+        'latitude' => 0,
+        'longitude' => 0.00005,
+        'location_accuracy' => 10,
+    ], $overrides);
+}
 
 function journalSetup(): array
 {
@@ -39,7 +56,7 @@ function journalSetup(): array
 it('allows a teacher to create a journal', function () {
     $data = journalSetup();
 
-    $response = $this->actingAs($data['user'])->post(route('jurnal.store'), [
+    $response = $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(),
         'tanggal' => '2026-09-08',
         'kelas_id' => $data['kelas']->id,
         'mapel_id' => $data['mapel']->id,
@@ -52,6 +69,43 @@ it('allows a teacher to create a journal', function () {
 
     $response->assertRedirect();
     expect(Jurnal::where('guru_id', $data['guru']->id)->count())->toBe(1);
+});
+
+it('rejects retired teacher attendance statuses', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])
+        ->post(route('jurnal.store'), ['status_guru' => 'Dinas'])
+        ->assertSessionHasErrors('status_guru');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('stores at most three server-selected present student witnesses', function () {
+    $data = journalSetup();
+
+    foreach (range(1, 5) as $index) {
+        $studentUser = User::factory()->create(['role' => 'siswa', 'is_active' => true]);
+        Siswa::create([
+            'user_id' => $studentUser->id,
+            'kelas_id' => $data['kelas']->id,
+            'nis' => 'WITNESS-'.$index,
+            'nama_siswa' => 'Siswa Witness '.$index,
+            'jenis_kelamin' => 'P',
+        ]);
+    }
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(),
+        'status_guru' => 'Hadir',
+        'absensi' => Siswa::query()->pluck('id')->mapWithKeys(fn (int $id, int $index): array => [
+            $index => ['siswa_id' => $id, 'status' => $index === 0 ? 'S' : 'H'],
+        ])->all(),
+    ])->assertRedirect();
+
+    $witnesses = Jurnal::sole()->attendance_witnesses;
+
+    expect($witnesses)->toHaveCount(3)
+        ->and(Absensi::whereIn('siswa_id', $witnesses)->where('status', '!=', 'H')->count())->toBe(0);
 });
 
 it('records teacher absence tasks and student attendance when creating a journal', function () {
@@ -108,6 +162,111 @@ it('allows an absent teacher to record only their status', function () {
 
     $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Sakit']);
 });
+
+it('orders the teacher dashboard schedule by lesson number ascending', function () {
+    $data = journalSetup();
+    $jamFive = JamPelajaran::firstOrCreate(
+        ['jam_ke' => 5],
+        ['jam_mulai' => '09:00', 'jam_selesai' => '09:45']
+    );
+    $kelas2 = Kelas::create(['nama_kelas' => 'X RPL 2', 'tingkat' => 'X']);
+    $mapel2 = Mapel::create(['kode_mapel' => 'IPA', 'nama_mapel' => 'IPA']);
+
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id, 'jam_pelajaran_id' => $jamFive->id, 'hari' => 'Senin', 'is_active' => true]);
+    Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $kelas2->id, 'mapel_id' => $mapel2->id, 'jam_pelajaran_id' => $data['jamMulai']->id, 'hari' => 'Senin', 'is_active' => true]);
+
+    $this->actingAs($data['user'])
+        ->get('/guru')
+        ->assertOk()
+        ->assertSee('Isi jurnal')
+        ->assertSeeInOrder(['Jam 1', 'Jam 5']);
+});
+
+it('shows a journal review summary before saving', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])
+        ->get(route('jurnal.create'))
+        ->assertOk()
+        ->assertSee('Ringkasan jurnal')
+        ->assertDontSee('<details')
+        ->assertDontSee('Default: Hadir')
+        ->assertSee('Detail pembelajaran dan absensi');
+});
+
+it('defaults teacher attendance to hadir when status is omitted', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        ...schoolLocationPayload(),
+        'kelas_id' => $data['kelas']->id,
+        'mapel_id' => $data['mapel']->id,
+        'jam_mulai_id' => $data['jamMulai']->id,
+        'jam_selesai_id' => $data['jamMulai']->id,
+        'status_guru' => '',
+        'materi' => 'Belajar mandiri',
+    ])->assertRedirect();
+
+    $this->assertDatabaseHas('jurnals', ['guru_id' => $data['guru']->id, 'status_guru' => 'Hadir']);
+});
+
+it('accepts a teacher location inside the school radius', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(), 'status_guru' => 'Hadir'])
+        ->assertRedirect();
+
+    expect(Jurnal::sole()->location_verified_at)->not->toBeNull();
+});
+
+it('accepts a teacher location exactly on the school radius', function () {
+    $data = journalSetup();
+    $longitude = 0.001;
+    $distance = 6371000 * 2 * atan2(sqrt(sin(deg2rad($longitude) / 2) ** 2), sqrt(1 - sin(deg2rad($longitude) / 2) ** 2));
+    config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => $distance, 'school.max_gps_accuracy' => 25]);
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [
+        'status_guru' => 'Hadir', 'latitude' => 0, 'longitude' => $longitude, 'location_accuracy' => 10,
+    ])->assertRedirect();
+
+    expect(Jurnal::sole()->location_distance)->toBeGreaterThan(0);
+});
+
+it('rejects a teacher location outside the school radius even when the client says it is valid', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload([
+        'longitude' => 0.01, 'location_valid' => true,
+    ]), 'status_guru' => 'Hadir'])->assertSessionHasErrors('location');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('rejects inaccurate GPS readings', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(['location_accuracy' => 26]), 'status_guru' => 'Hadir'])
+        ->assertSessionHasErrors('location_accuracy');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('rejects invalid GPS coordinates', function () {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), [...schoolLocationPayload(['latitude' => 91]), 'status_guru' => 'Hadir'])
+        ->assertSessionHasErrors('location_latitude');
+
+    expect(Jurnal::count())->toBe(0);
+});
+
+it('does not require GPS for izin or sakit journals', function (string $status) {
+    $data = journalSetup();
+
+    $this->actingAs($data['user'])->post(route('jurnal.store'), ['status_guru' => $status])->assertRedirect();
+
+    expect(Jurnal::sole()->location_verified_at)->toBeNull();
+})->with(['Izin', 'Sakit']);
 
 it('prevents a teacher from viewing another teachers journal', function () {
     $owner = journalSetup();

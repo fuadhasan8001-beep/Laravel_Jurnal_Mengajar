@@ -11,8 +11,6 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -21,6 +19,14 @@ class JadwalController extends Controller
     public function index(Request $request): View
     {
         $query = Jadwal::with(['guru', 'kelas', 'mapel', 'jamPelajaran'])->latest();
+
+        if (auth()->user()->role === 'sekretaris') {
+            $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'));
+        }
+
+        if (auth()->user()->role === 'guru') {
+            $query->where('guru_id', Guru::where('user_id', auth()->id())->value('id'));
+        }
 
         $query
             ->when($request->filled('hari'), fn ($builder) => $builder->where('hari', $request->string('hari')))
@@ -49,6 +55,13 @@ class JadwalController extends Controller
 
     public function show(Jadwal $jadwal): View
     {
+        if (auth()->user()->role === 'sekretaris') {
+            abort_unless(auth()->user()->kelasSekretaris()->whereKey($jadwal->kelas_id)->exists(), 403);
+        }
+        if (auth()->user()->role === 'guru') {
+            abort_unless($jadwal->guru_id === Guru::where('user_id', auth()->id())->value('id'), 403);
+        }
+
         return view('jadwal.show', ['jadwal' => $jadwal->load(['guru', 'kelas', 'mapel', 'jamPelajaran'])]);
     }
 
@@ -63,37 +76,10 @@ class JadwalController extends Controller
     public function update(UpdateJadwalRequest $request, Jadwal $jadwal): RedirectResponse
     {
         $data = [...$request->validated(), 'is_active' => $request->boolean('is_active')];
-        $startTime = $data['jam_mulai'] ?? null;
-        $endTime = $data['jam_selesai'] ?? null;
-        unset($data['jam_mulai'], $data['jam_selesai']);
         $this->ensureNoConflict($data, $jadwal);
-        DB::transaction(function () use ($jadwal, $data, $startTime, $endTime): void {
-            $jadwal->update($data);
-
-            if ($startTime && $endTime) {
-                $this->shiftGlobalPeriods($jadwal->jamPelajaran, $startTime, $endTime);
-            }
-        });
+        $jadwal->update($data);
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
-    }
-
-    private function shiftGlobalPeriods(JamPelajaran $period, string $startTime, string $endTime): void
-    {
-        $periods = JamPelajaran::query()->where('jam_ke', '>=', $period->jam_ke)->orderBy('jam_ke')->get();
-        $nextStart = Carbon::createFromFormat('H:i', $startTime);
-
-        foreach ($periods as $index => $currentPeriod) {
-            $duration = $index === 0
-                ? Carbon::createFromFormat('H:i', $endTime)->diffInMinutes($nextStart)
-                : Carbon::parse($currentPeriod->jam_mulai)->diffInMinutes(Carbon::parse($currentPeriod->jam_selesai));
-            $currentEnd = $nextStart->copy()->addMinutes($duration);
-            $currentPeriod->update([
-                'jam_mulai' => $nextStart->format('H:i'),
-                'jam_selesai' => $currentEnd->format('H:i'),
-            ]);
-            $nextStart = $currentEnd;
-        }
     }
 
     public function destroy(Jadwal $jadwal): RedirectResponse
@@ -108,19 +94,32 @@ class JadwalController extends Controller
      */
     private function ensureNoConflict(array $data, ?Jadwal $jadwal = null): void
     {
-        $query = Jadwal::query()
+        if (! $data['is_active']) {
+            return;
+        }
+
+        $period = JamPelajaran::findOrFail($data['jam_pelajaran_id']);
+        [$start] = $period->timesForDay($data['hari']);
+        [, $end] = $period->timesForDay($data['hari']);
+
+        $conflictExists = Jadwal::with('jamPelajaran')
             ->where('hari', $data['hari'])
-            ->where('jam_pelajaran_id', $data['jam_pelajaran_id'])
             ->where('is_active', true)
             ->when($jadwal, fn ($builder) => $builder->where('id', '!=', $jadwal->id))
             ->where(function ($builder) use ($data): void {
                 $builder->where('guru_id', $data['guru_id'])
                     ->orWhere('kelas_id', $data['kelas_id']);
+            })
+            ->get()
+            ->contains(function (Jadwal $existing) use ($data, $start, $end): bool {
+                [$existingStart, $existingEnd] = $existing->jamPelajaran->timesForDay($data['hari']);
+
+                return $start < $existingEnd && $end > $existingStart;
             });
 
-        if ($query->exists()) {
+        if ($conflictExists) {
             throw ValidationException::withMessages([
-                'jam_pelajaran_id' => 'Guru atau kelas sudah memiliki jadwal pada hari dan jam tersebut.',
+                'jam_pelajaran_id' => 'Guru atau kelas sudah memiliki jadwal yang waktunya bertabrakan.',
             ]);
         }
     }
@@ -130,10 +129,19 @@ class JadwalController extends Controller
      */
     private function formData(): array
     {
+        $guru = auth()->user()->role === 'guru'
+            ? Guru::where('user_id', auth()->id())->first()
+            : null;
+        $guruSchedule = Jadwal::query()->where('guru_id', $guru?->id);
+
         return [
-            'gurus' => Guru::orderBy('nama_guru')->get(),
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
-            'mapels' => Mapel::orderBy('nama_mapel')->get(),
+            'gurus' => $guru ? collect([$guru]) : Guru::orderBy('nama_guru')->get(),
+            'kelas' => $guru
+                ? Kelas::whereIn('id', (clone $guruSchedule)->select('kelas_id')->distinct())->orderBy('nama_kelas')->get()
+                : Kelas::orderBy('nama_kelas')->get(),
+            'mapels' => $guru
+                ? Mapel::whereIn('id', (clone $guruSchedule)->select('mapel_id')->distinct())->orderBy('nama_mapel')->get()
+                : Mapel::orderBy('nama_mapel')->get(),
             'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
         ];
     }

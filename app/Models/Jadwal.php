@@ -44,10 +44,12 @@ class Jadwal extends Model
                     $session = [
                         'id' => $row->id, 'kelas_id' => $row->kelas_id, 'mapel_id' => $row->mapel_id,
                         'kelas' => $row->kelas->nama_kelas, 'mapel' => $row->mapel->nama_mapel,
+                        'jadwal_ids' => [],
                         'jam_mulai_id' => $row->jam_pelajaran_id, 'jam_mulai_ke' => $row->jamPelajaran->jam_ke,
                         'jam_mulai' => $start, 'active' => false,
                     ];
                 }
+                $session['jadwal_ids'][] = $row->id;
                 $session['jam_selesai_id'] = $row->jam_pelajaran_id;
                 $session['jam_selesai_ke'] = $row->jamPelajaran->jam_ke;
                 $session['jam_selesai'] = $end;
