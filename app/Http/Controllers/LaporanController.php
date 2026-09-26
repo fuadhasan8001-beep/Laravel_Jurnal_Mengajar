@@ -20,21 +20,45 @@ class LaporanController extends Controller
 {
     public function jurnal(Request $request): View
     {
-        $jurnals = $this->jurnalQuery($request)->paginate(20)->withQueryString();
+        return $this->journalReport($request);
+    }
+
+    public function jurnalPiket(Request $request): View
+    {
+        abort_unless($request->user()->isPiketHariIni(), 403);
+
+        return $this->journalReport($request, true);
+    }
+
+    private function journalReport(Request $request, bool $includeAllTeachers = false): View
+    {
+        $jurnals = $this->jurnalQuery($request, $includeAllTeachers)->paginate(20)->withQueryString();
 
         return view('laporan.jurnal', [
             'jurnals' => $jurnals,
             'monitoringDate' => Carbon::parse($request->input('monitoring_date', today()->toDateString())),
-            'monitoring' => $this->journalMonitoring($request),
+            'monitoring' => $this->journalMonitoring($request, $includeAllTeachers),
             ...$this->filterData(),
         ]);
     }
 
     public function jurnalExport(Request $request): StreamedResponse
     {
+        return $this->exportJurnals($request);
+    }
+
+    public function jurnalPiketExport(Request $request): StreamedResponse
+    {
+        abort_unless($request->user()->isPiketHariIni(), 403);
+
+        return $this->exportJurnals($request, true);
+    }
+
+    private function exportJurnals(Request $request, bool $includeAllTeachers = false): StreamedResponse
+    {
         return $this->csv('rekap-jurnal.csv', [
             'Tanggal', 'Guru', 'Kelas', 'Mata Pelajaran', 'Jam', 'Materi', 'Status',
-        ], $this->jurnalQuery($request)->lazy(500)->map(fn (Jurnal $jurnal) => [
+        ], $this->jurnalQuery($request, $includeAllTeachers)->lazy(500)->map(fn (Jurnal $jurnal) => [
             Carbon::parse($jurnal->tanggal)->toDateString(),
             $jurnal->guru->nama_guru,
             $jurnal->kelas->nama_kelas,
@@ -105,7 +129,7 @@ class LaporanController extends Controller
         ]));
     }
 
-    private function jurnalQuery(Request $request)
+    private function jurnalQuery(Request $request, bool $includeAllTeachers = false)
     {
         $request->validate([
             'tanggal_mulai' => ['nullable', 'date'],
@@ -117,7 +141,7 @@ class LaporanController extends Controller
         ]);
 
         return Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai'])
-            ->when(auth()->user()->role === 'guru', fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
+            ->when(auth()->user()->role === 'guru' && ! $includeAllTeachers, fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
             ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id')))
             ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
@@ -192,7 +216,7 @@ class LaporanController extends Controller
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    private function journalMonitoring(Request $request): Collection
+    private function journalMonitoring(Request $request, bool $includeAllTeachers = false): Collection
     {
         $date = Carbon::parse($request->input('monitoring_date', today()->toDateString()));
         $weekday = $date->copy()->locale('id')->translatedFormat('l');
@@ -201,7 +225,7 @@ class LaporanController extends Controller
             ->where('hari', $weekday)
             ->where('is_active', true)
             ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
-            ->when(auth()->user()->role === 'guru', fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
+            ->when(auth()->user()->role === 'guru' && ! $includeAllTeachers, fn ($query) => $query->where('guru_id', $this->currentGuru()->id))
             ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id')))
             ->when($request->filled('guru_id'), fn ($query) => $query->where('guru_id', $request->integer('guru_id')))
             ->when($request->filled('kelas_id'), fn ($query) => $query->where('kelas_id', $request->integer('kelas_id')))

@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div><h1>Rekap jurnal mengajar</h1><p>Gunakan filter untuk meninjau dan mengunduh jurnal.</p></div>
-        <a class="btn" href="{{ route('laporan.jurnal.export', request()->query()) }}">Export CSV</a>
+        <a class="btn" href="{{ route(request()->routeIs('piket.rekap-jurnal') ? 'piket.rekap-jurnal.export' : 'laporan.jurnal.export', request()->query()) }}">Export CSV</a>
     </div>
     <section class="panel">
         <div class="panel-body">

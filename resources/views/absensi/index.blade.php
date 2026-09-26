@@ -7,15 +7,37 @@
     <div class="page-head">
         <div>
             <h1>Kelola absensi</h1>
-            <p>Rekap kehadiran siswa berdasarkan jurnal mengajar.</p>
+            <p>{{ $isAdmin ? 'Jurnal guru yang masuk pada tanggal terpilih.' : 'Rekap kehadiran siswa berdasarkan jurnal mengajar.' }}</p>
         </div><span class="status approved">Status D = dispensasi</span>
     </div>
+    @if ($isAdmin)
+        <section class="panel panel-spaced attendance-filter-panel">
+            <div class="panel-body">
+                <form method="GET" action="{{ route('absensi.index') }}">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="tanggal">Tanggal jurnal</label>
+                            <input id="tanggal" type="date" name="tanggal" value="{{ $selectedDate }}" required>
+                        </div>
+                        <div class="field">
+                            <label for="guru_search">Cari nama guru</label>
+                            <input id="guru_search" type="search" name="guru_search" value="{{ $guruSearch }}" placeholder="Ketik nama guru" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-muted" href="{{ route('absensi.index') }}">Hari ini</a>
+                        <button class="btn" type="submit">Cari jurnal</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    @endif
     @forelse ($jurnals as $jurnal)
         <section class="panel panel-spaced">
             <div class="panel-head">
                 <div>
                     <h2>{{ $jurnal->tanggal->format('d M Y') }}</h2>
-                    <span class="eyebrow">Kelas {{ $jurnal->kelas->nama_kelas }} · {{ $jurnal->mapel->nama_mapel }}</span>
+                    <span class="eyebrow">{{ $jurnal->guru->nama_guru }} · Kelas {{ $jurnal->kelas->nama_kelas }} · {{ $jurnal->mapel->nama_mapel }}</span>
                 </div><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa tercatat</span>
             </div>
             @if ($jurnal->kelas->siswas->count())

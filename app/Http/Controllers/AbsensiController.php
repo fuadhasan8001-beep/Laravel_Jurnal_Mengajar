@@ -20,7 +20,16 @@ class AbsensiController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Jurnal::with(['absensis.siswa', 'kelas.siswas'])
+        $isAdmin = $request->user()->role === 'admin';
+        $request->validate([
+            'tanggal' => ['nullable', 'date'],
+            'guru_search' => ['nullable', 'string', 'max:100'],
+        ]);
+        $selectedDate = $isAdmin
+            ? ($request->input('tanggal') ?: today()->toDateString())
+            : $request->input('tanggal');
+
+        $query = Jurnal::with(['guru', 'absensis.siswa', 'kelas.siswas'])
             ->orderByDesc('tanggal');
 
         if (auth()->user()->role === 'guru') {
@@ -32,6 +41,11 @@ class AbsensiController extends Controller
         }
 
         $query
+            ->when($selectedDate, fn ($builder) => $builder->whereDate('tanggal', $selectedDate))
+            ->when($isAdmin && $request->filled('guru_search'), fn ($builder) => $builder->whereHas(
+                'guru',
+                fn ($guru) => $guru->where('nama_guru', 'like', '%'.$request->string('guru_search')->trim().'%')
+            ))
             ->when($request->filled('tanggal_mulai'), fn ($builder) => $builder->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
             ->when($request->filled('tanggal_selesai'), fn ($builder) => $builder->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
             ->when($request->filled('kelas_id'), fn ($builder) => $builder->where('kelas_id', $request->integer('kelas_id')))
@@ -45,6 +59,9 @@ class AbsensiController extends Controller
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
             'siswas' => Siswa::orderBy('nama_siswa')->get(),
+            'isAdmin' => $isAdmin,
+            'selectedDate' => $selectedDate,
+            'guruSearch' => $request->string('guru_search')->toString(),
         ]);
     }
 

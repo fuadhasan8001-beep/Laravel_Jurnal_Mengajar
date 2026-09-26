@@ -31,4 +31,9 @@ class Guru extends Model
     {
         return $this->hasMany(Jurnal::class);
     }
+
+    public function jadwalPikets(): HasMany
+    {
+        return $this->hasMany(JadwalPiket::class);
+    }
 }

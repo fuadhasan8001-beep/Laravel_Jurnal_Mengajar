@@ -24,6 +24,10 @@
                 <strong>Riwayat dispensasi</strong>
                 <span>Lihat pengajuan piket dan status keputusan admin.</span>
             </a>
+            <a class="quick-card" href="{{ route('piket.rekap-jurnal') }}">
+                <strong>Rekap jurnal guru</strong>
+                <span>Pantau jadwal dan jurnal yang sudah diisi semua guru hari ini.</span>
+            </a>
         </div>
     </section>
     <div class="stats">

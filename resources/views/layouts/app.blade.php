@@ -893,6 +893,10 @@
             box-shadow: 0 8px 24px rgba(89, 96, 76, .1);
         }
 
+        .panel + .panel {
+            margin-top: 24px;
+        }
+
         .stat-card {
             display: flex;
             align-items: center;
@@ -975,6 +979,53 @@
 
         .panel-body {
             padding: 22px;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] > div:first-child {
+            display: none;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] > div:nth-child(2) {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] > div:nth-child(2) > div:last-child > span {
+            display: inline-flex;
+            max-width: 100%;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] a,
+        nav[role="navigation"][aria-label="Pagination Navigation"] span[aria-disabled="true"] > span,
+        nav[role="navigation"][aria-label="Pagination Navigation"] span[aria-current="page"] > span {
+            display: inline-flex;
+            min-width: 36px;
+            min-height: 36px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        nav[role="navigation"][aria-label="Pagination Navigation"] span[aria-current="page"] > span {
+            background: var(--cream);
+            font-weight: 800;
         }
 
         /* =========================================================
@@ -1739,12 +1790,51 @@
         ========================================================= */
 
         @media (max-width: 680px) {
+            .panel + .panel {
+                margin-top: 16px;
+            }
+
             .sidebar-datetime {
                 display: none;
             }
 
             .submit-summary dl {
                 grid-template-columns: 1fr;
+            }
+
+            nav[role="navigation"][aria-label="Pagination Navigation"] > div:first-child {
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+            }
+
+            nav[role="navigation"][aria-label="Pagination Navigation"] > div:first-child > a,
+            nav[role="navigation"][aria-label="Pagination Navigation"] > div:first-child > span {
+                width: calc(50% - 4px);
+                max-width: calc(50% - 4px);
+                min-width: 0;
+                overflow: hidden;
+                padding: 8px 6px !important;
+                border-radius: 8px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            nav[role="navigation"][aria-label="Pagination Navigation"] > div:nth-child(2) {
+                display: none;
+            }
+
+            .piket-search .form-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .piket-search .form-actions .btn {
+                width: auto;
+                flex: 1 1 110px;
             }
 
             .sidebar {
@@ -2166,90 +2256,43 @@
 
                     </nav>
 
-                    <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin*') || request()->is('dispensasi*')) open @endif>
-                        <summary class="nav-label">Menu tambahan</summary>
-                        <nav class="nav-list" aria-label="Menu tambahan">
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris', 'piket'], true))
-                        <a
-                            class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}"
-                            href="{{ route('laporan.jurnal') }}"
-                        >
-                            Rekap laporan
-                        </a>
-                    @endif
-
                     @if (auth()->user()->role === 'admin')
-                        <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/registrations*') ? 'active' : '' }}"
-                            href="{{ route('admin.registrations.index') }}"
-                        >
-                            Pendaftaran
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}"
-                            href="{{ route('admin.activity-logs') }}"
-                        >
-                            Riwayat aktivitas
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}"
-                            href="{{ route('admin.secretaries.index') }}"
-                        >
-                            Pengurus kelas
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}"
-                            href="{{ route('admin.gurus.index') }}"
-                        >
-                            Guru
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}"
-                            href="{{ route('admin.siswas.index') }}"
-                        >
-                            Siswa
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}"
-                            href="{{ route('admin.kelas.index') }}"
-                        >
-                            Kelas
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}"
-                            href="{{ route('admin.mapel.index') }}"
-                        >
-                            Mata pelajaran
-                        </a>
-
-                        <a
-                            class="nav-link {{ request()->is('admin/data/jam*') ? 'active' : '' }}"
-                            href="{{ route('admin.jam.index') }}"
-                        >
-                            Jam pelajaran
-                        </a>
-
+                        <details class="nav-extra" @if (request()->is('admin/data*') || request()->is('admin/secretaries*')) open @endif>
+                            <summary class="nav-label">Data & akun</summary>
+                            <nav class="nav-list" aria-label="Data dan akun">
+                                <a class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}" href="{{ route('admin.gurus.index') }}">Guru</a>
+                                <a class="nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}" href="{{ route('admin.siswas.index') }}">Siswa</a>
+                                <a class="nav-link {{ request()->is('admin/data/kelas*') ? 'active' : '' }}" href="{{ route('admin.kelas.index') }}">Kelas</a>
+                                <a class="nav-link {{ request()->is('admin/data/mapel*') ? 'active' : '' }}" href="{{ route('admin.mapel.index') }}">Mata pelajaran</a>
+                                <a class="nav-link {{ request()->is('admin/data/jam*') ? 'active' : '' }}" href="{{ route('admin.jam.index') }}">Jam pelajaran</a>
+                                <a class="nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}" href="{{ route('admin.secretaries.index') }}">Pengurus kelas</a>
+                            </nav>
+                        </details>
+                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('dispensasi*')) open @endif>
+                            <summary class="nav-label">Operasional</summary>
+                            <nav class="nav-list" aria-label="Operasional">
+                                <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
+                                <a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Riwayat aktivitas</a>
+                                <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
+                            </nav>
+                        </details>
+                    @else
+                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
+                            <summary class="nav-label">Menu tambahan</summary>
+                            <nav class="nav-list" aria-label="Menu tambahan">
+                                @if (in_array(auth()->user()->role, ['guru', 'sekretaris', 'piket'], true))
+                                    <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                @endif
+                                @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                                    <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal semua guru</a>
+                                @endif
+                                @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                                    <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
+                                @endif
+                            </nav>
+                        </details>
                     @endif
-
-                    @if (in_array(auth()->user()->role, ['siswa', 'piket', 'admin'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                        <a
-                            class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}"
-                            href="{{ route('dispensasi.index') }}"
-                        >
-                            Dispensasi
-                        </a>
-                    @endif
-
-                        </nav>
-                    </details>
 
                     <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
                         <span class="sidebar-date">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span>
