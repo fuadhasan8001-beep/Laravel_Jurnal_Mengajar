@@ -2254,6 +2254,9 @@
                         </a>
                     @endif
 
+                    @if (auth()->user()->role === 'guru' && auth()->user()->kelasWali()->exists())
+                        <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Lihat rekap jurnal</a>
+                    @endif
                     </nav>
 
                     @if (auth()->user()->role === 'admin')

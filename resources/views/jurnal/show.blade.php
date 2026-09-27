@@ -9,7 +9,7 @@
             <p>{{ $jurnal->tanggal->format('d M Y') }} · {{ $jurnal->kelas->nama_kelas }} · {{ $jurnal->mapel->nama_mapel }}</p>
         </div>
         <div class="form-actions">
-            @if (auth()->user()->role === 'guru' && $jurnal->status_verifikasi === 'Menunggu')
+            @if (! ($readOnlyWali ?? false) && auth()->user()->role === 'guru' && $jurnal->status_verifikasi === 'Menunggu')
                 <a class="btn btn-muted" href="{{ route('jurnal.edit', $jurnal) }}">Edit</a>
                 <form action="{{ route('jurnal.destroy', $jurnal) }}" method="POST" data-confirm="Hapus jurnal ini?">
                     @csrf
@@ -17,7 +17,7 @@
                     <button class="btn" type="submit">Hapus</button>
                 </form>
             @endif
-            <a class="btn btn-muted" href="{{ route('jurnal.index') }}">Kembali</a>
+            <a class="btn btn-muted" href="{{ ($readOnlyWali ?? false) ? route('wali-kelas.jurnal.index', ['tanggal' => $jurnal->tanggal->toDateString()]) : route('jurnal.index') }}">Kembali</a>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
         <section class="panel panel-top-spaced signature-card">
             <div class="panel-head"><h2>Tanda tangan guru</h2></div>
             <div class="signature-space">
-                <img class="saved-signature" src="{{ route('jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
+                <img class="saved-signature" src="{{ route(($readOnlyWali ?? false) ? 'wali-kelas.jurnal.signature' : 'jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
             </div>
         </section>
     @endif

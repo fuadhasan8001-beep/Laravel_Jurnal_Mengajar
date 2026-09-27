@@ -15,6 +15,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RekapController;
+use App\Http\Controllers\WaliKelasJurnalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,12 @@ Route::get('/', function () {
     }
 
     return redirect()->route('login');
+});
+
+Route::middleware('role:guru')->prefix('wali-kelas/jurnal')->name('wali-kelas.jurnal.')->group(function () {
+    Route::get('/', [WaliKelasJurnalController::class, 'index'])->name('index');
+    Route::get('/{jurnal}', [WaliKelasJurnalController::class, 'show'])->whereNumber('jurnal')->name('show');
+    Route::get('/{jurnal}/signature', [WaliKelasJurnalController::class, 'signature'])->whereNumber('jurnal')->name('signature');
 });
 
 Route::get('login', function () {
