@@ -46,11 +46,13 @@
                 <form action="{{ route('absensi.store') }}" method="POST" data-absence-form>
                     @csrf
                     <input type="hidden" name="jurnal_id" value="{{ $jurnal->id }}">
-                <div class="panel-body">
-                    <label for="attendance-search-{{ $jurnal->id }}">Cari siswa</label>
-                    <input id="attendance-search-{{ $jurnal->id }}" type="search" data-absence-search placeholder="Nama atau NIS" autocomplete="off">
+                <div class="panel-body attendance-controls">
+                    <div class="attendance-search-control">
+                        <label for="attendance-search-{{ $jurnal->id }}">Cari siswa</label>
+                        <input id="attendance-search-{{ $jurnal->id }}" type="search" data-absence-search placeholder="Nama atau NIS" autocomplete="off">
+                    </div>
                     <button
-                        class="btn btn-muted"
+                        class="btn btn-muted attendance-mark-present"
                         type="button"
                         data-mark-present
                     >Hadir semua</button>

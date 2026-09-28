@@ -3,6 +3,72 @@
 
 @pushOnce('styles', 'teacher-schedule-compact')
     <style>
+        .teacher-schedule .status.pending {
+            border: 1px solid #e4bb54;
+            background: #fff3ce;
+            color: #795600;
+        }
+
+        .teacher-schedule .status.approved {
+            border: 1px solid #75c99e;
+            background: #e4f7ed;
+            color: #17663f;
+        }
+
+        .teacher-schedule .status.rejected {
+            border: 1px solid #e7a4aa;
+            background: #fff0f1;
+            color: #9d2633;
+        }
+
+        .teacher-schedule .status.not-created {
+            border: 1px solid #c8c4b8;
+            background: #f2f0ea;
+            color: #5e5a50;
+        }
+
+        .teacher-schedule .schedule-action {
+            display: inline-flex;
+            min-height: 32px;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            padding: 4px 0;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.2;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color .15s ease;
+        }
+
+        .teacher-schedule .schedule-action-journal {
+            color: #684b0e;
+            min-height: 36px;
+            font-size: 14px;
+        }
+
+        .teacher-schedule .schedule-action-attendance {
+            color: #294575;
+        }
+
+        .teacher-schedule .schedule-action:hover {
+            text-decoration-thickness: 2px;
+        }
+
+        .teacher-schedule .schedule-action-journal:hover {
+            color: #9a6200;
+        }
+
+        .teacher-schedule .schedule-action-attendance:hover {
+            color: #163d81;
+        }
+
+        .teacher-schedule .schedule-action:focus-visible {
+            outline: 3px solid #283e71;
+            outline-offset: 2px;
+        }
+
         .teacher-schedule .table-wrap {
             overflow-x: visible;
         }
@@ -24,9 +90,9 @@
 
             .teacher-schedule tbody tr {
                 display: grid;
-                grid-template-columns: minmax(60px, .8fr) minmax(76px, 1fr) max-content;
+                grid-template-columns: minmax(0, 1fr) max-content;
                 align-items: center;
-                gap: 2px 8px;
+                gap: 2px 12px;
                 padding: 8px 12px;
                 border-bottom: 1px solid var(--line);
             }
@@ -41,37 +107,53 @@
 
             .teacher-schedule td:nth-child(1) {
                 grid-column: 1;
-                grid-row: 1 / span 2;
-            }
-
-            .teacher-schedule td:nth-child(2) {
-                grid-column: 2;
                 grid-row: 1;
             }
 
-            .teacher-schedule td:nth-child(3) {
-                grid-column: 2;
+            .teacher-schedule td:nth-child(2) {
+                grid-column: 1 / -1;
                 grid-row: 2;
+                padding-top: 5px;
+                font-weight: 700;
+            }
+
+            .teacher-schedule td:nth-child(3) {
+                grid-column: 1 / -1;
+                grid-row: 3;
+                color: var(--muted);
+                line-height: 1.4;
+                overflow-wrap: anywhere;
+                white-space: normal;
             }
 
             .teacher-schedule td:nth-child(4) {
-                grid-column: 3;
-                grid-row: 1 / span 2;
+                grid-column: 2;
+                grid-row: 1;
+                justify-self: end;
+            }
+
+            .teacher-schedule .status {
+                white-space: nowrap;
+            }
+
+            .teacher-schedule .schedule-action {
+                margin-right: 0;
             }
 
             .teacher-schedule td:nth-child(5) {
                 display: flex;
                 grid-column: 1 / -1;
-                justify-content: flex-end;
-                gap: 12px;
+                grid-row: 4;
+                justify-content: flex-start;
+                gap: 16px;
                 padding-top: 6px;
             }
         }
 
         @media (max-width: 380px) {
             .teacher-schedule tbody tr {
-                grid-template-columns: minmax(54px, .7fr) minmax(68px, 1fr) max-content;
-                gap: 2px 6px;
+                grid-template-columns: minmax(0, 1fr) max-content;
+                gap: 2px 8px;
                 padding-right: 10px;
                 padding-left: 10px;
             }
@@ -270,25 +352,31 @@
                                     && (int) $item->mapel_id === (int) $jadwal->mapel_id
                                     && $item->jamMulai->jam_ke <= $jadwal->jamPelajaran->jam_ke
                                     && $item->jamSelesai->jam_ke >= $jadwal->jamPelajaran->jam_ke);
+                                $statusClass = match ($jurnal?->status_verifikasi) {
+                                    'Disetujui' => 'approved',
+                                    'Ditolak' => 'rejected',
+                                    'Menunggu' => 'pending',
+                                    default => 'not-created',
+                                };
                             @endphp
                             <tr>
                                 <td>Jam {{ $jadwal->jamPelajaran->jam_ke }}<br><span class="eyebrow">{{ substr($jamMulai, 0, 5) }} - {{ substr($jamSelesai, 0, 5) }}</span></td>
                                 <td>{{ $jadwal->kelas->nama_kelas }}</td>
                                 <td>{{ $jadwal->mapel->nama_mapel }}</td>
                                 <td>
-                                    <span class="status {{ $jurnal ? 'approved' : 'pending' }}">
+                                    <span class="status {{ $statusClass }}">
                                         {{ $jurnal ? $jurnal->status_verifikasi : 'Belum dibuat' }}
                                     </span>
                                 </td>
                                 <td>
                                     @if ($jurnal)
-                                        <a href="{{ route('jurnal.show', $jurnal) }}">Lihat jurnal</a>
+                                        <a class="schedule-action schedule-action-journal" href="{{ route('jurnal.show', $jurnal) }}">Lihat jurnal</a>
                                     @elseif ($activeJadwalIds->contains($jadwal->id))
-                                        <a href="{{ route('jurnal.create', ['jadwal_id' => $jadwal->id]) }}">Buat jurnal</a>
+                                        <a class="schedule-action schedule-action-journal" href="{{ route('jurnal.create', ['jadwal_id' => $jadwal->id]) }}">Buat jurnal</a>
                                     @else
                                         <span class="eyebrow">Belum aktif</span>
                                     @endif
-                                    <a href="{{ route('absensi.index') }}">Absensi</a>
+                                    <a class="schedule-action schedule-action-attendance" href="{{ route('absensi.index') }}">Absensi</a>
                                 </td>
                             </tr>
                         @endforeach

@@ -3,6 +3,11 @@
     .attendance-editor { width: 100%; overflow: visible; }
     .attendance-dropdown > summary { cursor: pointer; padding: 18px 24px; font-weight: 700; }
     .attendance-dropdown[open] > summary { border-bottom: 1px solid var(--border, #ddd); }
+    .attendance-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px 12px; padding: 14px 16px 8px; }
+    .attendance-search-control { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+    .attendance-search-control label { color: var(--text-dark, #333); font-size: 12px; font-weight: 700; }
+    .attendance-search-control input { width: 100%; min-width: 0; height: 40px; box-sizing: border-box; }
+    .attendance-controls .attendance-mark-present { min-height: 40px; padding: 8px 12px; white-space: nowrap; font-size: 13px; }
     .attendance-editor table { width: 100%; table-layout: fixed; min-width: 0; }
     .attendance-editor th, .attendance-editor td { white-space: normal; overflow-wrap: anywhere; vertical-align: top; padding: 14px 12px; }
     .attendance-editor th:first-child { width: 28%; }
@@ -21,15 +26,17 @@
     @media (max-width: 1100px) {
         .attendance-editor table, .attendance-editor tbody { display: block; }
         .attendance-editor thead { display: none; }
-        .attendance-editor tbody > tr { display: grid; grid-template-columns: minmax(0, 1fr); border-bottom: 1px solid var(--border, #ddd); padding: 14px 0; }
-        .attendance-editor td { display: block; padding: 4px 8px; border: 0; width: auto; }
+        .attendance-editor tbody > tr { display: grid; grid-template-columns: minmax(0, 1fr); border-bottom: 1px solid var(--border, #ddd); padding: 8px 0; }
+        .attendance-editor td { display: block; padding: 2px 8px; border: 0; width: auto; }
         .attendance-editor td.attendance-number { float: left; width: auto; font-size: 12px; color: var(--muted, #666); }
         .attendance-editor .attendance-options { grid-template-columns: repeat(5, minmax(0, 1fr)); }
         .attendance-editor td:has(input[data-attendance-note][hidden]), .attendance-editor td:has(input[data-absence-note][hidden]):not(:has(a)) { display: none; }
     }
     @media (max-width: 520px) {
+        .attendance-controls { gap: 8px; padding: 12px 12px 6px; }
         .attendance-editor .attendance-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        .attendance-options label { font-size: 12px; }
+        .attendance-editor .attendance-options { gap: 0 4px; }
+        .attendance-options label { min-height: 32px; gap: 4px; font-size: 12px; }
     }
 </style>
 @endPushOnce
