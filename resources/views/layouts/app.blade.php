@@ -1036,6 +1036,92 @@
             overflow-x: auto;
         }
 
+        .journal-detail-dialog {
+            width: min(620px, calc(100% - 28px));
+            max-height: min(80vh, 720px);
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 20px;
+            background: var(--surface);
+            color: var(--ink);
+        }
+
+        .journal-detail-dialog::backdrop {
+            background: rgba(22, 26, 25, .55);
+        }
+
+        .journal-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .journal-detail-head h2 {
+            margin: 0;
+        }
+
+        .journal-detail-head form {
+            margin: 0;
+        }
+
+        .journal-detail-dialog .detail-grid {
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 720px) {
+            .responsive-card-table-wrap {
+                overflow: visible;
+            }
+
+            .responsive-card-table,
+            .responsive-card-table tbody,
+            .responsive-card-table tr,
+            .responsive-card-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .responsive-card-table thead {
+                display: none;
+            }
+
+            .responsive-card-table tbody {
+                display: grid;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .responsive-card-table tbody tr {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 12px;
+            }
+
+            .responsive-card-table td {
+                min-width: 0;
+                padding: 0;
+                border: 0;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .responsive-card-table td::before {
+                display: block;
+                margin-bottom: 4px;
+                color: var(--muted);
+                content: attr(data-label);
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;

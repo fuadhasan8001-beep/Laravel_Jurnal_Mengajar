@@ -7,8 +7,8 @@ use App\Http\Controllers\AdminReferenceController;
 use App\Http\Controllers\AdminRegistrationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DispensasiController;
-use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\IzinSekolahController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
@@ -115,10 +115,13 @@ Route::middleware('role:admin,waka')->prefix('admin')->group(function () {
 Route::middleware('role:admin,waka,guru,sekretaris,piket')->prefix('rekap')->group(function () {
     Route::get('/jurnal', [LaporanController::class, 'jurnal'])->name('laporan.jurnal');
     Route::get('/jurnal/export', [LaporanController::class, 'jurnalExport'])->name('laporan.jurnal.export');
-    Route::get('/absensi', [LaporanController::class, 'absensi'])->name('laporan.absensi');
-    Route::get('/absensi/export', [LaporanController::class, 'absensiExport'])->name('laporan.absensi.export');
     Route::get('/dispensasi', [LaporanController::class, 'dispensasi'])->name('laporan.dispensasi');
     Route::get('/dispensasi/export', [LaporanController::class, 'dispensasiExport'])->name('laporan.dispensasi.export');
+});
+
+Route::middleware('role:admin,waka,guru,sekretaris')->prefix('rekap')->group(function () {
+    Route::get('/absensi', [LaporanController::class, 'absensi'])->name('laporan.absensi');
+    Route::get('/absensi/export', [LaporanController::class, 'absensiExport'])->name('laporan.absensi.export');
 });
 
 Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(function () {

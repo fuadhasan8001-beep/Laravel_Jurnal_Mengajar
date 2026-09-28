@@ -39,7 +39,7 @@ it('shows the recap menu for every teacher and keeps the homeroom-only class pag
 
 it('filters by date and teacher and shows complete readonly journal detail', function () {
     $this->actingAs($this->wali)->get(route('wali-kelas.jurnal.index', ['guru' => 'Badrus']))
-        ->assertOk()->assertSee('Materi algoritma');
+        ->assertOk()->assertSee('Materi algoritma')->assertSee('Tampilkan detail');
     $this->get(route('wali-kelas.jurnal.index', ['guru' => 'Tidak cocok']))->assertOk()->assertDontSee('Materi algoritma');
     $this->get(route('wali-kelas.jurnal.show', $this->journal))->assertOk()->assertSee('Latihan fungsi')->assertDontSee('>Edit<', false);
     $this->get(route('jurnal.edit', $this->journal))->assertForbidden();
@@ -86,4 +86,13 @@ it('keeps the duty report restricted to teachers assigned today', function () {
         ->assertSee('action="'.route('piket.rekap-jurnal').'"', false)
         ->assertDontSee('action="'.route('laporan.jurnal').'"', false);
     $this->get(route('piket.rekap-jurnal.export'))->assertDownload('rekap-jurnal.csv');
+});
+
+it('allows the dedicated duty role to view journal recaps but not attendance reports', function () {
+    $piket = User::factory()->create(['role' => 'piket', 'is_active' => true]);
+
+    $this->actingAs($piket)->get(route('piket.rekap-jurnal'))
+        ->assertOk()->assertSee('Tampilkan detail')->assertSee('Materi algoritma');
+    $this->get(route('laporan.absensi'))->assertForbidden();
+    $this->get(route('laporan.absensi.export'))->assertForbidden();
 });

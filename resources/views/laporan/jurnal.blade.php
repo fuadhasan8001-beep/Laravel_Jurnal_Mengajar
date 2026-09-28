@@ -25,7 +25,32 @@
     <section class="panel">
         <div class="panel-head"><h2>Data jurnal</h2><span class="eyebrow">{{ $jurnals->total() }} data</span></div>
         @if ($jurnals->isNotEmpty())
-            <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Materi</th><th>Status</th></tr></thead><tbody>@foreach ($jurnals as $jurnal)<tr><td>{{ $jurnal->tanggal->format('d M Y') }}</td><td>{{ $jurnal->guru->nama_guru }}</td><td>{{ $jurnal->kelas->nama_kelas }}</td><td>{{ $jurnal->mapel->nama_mapel }}</td><td>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td><td>{{ $jurnal->materi }}</td><td>{{ $jurnal->status_verifikasi }}</td></tr>@endforeach</tbody></table></div>
+            <div class="table-wrap responsive-card-table-wrap"><table class="responsive-card-table"><thead><tr><th>Tanggal</th><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th><th></th></tr></thead><tbody>
+                @foreach ($jurnals as $jurnal)
+                    <tr>
+                        <td data-label="Tanggal">{{ $jurnal->tanggal->format('d M Y') }}</td>
+                        <td data-label="Guru">{{ $jurnal->guru->nama_guru }}</td>
+                        <td data-label="Kelas">{{ $jurnal->kelas->nama_kelas }}</td>
+                        <td data-label="Mapel">{{ $jurnal->mapel->nama_mapel }}</td>
+                        <td data-label="Jam">{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
+                        <td data-label="Status">{{ $jurnal->status_verifikasi }}</td>
+                        <td class="report-journal-action"><button class="btn btn-muted" type="button" data-open-dialog="report-jurnal-detail-{{ $jurnal->id }}">Tampilkan detail</button></td>
+                    </tr>
+                    <dialog class="journal-detail-dialog" id="report-jurnal-detail-{{ $jurnal->id }}" aria-labelledby="report-jurnal-title-{{ $jurnal->id }}">
+                        <div class="journal-detail-head"><h2 id="report-jurnal-title-{{ $jurnal->id }}">Detail jurnal</h2><form method="dialog"><button class="btn btn-muted" aria-label="Tutup detail">Tutup</button></form></div>
+                        <dl class="detail-grid">
+                            <div class="detail-item"><dt>Tanggal</dt><dd>{{ $jurnal->tanggal->format('d M Y') }}</dd></div>
+                            <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnal->guru->nama_guru }}</dd></div>
+                            <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
+                            <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnal->mapel->nama_mapel }}</dd></div>
+                            <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</dd></div>
+                            <div class="detail-item"><dt>Status verifikasi</dt><dd>{{ $jurnal->status_verifikasi }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Materi</dt><dd>{{ $jurnal->materi ?: '-' }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
+                        </dl>
+                    </dialog>
+                @endforeach
+            </tbody></table></div>
             <div class="panel-body">{{ $jurnals->links() }}</div>
         @else
             <div class="empty">Belum ada jurnal pada periode ini.</div>
@@ -45,9 +70,27 @@
             </form>
         </div>
         @if ($monitoring->isNotEmpty())
-            <div class="table-wrap"><table><thead><tr><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th></tr></thead><tbody>@foreach ($monitoring as $item)<tr><td>{{ $item['guru'] }}</td><td>{{ $item['kelas'] }}</td><td>{{ $item['mapel'] }}</td><td>{{ $item['jam'] }}</td><td>{{ $item['status'] }}</td></tr>@endforeach</tbody></table></div>
+            <div class="table-wrap responsive-card-table-wrap"><table class="responsive-card-table"><thead><tr><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th></tr></thead><tbody>@foreach ($monitoring as $item)<tr><td data-label="Guru">{{ $item['guru'] }}</td><td data-label="Kelas">{{ $item['kelas'] }}</td><td data-label="Mapel">{{ $item['mapel'] }}</td><td data-label="Jam">{{ $item['jam'] }}</td><td data-label="Status">{{ $item['status'] }}</td></tr>@endforeach</tbody></table></div>
         @else
             <div class="empty">Tidak ada jadwal aktif pada tanggal ini.</div>
         @endif
     </section>
 @endsection
+
+@push('styles')
+<style>
+    @media (max-width: 720px) {
+        .report-journal-action { grid-column: 1 / -1; }
+        .report-journal-action::before { content: none !important; }
+        .report-journal-action .btn { width: 100%; }
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.querySelectorAll('[data-open-dialog]').forEach((button) => {
+        button.addEventListener('click', () => document.getElementById(button.dataset.openDialog)?.showModal());
+    });
+</script>
+@endpush
