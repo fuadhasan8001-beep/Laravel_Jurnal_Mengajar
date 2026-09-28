@@ -13,8 +13,9 @@ use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
-use App\Services\SchoolLocationVerifier;
+use App\Models\User;
 use App\Notifications\JurnalNotification;
+use App\Services\SchoolLocationVerifier;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,8 +65,10 @@ class JurnalController extends Controller
         unset($data['absensi'], $data['tanda_tangan'], $data['jadwal_id']);
         $data = [...$data, ...$this->locationData($data, $locationVerifier)];
         $this->validatePeriodOrder($data);
+        $isNewJournal = false;
 
-        $jurnal = DB::transaction(function () use ($data, $absensis): Jurnal {
+        $jurnal = DB::transaction(function () use ($data, $absensis, &$isNewJournal): Jurnal {
+            $isNewJournal = false;
             $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
             $existingJournal = Jurnal::query()
                 ->where('guru_id', $guru->id)
@@ -85,12 +88,31 @@ class JurnalController extends Controller
                 'guru_id' => $guru->id,
             ]);
             $this->syncAbsensis($jurnal, $absensis);
+            $isNewJournal = true;
 
             return $jurnal;
         }, 5);
 
+        if ($isNewJournal) {
+            $jurnal->loadMissing(['guru.user', 'kelas', 'mapel']);
+            $teacherName = $jurnal->guru->user?->name ?? $jurnal->guru->nama_guru;
+            $message = 'Guru '.$teacherName.' mengirim jurnal '.$jurnal->kelas->nama_kelas.' untuk '.$jurnal->mapel->nama_mapel.'.';
+
+            User::query()
+                ->where('role', 'sekretaris')
+                ->whereHas('kelasSekretaris', fn ($query) => $query->whereKey($jurnal->kelas_id))
+                ->get()
+                ->each(function (User $secretary) use ($jurnal, $message): void {
+                    $secretary->notify(new JurnalNotification(
+                        'jurnal_submitted',
+                        $message,
+                        route('jurnal.show', $jurnal),
+                    ));
+                });
+        }
+
         return redirect()->route('jurnal.show', $jurnal)
-            ->with('success', $jurnal->wasRecentlyCreated ? 'Jurnal berhasil disimpan.' : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
+            ->with('success', $isNewJournal ? 'Jurnal berhasil disimpan.' : 'Jurnal untuk sesi ini sudah diisi. Data sebelumnya tetap tersimpan.');
     }
 
     public function show(Jurnal $jurnal): View
@@ -193,13 +215,14 @@ class JurnalController extends Controller
                 'catatan' => $data['catatan'] ?? null,
                 'verified_at' => now(),
             ]);
-            $jurnal->loadMissing(['guru.user', 'kelas', 'mapel']);
-            $jurnal->guru->user?->notify(new JurnalNotification(
-                'journal_verified',
-                'Jurnal '.$jurnal->kelas->nama_kelas.' untuk '.$jurnal->mapel->nama_mapel.' telah '.$data['status'].' oleh sekretaris.',
-                route('jurnal.show', $jurnal),
-            ));
         });
+
+        $jurnal->refresh()->load(['guru.user', 'kelas', 'mapel']);
+        $jurnal->guru->user?->notify(new JurnalNotification(
+            'journal_verified',
+            'Jurnal '.$jurnal->kelas->nama_kelas.' untuk '.$jurnal->mapel->nama_mapel.' telah '.$data['status'].' oleh sekretaris.',
+            route('jurnal.show', $jurnal),
+        ));
 
         return redirect()->route('jurnal.show', $jurnal)->with('success', 'Verifikasi jurnal berhasil disimpan.');
     }
@@ -218,6 +241,7 @@ class JurnalController extends Controller
                 'longitude' => null,
                 'location_accuracy' => null,
                 'location_distance' => null,
+                'location_valid' => null,
                 'location_verified_at' => null,
             ];
         }
@@ -233,6 +257,7 @@ class JurnalController extends Controller
             'longitude' => $verifiedLocation['longitude'],
             'location_accuracy' => $verifiedLocation['accuracy'],
             'location_distance' => $verifiedLocation['distance'],
+            'location_valid' => true,
             'location_verified_at' => $verifiedLocation['verified_at'],
         ];
     }

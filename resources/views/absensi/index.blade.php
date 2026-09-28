@@ -38,9 +38,11 @@
                 <div>
                     <h2>{{ $jurnal->tanggal->format('d M Y') }}</h2>
                     <span class="eyebrow">{{ $jurnal->guru->nama_guru }} · Kelas {{ $jurnal->kelas->nama_kelas }} · {{ $jurnal->mapel->nama_mapel }}</span>
-                </div><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa tercatat</span>
+                </div>
             </div>
             @if ($jurnal->kelas->siswas->count())
+                <details class="attendance-dropdown">
+                    <summary>{{ $jurnal->absensis->count() }} siswa tercatat · Tampilkan absensi siswa</summary>
                 <form action="{{ route('absensi.store') }}" method="POST" data-absence-form>
                     @csrf
                     <input type="hidden" name="jurnal_id" value="{{ $jurnal->id }}">
@@ -105,8 +107,9 @@
                         <button class="btn" type="submit">Simpan absensi</button>
                     </div>
                 </form>
+                </details>
             @else
-                <div class="empty">Belum ada siswa dalam kelas jurnal ini.</div>
+                <div class="empty">Absensi siswa: Nihil</div>
             @endif
         </section>
     @empty

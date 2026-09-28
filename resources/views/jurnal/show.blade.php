@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@include('absensi._styles')
 
 @section('title', 'Detail Jurnal')
 
@@ -50,21 +51,28 @@
     @endif
 
     <section class="panel panel-top-spaced">
-        <div class="panel-head"><h2>Absensi siswa</h2><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa</span></div>
-        <div class="table-wrap"><table>
-            <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
-            <tbody>
-                @forelse ($jurnal->absensis as $absensi)
-                    <tr>
-                        <td>{{ $absensi->siswa->nama_siswa }}</td>
-                        <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
-                        <td>{{ $absensi->catatan ?: '-' }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="3">Belum ada absensi siswa.</td></tr>
-                @endforelse
-            </tbody>
-        </table></div>
+        <div class="panel-head"><h2>Absensi siswa</h2></div>
+        @if ($jurnal->absensis->isEmpty())
+            <div class="panel-body">Nihil</div>
+        @else
+            <div class="panel-body">
+                <details class="attendance-dropdown">
+                    <summary>{{ $jurnal->absensis->count() }} siswa tercatat · Lihat absensi</summary>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
+                        <tbody>
+                            @foreach ($jurnal->absensis as $absensi)
+                                <tr>
+                                    <td>{{ $absensi->siswa->nama_siswa }}</td>
+                                    <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
+                                    <td>{{ $absensi->catatan ?: '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table></div>
+                </details>
+            </div>
+        @endif
     </section>
 
     @if (auth()->user()->role === 'sekretaris' && $jurnal->status_verifikasi === 'Menunggu')

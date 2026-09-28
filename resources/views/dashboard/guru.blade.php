@@ -1,4 +1,88 @@
 @extends('layouts.app')
+@include('absensi._styles')
+
+@pushOnce('styles', 'teacher-schedule-compact')
+    <style>
+        .teacher-schedule .table-wrap {
+            overflow-x: visible;
+        }
+
+        .teacher-schedule table {
+            min-width: 0;
+            table-layout: fixed;
+        }
+
+        @media (max-width: 680px) {
+            .teacher-schedule thead {
+                display: none;
+            }
+
+            .teacher-schedule tbody,
+            .teacher-schedule tbody tr {
+                display: block;
+            }
+
+            .teacher-schedule tbody tr {
+                display: grid;
+                grid-template-columns: minmax(60px, .8fr) minmax(76px, 1fr) max-content;
+                align-items: center;
+                gap: 2px 8px;
+                padding: 8px 12px;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .teacher-schedule td {
+                min-width: 0;
+                padding: 3px 0;
+                border: 0;
+                font-size: 12px;
+                overflow-wrap: anywhere;
+            }
+
+            .teacher-schedule td:nth-child(1) {
+                grid-column: 1;
+                grid-row: 1 / span 2;
+            }
+
+            .teacher-schedule td:nth-child(2) {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .teacher-schedule td:nth-child(3) {
+                grid-column: 2;
+                grid-row: 2;
+            }
+
+            .teacher-schedule td:nth-child(4) {
+                grid-column: 3;
+                grid-row: 1 / span 2;
+            }
+
+            .teacher-schedule td:nth-child(5) {
+                display: flex;
+                grid-column: 1 / -1;
+                justify-content: flex-end;
+                gap: 12px;
+                padding-top: 6px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .teacher-schedule tbody tr {
+                grid-template-columns: minmax(54px, .7fr) minmax(68px, 1fr) max-content;
+                gap: 2px 6px;
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+
+            .teacher-schedule .status {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+        }
+    </style>
+@endPushOnce
 
 @section('title', 'Dashboard Guru')
 
@@ -132,31 +216,29 @@
                     <div class="journal-card-header">
                         <div>
                             <h3>Absensi siswa</h3>
-                            <p>{{ $jurnalTerbaru->absensis->count() }} siswa tercatat</p>
                         </div>
                     </div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Siswa</th>
-                                    <th>Status</th>
-                                    <th>Catatan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($jurnalTerbaru->absensis as $absensi)
-                                    <tr>
-                                        <td>{{ $absensi->siswa->nama_siswa }}</td>
-                                        <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
-                                        <td>{{ $absensi->catatan ?: '-' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="3">Belum ada absensi siswa.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                    @if ($jurnalTerbaru->absensis->isEmpty())
+                        <p>Nihil</p>
+                    @else
+                        <details class="attendance-dropdown">
+                            <summary>{{ $jurnalTerbaru->absensis->count() }} siswa tercatat · Lihat absensi</summary>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
+                                    <tbody>
+                                        @foreach ($jurnalTerbaru->absensis as $absensi)
+                                            <tr>
+                                                <td>{{ $absensi->siswa->nama_siswa }}</td>
+                                                <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
+                                                <td>{{ $absensi->catatan ?: '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    @endif
                 </div>
             </div>
         </section>
@@ -169,7 +251,7 @@
         </div>
 
         @if ($jadwalHariIni->isNotEmpty())
-            <div class="table-wrap">
+            <div class="table-wrap teacher-schedule">
                 <table>
                     <thead>
                         <tr>

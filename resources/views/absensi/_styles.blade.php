@@ -1,6 +1,8 @@
 @pushOnce('styles', 'attendance-editor')
 <style>
     .attendance-editor { width: 100%; overflow: visible; }
+    .attendance-dropdown > summary { cursor: pointer; padding: 18px 24px; font-weight: 700; }
+    .attendance-dropdown[open] > summary { border-bottom: 1px solid var(--border, #ddd); }
     .attendance-editor table { width: 100%; table-layout: fixed; min-width: 0; }
     .attendance-editor th, .attendance-editor td { white-space: normal; overflow-wrap: anywhere; vertical-align: top; padding: 14px 12px; }
     .attendance-editor th:first-child { width: 28%; }

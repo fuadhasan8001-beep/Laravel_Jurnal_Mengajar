@@ -51,7 +51,7 @@
     <section class="journal-detail-panel" aria-label="Detail pembelajaran dan absensi">
         <div class="journal-card-header"><h3>Detail pembelajaran dan absensi</h3></div>
         @foreach (['materi' => 'Materi pembelajaran', 'kegiatan' => 'Kegiatan pembelajaran'] as $field => $label)
-            <div class="field"><label for="{{ $field }}">{{ $label }}</label>
+            <div class="field" @if ($field === 'kegiatan' && (old('status_guru', $jurnal?->status_guru) ?: 'Hadir') !== 'Hadir') hidden style="display:none" @endif id="{{ $field }}-field"><label for="{{ $field }}">{{ $label }}</label>
                 @if ($field === 'materi')
                     <input id="{{ $field }}" name="{{ $field }}" value="{{ old($field, $jurnal?->$field) }}" maxlength="200">
                 @else
@@ -111,11 +111,11 @@
     </section>
     <section class="journal-detail-panel" aria-labelledby="location-title" data-school-latitude="{{ config('school.latitude') }}" data-school-longitude="{{ config('school.longitude') }}" data-school-radius="{{ config('school.radius_meters') }}" data-max-gps-accuracy="{{ config('school.max_gps_accuracy') }}">
         <div class="journal-card-header"><div><h3 id="location-title">Verifikasi lokasi sekolah</h3><p>Status Hadir memerlukan verifikasi GPS di area sekolah.</p></div></div>
-        <p id="location-status" role="status" aria-live="polite">Pilih Hadir untuk memeriksa lokasi.</p>
+        <p id="location-status" role="status" aria-live="polite">📍 Mendeteksi lokasi...</p>
         <input type="hidden" name="latitude" id="location-latitude" value="{{ old('latitude') }}">
         <input type="hidden" name="longitude" id="location-longitude" value="{{ old('longitude') }}">
         <input type="hidden" name="location_accuracy" id="location-accuracy" value="{{ old('location_accuracy') }}">
-        <button type="button" class="btn btn-muted" id="check-location">Periksa lokasi</button>
+        <button type="button" class="btn btn-muted" id="retry-location" hidden>Coba lagi</button>
         @error('location')<small class="error">{{ $message }}</small>@enderror
         @error('location_latitude')<small class="error">{{ $message }}</small>@enderror
         @error('location_longitude')<small class="error">{{ $message }}</small>@enderror
@@ -154,7 +154,7 @@
     const selectedStatus = () => form.querySelector('input[name="status_guru"]:checked')?.value;
     const locationPanel = document.querySelector('[data-school-latitude]');
     const locationStatus = document.getElementById('location-status');
-    const checkLocationButton = document.getElementById('check-location');
+    const retryLocationButton = document.getElementById('retry-location');
     const saveTrigger = document.getElementById('confirm-save-trigger');
     const finalSubmit = document.getElementById('final-submit-journal');
     const confirmModal = document.getElementById('journal-confirm-modal');
@@ -196,14 +196,19 @@
 
     function updateButtons() {
         const assignment = document.getElementById('teacher-assignment');
-        assignment.hidden = selectedStatus() === 'Hadir';
-        assignment.style.display = selectedStatus() === 'Hadir' ? 'none' : '';
+        const isPresent = selectedStatus() === 'Hadir';
+        assignment.hidden = isPresent;
+        assignment.style.display = isPresent ? 'none' : '';
+        const learningActivity = document.getElementById('kegiatan-field');
+        learningActivity.hidden = !isPresent;
+        learningActivity.style.display = isPresent ? '' : 'none';
+        document.getElementById('kegiatan').disabled = !isPresent;
         const canSubmit = selectedStatus() !== 'Hadir' || locationValid;
         saveTrigger.disabled = !canSubmit;
         finalSubmit.disabled = !canSubmit;
         locationPanel.hidden = selectedStatus() !== 'Hadir';
         locationPanel.style.display = selectedStatus() === 'Hadir' ? '' : 'none';
-        checkLocationButton.hidden = selectedStatus() !== 'Hadir';
+        retryLocationButton.hidden = selectedStatus() !== 'Hadir' || !retryLocationButton.dataset.available;
         document.getElementById('confirm-location').parentElement.hidden = selectedStatus() !== 'Hadir';
     }
 
@@ -216,6 +221,7 @@
     }
 
     function checkLocation() {
+        if (selectedStatus() !== 'Hadir') return;
         locationValid = false;
         latitudeInput.value = '';
         longitudeInput.value = '';
@@ -226,39 +232,53 @@
             return;
         }
         if (!navigator.geolocation) {
-            locationStatus.textContent = 'GPS tidak tersedia pada browser ini.';
+            locationStatus.textContent = 'GPS tidak tersedia pada browser ini. Coba gunakan browser lain.';
+            retryLocationButton.dataset.available = 'true';
+            updateButtons();
             return;
         }
-        locationStatus.textContent = 'Memeriksa lokasi...';
+        retryLocationButton.hidden = true;
+        delete retryLocationButton.dataset.available;
+        locationStatus.textContent = '📍 Mendeteksi lokasi...';
         navigator.geolocation.getCurrentPosition((position) => {
             if (selectedStatus() !== 'Hadir') return;
             const { latitude, longitude, accuracy } = position.coords;
             if (!Number.isFinite(latitude) || Math.abs(latitude) > 90 || !Number.isFinite(longitude) || Math.abs(longitude) > 180 || !Number.isFinite(accuracy) || accuracy < 0) {
-                locationStatus.textContent = 'Koordinat GPS tidak valid. Coba periksa lokasi kembali.';
+                locationStatus.textContent = 'Koordinat GPS tidak valid.';
+                retryLocationButton.dataset.available = 'true';
+                updateButtons();
                 return;
             }
             if (accuracy > maximumAccuracy) {
-                locationStatus.textContent = `Akurasi GPS buruk (${Math.round(accuracy)} meter). Batas akurasi ${maximumAccuracy} meter. Coba periksa kembali.`;
+                locationStatus.textContent = `Akurasi GPS buruk (${Math.round(accuracy)} meter). Batas akurasi ${maximumAccuracy} meter.`;
+                retryLocationButton.dataset.available = 'true';
+                updateButtons();
                 return;
             }
             const distance = distanceMeters(latitude, longitude);
             if (distance > radius) {
-                locationStatus.textContent = `Di luar area sekolah — Jarak ${Math.round(distance)} meter, batas ${Math.round(radius)} meter.`;
+                locationStatus.textContent = `📍 Di luar radius (Jarak: ${Math.round(distance)} m)`;
+                retryLocationButton.dataset.available = 'true';
+                updateButtons();
+                updateSummary();
                 return;
             }
             latitudeInput.value = latitude;
             longitudeInput.value = longitude;
             accuracyInput.value = accuracy;
             locationValid = true;
-            locationStatus.textContent = 'Lokasi valid — Anda berada di area sekolah.';
+            locationStatus.textContent = `📍 GPS Terkunci (Jarak: ${Math.round(distance)} m)`;
             updateButtons();
+            updateSummary();
         }, (error) => {
             const messages = {
-                1: 'Izin lokasi ditolak. Aktifkan izin lokasi browser untuk mengirim jurnal Hadir.',
-                2: 'GPS tidak tersedia. Periksa pengaturan lokasi perangkat dan coba kembali.',
-                3: 'Waktu pemeriksaan GPS habis. Coba periksa lokasi kembali.',
+                1: 'Akses lokasi diperlukan untuk absensi. Izinkan lokasi di browser, lalu coba lagi.',
+                2: 'GPS gagal mendapatkan lokasi. Periksa pengaturan lokasi perangkat, lalu coba lagi.',
+                3: 'Waktu pencarian lokasi habis. Coba lagi.',
             };
             locationStatus.textContent = messages[error.code] || 'Lokasi tidak dapat diperiksa. Coba kembali.';
+            retryLocationButton.dataset.available = 'true';
+            updateButtons();
         }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
     }
 
@@ -300,7 +320,7 @@
         updateButtons();
         updateSummary();
     });
-    checkLocationButton.addEventListener('click', checkLocation);
+    retryLocationButton.addEventListener('click', checkLocation);
     saveTrigger.addEventListener('click', openConfirmModal);
     finalSubmit.addEventListener('click', () => {
         if (selectedStatus() === 'Hadir' && !locationValid) return;

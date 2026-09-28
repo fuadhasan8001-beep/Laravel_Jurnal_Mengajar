@@ -269,8 +269,8 @@
 
         .brand-mark {
             display: flex;
-            width: 39px;
-            height: 39px;
+            width: 32px;
+            height: 32px;
 
             align-items: center;
             justify-content: center;
@@ -2202,8 +2202,8 @@
                 >
                     <span class="brand-mark">
                         <svg
-                            width="22"
-                            height="22"
+                            width="18"
+                            height="18"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -2488,7 +2488,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="mobile">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2505,7 +2505,7 @@
                                                 <br>
 
                                                 <small>
-                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    Belum dibaca
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>
@@ -2806,7 +2806,7 @@
                         if (item.querySelector('.notification-item')) item.remove();
                     });
                     list.querySelectorAll('.notification-empty').forEach(item => item.remove());
-                    const items = feed.items.filter(item => mode === 'mobile' || !item.read).slice(0, limit);
+                    const items = feed.items.filter(item => !item.read).slice(0, limit);
                     if (!items.length) {
                         const empty = document.createElement('div');
                         empty.className = 'notification-empty';

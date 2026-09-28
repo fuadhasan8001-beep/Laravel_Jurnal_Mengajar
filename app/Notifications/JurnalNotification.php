@@ -26,6 +26,10 @@ class JurnalNotification extends Notification
      */
     public function via(object $notifiable): array
     {
+        if ($this->event === 'jurnal_submitted') {
+            return ['database'];
+        }
+
         return ['database', 'mail'];
     }
 

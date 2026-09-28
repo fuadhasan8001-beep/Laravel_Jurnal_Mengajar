@@ -31,6 +31,7 @@ class Jurnal extends Model
         'longitude',
         'location_accuracy',
         'location_distance',
+        'location_valid',
         'location_verified_at',
     ];
 
@@ -40,6 +41,7 @@ class Jurnal extends Model
             'tanggal' => 'date',
             'attendance_witnesses' => 'array',
             'location_verified_at' => 'datetime',
+            'location_valid' => 'boolean',
         ];
     }
 
