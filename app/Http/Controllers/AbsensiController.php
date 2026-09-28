@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\IzinSekolah;
+use App\Models\Jadwal;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
@@ -93,6 +95,12 @@ class AbsensiController extends Controller
             $data['status'] = 'D';
             $data['catatan'] = 'Dispensasi disetujui.';
         }
+        $allDayIzin = IzinSekolah::where('siswa_id', $data['siswa_id'])
+            ->whereDate('tanggal', $jurnal->tanggal)->first();
+        if ($allDayIzin) {
+            $data['status'] = 'I';
+            $data['catatan'] = 'Izin sekolah seharian berdasarkan surat orang tua.';
+        }
 
         Absensi::updateOrCreate(
             [
@@ -102,6 +110,7 @@ class AbsensiController extends Controller
             [
                 'status' => $data['status'],
                 'catatan' => $data['catatan'] ?? null,
+                'surat_izin_path' => $allDayIzin?->surat_izin_path,
             ]
         );
 
@@ -129,17 +138,21 @@ class AbsensiController extends Controller
         abort_unless($studentIds->diff($studentsInClass)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
 
         $approvedDispensations = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
-        DB::transaction(function () use ($records, $jurnal, $approvedDispensations): void {
+        $allDayIzin = IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
+            ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
+        DB::transaction(function () use ($records, $jurnal, $approvedDispensations, $allDayIzin): void {
             foreach ($records as $record) {
                 $studentId = (int) $record['siswa_id'];
                 $hasApprovedDispensation = $approvedDispensations->contains($studentId);
                 abort_if($record['status'] === 'D' && ! $hasApprovedDispensation, 422, 'Status dispensasi memerlukan persetujuan admin.');
+                $allDayLeave = $allDayIzin->get($studentId);
 
                 Absensi::updateOrCreate(
                     ['jurnal_id' => $jurnal->id, 'siswa_id' => $studentId],
                     [
-                        'status' => $hasApprovedDispensation ? 'D' : $record['status'],
-                        'catatan' => $hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null),
+                        'status' => $allDayLeave ? 'I' : ($hasApprovedDispensation ? 'D' : $record['status']),
+                        'catatan' => $allDayLeave ? 'Izin sekolah seharian berdasarkan surat orang tua.' : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null)),
+                        'surat_izin_path' => $allDayLeave?->surat_izin_path,
                     ]
                 );
             }
@@ -156,6 +169,33 @@ class AbsensiController extends Controller
         abort_unless($absensi->surat_izin_path && Storage::exists($absensi->surat_izin_path), 404);
 
         return response()->download(Storage::path($absensi->surat_izin_path));
+    }
+
+    public function downloadSchoolPermissionLetter(Request $request, IzinSekolah $izinSekolah): BinaryFileResponse
+    {
+        $user = $request->user();
+        $student = $izinSekolah->siswa;
+
+        if ($user->role === 'guru') {
+            $guruId = $this->currentGuru()->id;
+            $hasJournalAccess = Jurnal::whereDate('tanggal', $izinSekolah->tanggal)
+                ->where('kelas_id', $student->kelas_id)->where('guru_id', $guruId)->exists();
+            $hasScheduleAccess = Jadwal::where('kelas_id', $student->kelas_id)
+                ->where('guru_id', $guruId)
+                ->where('hari', $izinSekolah->tanggal->locale('id')->translatedFormat('l'))
+                ->where('is_active', true)->exists();
+            abort_unless($hasJournalAccess || $hasScheduleAccess, 403);
+        } elseif ($user->role === 'sekretaris') {
+            abort_unless($user->kelasSekretaris()->whereKey($student->kelas_id)->exists(), 403);
+        } elseif ($user->role === 'piket') {
+            abort_unless($user->is_active, 403);
+        } else {
+            abort_unless(in_array($user->role, ['admin', 'waka'], true), 403);
+        }
+
+        abort_unless(Storage::exists($izinSekolah->surat_izin_path), 404);
+
+        return response()->download(Storage::path($izinSekolah->surat_izin_path));
     }
 
     private function authorizeJurnal(Jurnal $jurnal): void

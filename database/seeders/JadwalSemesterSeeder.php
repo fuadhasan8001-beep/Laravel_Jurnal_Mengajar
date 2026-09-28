@@ -45,7 +45,7 @@ class JadwalSemesterSeeder extends Seeder
                     $username = Str::slug($row['guru'], '.');
                     $user = User::firstOrCreate(['username' => $username], [
                         'name' => $row['guru'], 'email' => $username.'@guru.smkn1boyolangu.sch.id',
-                        'password' => Str::random(40), 'role' => 'guru', 'is_active' => true,
+                        'password' => config('seeding.default_password') ?? 'password123', 'role' => 'guru', 'is_active' => true,
                     ]);
                     $guru = Guru::firstOrCreate(['user_id' => $user->id], [
                         'nama_guru' => $row['guru'], 'nip' => 'JADWAL-'.$user->id,

@@ -5,8 +5,8 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>{{ ($uploadMode ?? false) ? 'Upload surat izin siswa' : (auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi') }}</h1>
-            <p>{{ ($uploadMode ?? false) ? 'Pilih siswa dan unggah surat izin dari orang tua.' : 'Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.' }}</p>
+            <h1>{{ auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
+            <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
         </div><a
             class="btn btn-muted"
             href="{{ route('dispensasi.index') }}"
@@ -102,9 +102,6 @@
                             accept="image/jpeg,image/png,image/webp"
                         >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
                     @endunless
-                    @if (auth()->user()->isPiketHariIni())
-                        <div class="field"><label for="surat_izin">Foto surat izin dari orang tua <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input id="surat_izin" type="file" name="surat_izin" accept="image/jpeg,image/png,image/webp">@error('surat_izin')<small class="error">{{ $message }}</small>@enderror</div>
-                    @endif
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"

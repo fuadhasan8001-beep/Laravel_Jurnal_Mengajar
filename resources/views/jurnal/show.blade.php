@@ -65,7 +65,7 @@
                                 <tr>
                                     <td>{{ $absensi->siswa->nama_siswa }}</td>
                                     <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
-                                    <td>{{ $absensi->catatan ?: '-' }}</td>
+                                    <td>{{ $absensi->catatan ?: '-' }}@if ($absensi->surat_izin_path)<br><a href="{{ route('absensi.parent-letter', $absensi) }}">Lihat surat izin</a>@endif</td>
                                 </tr>
                             @endforeach
                         </tbody>

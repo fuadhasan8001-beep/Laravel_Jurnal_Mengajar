@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Guru;
+use App\Models\JadwalPiket;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
@@ -28,9 +29,9 @@ beforeEach(function () {
     $this->journal->verifikasiJurnals()->create(['verifikator_id' => $this->secretary->id, 'status' => 'Disetujui', 'verified_at' => now()]);
 });
 
-it('shows the menu only for homeroom teachers and protects direct access', function () {
-    $this->actingAs($this->wali)->get('/guru')->assertOk()->assertSee('Lihat rekap jurnal');
-    $this->actingAs($this->teacher)->get('/guru')->assertOk()->assertDontSee('Lihat rekap jurnal');
+it('shows the recap menu for every teacher and keeps the homeroom-only class page protected', function () {
+    $this->actingAs($this->wali)->get('/guru')->assertOk()->assertSee('Rekap jurnal');
+    $this->actingAs($this->teacher)->get('/guru')->assertOk()->assertSee('Rekap jurnal');
     $this->get(route('wali-kelas.jurnal.index'))->assertForbidden();
     $this->get(route('wali-kelas.jurnal.show', $this->journal))->assertForbidden();
     $this->actingAs($this->secretary)->get(route('wali-kelas.jurnal.index'))->assertForbidden();
@@ -66,4 +67,23 @@ it('excludes journals without secretary approval', function (string $status, boo
 
 it('validates date filters', function () {
     $this->actingAs($this->wali)->get(route('wali-kelas.jurnal.index', ['tanggal' => 'bukan-tanggal']))->assertSessionHasErrors('tanggal');
+});
+
+it('blocks the legacy journal report and export for teachers', function () {
+    foreach ([$this->teacher, $this->wali] as $user) {
+        $this->actingAs($user)->get(route('laporan.jurnal'))->assertForbidden();
+        $this->get(route('laporan.jurnal.export'))->assertForbidden();
+        $this->get('/guru')->assertOk()->assertDontSee('Rekap laporan');
+        $this->get(route('jurnal.index'))->assertOk();
+    }
+});
+
+it('keeps the duty report restricted to teachers assigned today', function () {
+    $this->actingAs($this->teacher)->get(route('piket.rekap-jurnal'))->assertForbidden();
+    $this->get(route('piket.rekap-jurnal.export'))->assertForbidden();
+    JadwalPiket::create(['guru_id' => $this->journal->guru_id, 'tanggal' => today()]);
+    $this->get(route('piket.rekap-jurnal'))->assertOk()
+        ->assertSee('action="'.route('piket.rekap-jurnal').'"', false)
+        ->assertDontSee('action="'.route('laporan.jurnal').'"', false);
+    $this->get(route('piket.rekap-jurnal.export'))->assertDownload('rekap-jurnal.csv');
 });

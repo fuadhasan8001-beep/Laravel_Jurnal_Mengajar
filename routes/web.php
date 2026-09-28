@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminRegistrationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DispensasiController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\IzinSekolahController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
@@ -123,7 +124,14 @@ Route::middleware('role:admin,waka,guru,sekretaris,piket')->prefix('rekap')->gro
 Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(function () {
     Route::get('/rekap-jurnal', [LaporanController::class, 'jurnalPiket'])->name('rekap-jurnal');
     Route::get('/rekap-jurnal/export', [LaporanController::class, 'jurnalPiketExport'])->name('rekap-jurnal.export');
+    Route::get('/izin-sekolah', [IzinSekolahController::class, 'index'])->name('izin-sekolah.index');
+    Route::get('/izin-sekolah/create', [IzinSekolahController::class, 'create'])->name('izin-sekolah.create');
+    Route::post('/izin-sekolah', [IzinSekolahController::class, 'store'])->name('izin-sekolah.store');
 });
+
+Route::get('/piket/izin-sekolah/{izinSekolah}/surat', [AbsensiController::class, 'downloadSchoolPermissionLetter'])
+    ->middleware('role:admin,waka,guru,sekretaris,piket')
+    ->name('piket.izin-sekolah.surat');
 
 Route::middleware('role:guru,admin,waka,sekretaris')->group(function () {
     Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');

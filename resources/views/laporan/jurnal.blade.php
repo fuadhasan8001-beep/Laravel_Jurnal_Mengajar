@@ -9,7 +9,7 @@
     </div>
     <section class="panel">
         <div class="panel-body">
-            <form method="GET" action="{{ route('laporan.jurnal') }}">
+            <form method="GET" action="{{ route(request()->routeIs('piket.rekap-jurnal') ? 'piket.rekap-jurnal' : 'laporan.jurnal') }}">
                 <div class="form-grid">
                     <div class="field"><label for="tanggal_mulai">Dari tanggal</label><input id="tanggal_mulai" type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"></div>
                     <div class="field"><label for="tanggal_selesai">Sampai tanggal</label><input id="tanggal_selesai" type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"></div>
@@ -18,7 +18,7 @@
                     <div class="field"><label for="mapel_id">Mapel</label><select id="mapel_id" name="mapel_id"><option value="">Semua mapel</option>@foreach ($mapels as $mapel)<option value="{{ $mapel->id }}" @selected((string) request('mapel_id') === (string) $mapel->id)>{{ $mapel->nama_mapel }}</option>@endforeach</select></div>
                     <div class="field"><label for="status_verifikasi">Status</label><select id="status_verifikasi" name="status_verifikasi"><option value="">Semua status</option>@foreach (['Menunggu', 'Disetujui', 'Ditolak'] as $status)<option value="{{ $status }}" @selected(request('status_verifikasi') === $status)>{{ $status }}</option>@endforeach</select></div>
                 </div>
-                <div class="form-actions"><a class="btn btn-muted" href="{{ route('laporan.jurnal') }}">Reset</a><button class="btn" type="submit">Terapkan filter</button></div>
+                <div class="form-actions"><a class="btn btn-muted" href="{{ route(request()->routeIs('piket.rekap-jurnal') ? 'piket.rekap-jurnal' : 'laporan.jurnal') }}">Reset</a><button class="btn" type="submit">Terapkan filter</button></div>
             </form>
         </div>
     </section>
@@ -34,7 +34,7 @@
     <section class="panel">
         <div class="panel-head"><h2>Deteksi pengisian jurnal</h2><span class="eyebrow">{{ $monitoringDate->format('d M Y') }}</span></div>
         <div class="panel-body">
-            <form method="GET" action="{{ route('laporan.jurnal') }}">
+            <form method="GET" action="{{ route(request()->routeIs('piket.rekap-jurnal') ? 'piket.rekap-jurnal' : 'laporan.jurnal') }}">
                 @foreach (request()->except('monitoring_date', 'page') as $key => $value)
                     @if (is_scalar($value))<input type="hidden" name="{{ $key }}" value="{{ $value }}">@endif
                 @endforeach

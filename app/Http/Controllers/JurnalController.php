@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateJurnalRequest;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\IzinSekolah;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -32,7 +33,17 @@ class JurnalController extends Controller
             ->latest('tanggal');
 
         if (auth()->user()->role === 'guru') {
-            $query->where('guru_id', $this->currentGuru()->id);
+            $guruId = $this->currentGuru()->id;
+            $query->where(function ($builder) use ($guruId) {
+                $builder->where('guru_id', $guruId)
+                    ->orWhere(function ($nested) use ($guruId) {
+                        $nested->whereIn('kelas_id', auth()->user()->kelasWali()->select('kelas.id'))
+                            ->where('status_verifikasi', 'Disetujui')
+                            ->whereHas('verifikasiJurnals', fn ($verification) => $verification
+                                ->where('status', 'Disetujui')
+                                ->whereHas('verifikator', fn ($verifier) => $verifier->where('role', 'sekretaris')));
+                    });
+            });
         }
 
         if (auth()->user()->role === 'sekretaris') {
@@ -298,6 +309,8 @@ class JurnalController extends Controller
         $studentIds = $students->pluck('id');
         $submittedAbsensis = collect($absensis)->keyBy('siswa_id');
         $dispensedStudentIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
+        $allDayIzin = IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
+            ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
         abort_if(
@@ -307,10 +320,17 @@ class JurnalController extends Controller
         );
 
         $timestamp = now();
-        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds): array {
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds, $allDayIzin): array {
             $absensi = $submittedAbsensis->get($student->id, []);
 
-            if ($dispensedStudentIds->contains($student->id)) {
+            if ($allDayIzin->has($student->id)) {
+                $izin = $allDayIzin->get($student->id);
+                $absensi = [
+                    'status' => 'I',
+                    'catatan' => 'Izin sekolah seharian berdasarkan surat orang tua.',
+                    'surat_izin_path' => $izin->surat_izin_path,
+                ];
+            } elseif ($dispensedStudentIds->contains($student->id)) {
                 $absensi = ['status' => 'D', 'catatan' => 'Dispensasi disetujui.'];
             }
 
@@ -319,6 +339,7 @@ class JurnalController extends Controller
                 'siswa_id' => $student->id,
                 'status' => $absensi['status'] ?? 'H',
                 'catatan' => $absensi['catatan'] ?? null,
+                'surat_izin_path' => $absensi['surat_izin_path'] ?? null,
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp,
             ];
@@ -329,7 +350,7 @@ class JurnalController extends Controller
             ->delete();
 
         if ($records !== []) {
-            Absensi::upsert($records, ['jurnal_id', 'siswa_id'], ['status', 'catatan', 'updated_at']);
+            Absensi::upsert($records, ['jurnal_id', 'siswa_id'], ['status', 'catatan', 'surat_izin_path', 'updated_at']);
         }
 
         $jurnal->update([
@@ -377,6 +398,9 @@ class JurnalController extends Controller
                 ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $kelasId))
                 ->where('status_akhir', 'Disetujui')
                 ->get(['id', 'siswa_id', 'jam_mulai_id', 'jam_selesai_id']),
+            'izinSekolahSiswa' => IzinSekolah::whereDate('tanggal', $tanggal)
+                ->whereHas('siswa', fn ($query) => $query->where('kelas_id', $kelasId))
+                ->get()->keyBy('siswa_id'),
             'kelas' => Kelas::with(['siswas' => fn ($query) => $query->select(['id', 'kelas_id', 'nama_siswa', 'nis'])->orderBy('nama_siswa')])
                 ->whereKey($kelasId)
                 ->get(),

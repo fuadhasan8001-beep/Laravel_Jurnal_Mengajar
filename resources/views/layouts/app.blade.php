@@ -2257,8 +2257,11 @@
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
                         <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Verifikasi dispensasi</a>
                     @endif
-                    @if (auth()->user()->role === 'guru' && auth()->user()->kelasWali()->exists())
-                        <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Lihat rekap jurnal</a>
+                    @if (auth()->user()->role === 'guru')
+                        <a class="nav-link {{ request()->routeIs('jurnal.index') || request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Rekap jurnal</a>
+                        @if (auth()->user()->kelasWali()->exists())
+                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                        @endif
                     @endif
                     </nav>
 
@@ -2287,7 +2290,7 @@
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
                             <summary class="nav-label">Menu tambahan</summary>
                             <nav class="nav-list" aria-label="Menu tambahan">
-                                @if (in_array(auth()->user()->role, ['guru', 'sekretaris', 'piket'], true))
+                                @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
                                     <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 @endif
                                 @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))

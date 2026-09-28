@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guru;
 use App\Models\Jurnal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -15,12 +16,23 @@ class WaliKelasJurnalController extends Controller
     {
         abort_unless($request->user()->role === 'guru' && $request->user()->kelasWali()->exists(), 403);
 
+        $guruId = Guru::where('user_id', $request->user()->id)->value('id');
+        abort_if($guruId === null, 403);
+
         return Jurnal::query()
-            ->whereIn('kelas_id', $request->user()->kelasWali()->select('kelas.id'))
-            ->where('status_verifikasi', 'Disetujui')
-            ->whereHas('verifikasiJurnals', fn (Builder $query) => $query
-                ->where('status', 'Disetujui')
-                ->whereHas('verifikator', fn (Builder $user) => $user->where('role', 'sekretaris')));
+            ->where(function (Builder $query) use ($guruId, $request): void {
+                $query->where('guru_id', $guruId)
+                    ->orWhereIn('kelas_id', $request->user()->kelasWali()->select('kelas.id'));
+            })
+            ->where(function (Builder $query) use ($guruId): void {
+                $query->where('guru_id', $guruId)
+                    ->orWhere(function (Builder $verified): void {
+                        $verified->where('status_verifikasi', 'Disetujui')
+                            ->whereHas('verifikasiJurnals', fn (Builder $verification) => $verification
+                                ->where('status', 'Disetujui')
+                                ->whereHas('verifikator', fn (Builder $user) => $user->where('role', 'sekretaris')));
+                    });
+            });
     }
 
     public function index(Request $request): View

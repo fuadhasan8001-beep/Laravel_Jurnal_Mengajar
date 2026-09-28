@@ -43,9 +43,13 @@ class DispensasiController extends Controller
         ]);
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
         $this->authorizePiketAccess();
+        if ($request->boolean('mode') || $request->input('mode') === 'surat-izin') {
+            return redirect()->route('piket.izin-sekolah.create');
+        }
+
         $hari = today()->locale('id')->translatedFormat('l');
         $waktuSekarang = now()->format('H:i:s');
         $jamPelajarans = JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get();
@@ -53,7 +57,6 @@ class DispensasiController extends Controller
         return view('dispensasi.create', [
             'hariIni' => $hari,
             'siswas' => auth()->user()->isPiketHariIni() ? Siswa::with('kelas')->orderBy('nama_siswa')->get() : collect(),
-            'uploadMode' => $request->boolean('mode') || $request->input('mode') === 'surat-izin',
             'jamPelajarans' => $jamPelajarans,
             'jamTidakTersediaIds' => $jamPelajarans
                 ->filter(fn (JamPelajaran $jam): bool => $jam->timesForDay($hari)[1] <= $waktuSekarang)
@@ -76,7 +79,6 @@ class DispensasiController extends Controller
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
             'alasan' => ['required', 'string', 'max:5000'],
             'bukti' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'surat_izin' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'attendance_status' => ['exclude'],
         ]);
 
@@ -125,14 +127,10 @@ class DispensasiController extends Controller
                 ->withErrors(['siswa_ids' => 'Siswa tersebut sudah memiliki dispensasi pada jam yang beririsan.']);
         }
 
-        unset($data['siswa_ids'], $data['bukti'], $data['surat_izin']);
+        unset($data['siswa_ids'], $data['bukti']);
         if ($request->hasFile('bukti')) {
             $data['bukti'] = $request->file('bukti')->store('dispensasi/bukti');
         }
-        if ($request->hasFile('surat_izin')) {
-            $data['surat_izin_path'] = $request->file('surat_izin')->store('dispensasi/surat');
-        }
-
         $groupKey = $isPiket ? (string) Str::uuid() : null;
         try {
             $first = DB::transaction(function () use ($studentIds, $data, $isPiket, $groupKey): ?Dispensasi {
@@ -148,7 +146,7 @@ class DispensasiController extends Controller
                 return $first;
             });
         } catch (\Throwable $exception) {
-            Storage::delete(array_filter([$data['bukti'] ?? null, $data['surat_izin_path'] ?? null]));
+            Storage::delete(array_filter([$data['bukti'] ?? null]));
             throw $exception;
         }
 

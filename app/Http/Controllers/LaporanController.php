@@ -20,6 +20,8 @@ class LaporanController extends Controller
 {
     public function jurnal(Request $request): View
     {
+        abort_if($request->user()->role === 'guru', 403);
+
         return $this->journalReport($request);
     }
 
@@ -44,6 +46,8 @@ class LaporanController extends Controller
 
     public function jurnalExport(Request $request): StreamedResponse
     {
+        abort_if($request->user()->role === 'guru', 403);
+
         return $this->exportJurnals($request);
     }
 

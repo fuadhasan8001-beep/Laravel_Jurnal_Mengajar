@@ -6,7 +6,7 @@
     <div class="page-head">
         <div>
             <h1>Meja piket</h1>
-            <p>Pengajuan dispensasi siswa.</p>
+            <p>Dispensasi dan izin siswa.</p>
         </div>
     </div>
     <section class="panel panel-spaced">
@@ -16,9 +16,13 @@
                 <strong>Ajukan dispensasi</strong>
                 <span>Pilih siswa, isi alasan, dan kirim pengajuan ke admin.</span>
             </a>
-            <a class="quick-card" href="{{ route('dispensasi.create', ['mode' => 'surat-izin']) }}">
-                <strong>Upload surat izin</strong>
-                <span>Input siswa yang izin dan simpan foto surat dari orang tua.</span>
+            <a class="quick-card" href="{{ route('piket.izin-sekolah.create') }}">
+                <strong>Catat izin sekolah seharian</strong>
+                <span>Unggah surat orang tua agar izin tercatat untuk seluruh hari sekolah.</span>
+            </a>
+            <a class="quick-card" href="{{ route('piket.izin-sekolah.index') }}">
+                <strong>Riwayat izin sekolah</strong>
+                <span>Lihat siswa yang izin seharian dan surat yang sudah dicatat.</span>
             </a>
             <a class="quick-card" href="{{ route('dispensasi.index') }}">
                 <strong>Riwayat dispensasi</strong>

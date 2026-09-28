@@ -79,25 +79,32 @@
                         return $item->siswa_id === $student->id
                             && $dispensationStart < $journalEnd && $dispensationEnd > $journalStart;
                     });
+                            $izinSekolah = $izinSekolahSiswa->get($student->id);
+                            $forcedStatus = $izinSekolah ? 'I' : ($dispensed ? 'D' : null);
                     $saved = collect($attendance)->firstWhere('siswa_id', $student->id) ?? $attendance[$student->id] ?? [];
                 @endphp
                 <tr data-attendance-student="{{ $student->nama_siswa }} {{ $student->nis }}">
                     <td class="attendance-number">{{ $loop->iteration }}<input type="hidden" name="absensi[{{ $student->id }}][siswa_id]" value="{{ $student->id }}"></td>
                     <td class="attendance-name"><strong>{{ $student->nama_siswa }}</strong><small>{{ $student->nis }}</small></td>
                     <td>
-                        @if ($dispensed)
-                            <input type="hidden" name="absensi[{{ $student->id }}][status]" value="D" class="attendance-dispensed">
+                        @if ($forcedStatus)
+                            <input type="hidden" name="absensi[{{ $student->id }}][status]" value="{{ $forcedStatus }}" class="attendance-dispensed">
                         @endif
                         <div class="attendance-options" role="group" aria-label="Status {{ $student->nama_siswa }}">
                             @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $value => $label)
                                 <label @if ($value === 'D') title="Dispensasi mengikuti persetujuan admin" @endif>
-                                    <input type="radio" class="attendance-status" name="absensi[{{ $student->id }}][status]" value="{{ $value }}" style="width:18px;height:18px;margin:0;" @checked(($dispensed ? 'D' : ($saved['status'] ?? 'H')) === $value) @disabled($dispensed || $value === 'D')>
+                                    <input type="radio" class="attendance-status" name="absensi[{{ $student->id }}][status]" value="{{ $value }}" style="width:18px;height:18px;margin:0;" @checked(($forcedStatus ?? ($saved['status'] ?? 'H')) === $value) @disabled($forcedStatus !== null || $value === 'D')>
                                     {{ $label }}
                                 </label>
                             @endforeach
                         </div>
                     </td>
-                    <td><input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($saved['catatan'] ?? '') }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($dispensed)></td>
+                    <td>
+                        <input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($izinSekolah ? 'Izin sekolah seharian berdasarkan surat orang tua.' : ($saved['catatan'] ?? '')) }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($forcedStatus !== null)>
+                        @if ($izinSekolah)
+                            <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat izin</a>
+                        @endif
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="4">Belum ada siswa di kelas ini.</td></tr>
