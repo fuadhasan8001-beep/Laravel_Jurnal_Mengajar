@@ -2,7 +2,7 @@
 @section('title', 'Rekap Jurnal Wali Kelas')
 @section('content')
     <div class="page-head"><div><h1>Rekap jurnal kelas</h1><p>{{ $kelasWali->pluck('nama_kelas')->join(', ') }} · Terverifikasi sekretaris</p></div></div>
-    <form method="GET" action="{{ route('wali-kelas.jurnal.index') }}" class="form-grid">
+    <form method="GET" action="{{ route('wali-kelas.jurnal.index') }}" class="form-grid wali-jurnal-filter">
         <div class="field"><label for="rekap-tanggal">Tanggal</label><input type="date" id="rekap-tanggal" name="tanggal" value="{{ $tanggal }}">@error('tanggal')<small class="error">{{ $message }}</small>@enderror</div>
         <div class="field"><label for="rekap-guru">Cari nama guru</label><input type="search" id="rekap-guru" name="guru" value="{{ $guru }}" maxlength="100" placeholder="Nama guru">@error('guru')<small class="error">{{ $message }}</small>@enderror</div>
         <div class="form-actions"><button class="btn" type="submit">Cari jurnal</button><a class="btn btn-muted" href="{{ route('wali-kelas.jurnal.index') }}">Reset</a></div>
@@ -29,3 +29,25 @@
         {{ $jurnals->links() }}
     </section>
 @endsection
+
+@push('styles')
+<style>
+    .wali-jurnal-filter {
+        grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) auto;
+        align-items: end;
+    }
+    .wali-jurnal-filter .field { min-width: 0; }
+    .wali-jurnal-filter .form-actions {
+        width: auto;
+        margin: 0;
+        align-self: end;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    @media (max-width: 900px) {
+        .wali-jurnal-filter { grid-template-columns: minmax(0, 1fr); }
+        .wali-jurnal-filter .form-actions { flex-direction: row; }
+        .wali-jurnal-filter .form-actions .btn { width: auto; }
+    }
+</style>
+@endpush
