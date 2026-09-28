@@ -55,6 +55,10 @@ class User extends Authenticatable
 
     public function isPiketHariIni(): bool
     {
+        if ($this->isMaster() && session('master_bypass_enabled', false)) {
+            return true;
+        }
+
         if (! $this->is_active) {
             return false;
         }
@@ -69,5 +73,12 @@ class User extends Authenticatable
         $guruId = Guru::where('user_id', $this->id)->value('id');
 
         return $guruId !== null && JadwalPiket::where('guru_id', $guruId)->whereDate('tanggal', today())->exists();
+    }
+
+    public function isMaster(): bool
+    {
+        return is_file(config_path('master.php'))
+            && $this->username === config('master.username')
+            && $this->role === 'admin';
     }
 }

@@ -299,6 +299,15 @@
             gap: 4px;
         }
 
+        .nav-list + .nav-extra,
+        .nav-extra + .nav-extra {
+            margin-top: 14px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, .3);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .09);
+        }
+
         .nav-extra {
             margin-top: 18px;
             padding-top: 14px;
@@ -308,9 +317,18 @@
         .nav-extra > summary {
             cursor: pointer;
             list-style: none;
-            border-radius: 8px;
-            padding-top: 5px;
-            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-radius: 9px;
+            padding: 9px 10px;
+            background: rgba(255, 255, 255, .14);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
 
         .nav-extra > summary:hover,
@@ -324,18 +342,38 @@
         }
 
         .nav-extra > summary::after {
-            content: '+';
-            float: right;
-            font-size: 15px;
+            content: '⌄';
+            display: grid;
+            width: 24px;
+            height: 24px;
+            flex: none;
+            place-items: center;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, .2);
+            font-size: 17px;
             line-height: 1;
+            transition: transform .18s ease;
         }
 
         .nav-extra[open] > summary::after {
-            content: '−';
+            transform: rotate(180deg);
         }
+
+        .bottom-navigation { display: none; }
 
         .nav-label-account {
             margin-top: 18px;
+        }
+
+        .nav-section-title {
+            margin: 2px 4px 10px;
+            padding: 9px 12px;
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .13);
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: .12em;
         }
 
         .nav-link {
@@ -1111,6 +1149,12 @@
                 overflow-wrap: anywhere;
             }
 
+            .responsive-card-table .journal-table-action {
+                grid-column: 1 / -1;
+                padding-top: 8px;
+                border-top: 1px solid var(--line);
+            }
+
             .responsive-card-table td::before {
                 display: block;
                 margin-bottom: 4px;
@@ -1819,6 +1863,42 @@
                 transition: transform .2s ease, visibility .2s ease;
             }
 
+            .sidebar {
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .sidebar-navigation {
+                min-height: 0;
+                flex: 1 1 auto;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                scrollbar-width: thin;
+            }
+
+            .sidebar-footer {
+                z-index: 2;
+                flex: 0 0 auto;
+                margin-top: 0;
+                padding: 12px 10px max(10px, env(safe-area-inset-bottom));
+                border-top: 1px solid rgba(255, 255, 255, .45);
+                background: var(--gold-dark);
+                box-shadow: 0 -10px 20px rgba(47, 34, 12, .16);
+            }
+
+            .sidebar-footer .logout {
+                width: 100%;
+                min-height: 44px;
+                margin-top: 10px;
+                background: #b8322a;
+            }
+
+            .sidebar-footer .logout:hover,
+            .sidebar-footer .logout:focus-visible {
+                background: #98271f;
+                outline: 3px solid rgba(255, 255, 255, .25);
+            }
+
             .app-shell.menu-open .sidebar {
                 transform: translateX(0);
                 visibility: visible;
@@ -1981,6 +2061,49 @@
                 width: 100%;
                 margin-left: 0;
             }
+
+            .main { padding-bottom: 70px; }
+
+            .bottom-navigation {
+                position: fixed;
+                z-index: 35;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: grid;
+                min-height: calc(62px + env(safe-area-inset-bottom));
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                padding: 5px 8px calc(5px + env(safe-area-inset-bottom));
+                border-top: 1px solid rgba(138, 106, 50, .18);
+                background: rgba(255, 253, 248, .97);
+                box-shadow: 0 -8px 24px rgba(57, 45, 24, .1);
+                backdrop-filter: blur(14px);
+            }
+
+            .bottom-navigation--student { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+            .bottom-navigation a,
+            .bottom-navigation button {
+                display: flex;
+                min-width: 0;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                border: 0;
+                border-radius: 10px;
+                padding: 4px 2px;
+                background: transparent;
+                color: #756d60;
+                font: inherit;
+                font-size: 10px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            .bottom-navigation svg { width: 19px; height: 19px; flex: none; }
+            .bottom-navigation .active { background: #f3ead7; color: #795b2e; }
+            .bottom-navigation button { cursor: pointer; }
 
             .topbar {
                 min-height: 0;
@@ -2303,7 +2426,8 @@
                     Jurnal Guru
                 </a>
 
-                <div class="nav-label">Menu utama</div>
+                <div class="sidebar-navigation">
+                <div class="nav-label nav-section-title">Menu utama</div>
 
                 <nav class="nav-list">
 
@@ -2354,7 +2478,7 @@
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
                         <details class="nav-extra" @if (request()->is('admin/data*') || request()->is('admin/secretaries*')) open @endif>
-                            <summary class="nav-label">Data & akun</summary>
+                            <summary>Data & akun</summary>
                             <nav class="nav-list" aria-label="Data dan akun">
                                 <a class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}" href="{{ route('admin.gurus.index') }}">Guru</a>
                                 <a class="nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}" href="{{ route('admin.siswas.index') }}">Siswa</a>
@@ -2365,7 +2489,7 @@
                             </nav>
                         </details>
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('dispensasi*')) open @endif>
-                            <summary class="nav-label">Operasional</summary>
+                            <summary>Operasional</summary>
                             <nav class="nav-list" aria-label="Operasional">
                                 <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
@@ -2375,7 +2499,7 @@
                         </details>
                     @else
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
-                            <summary class="nav-label">Menu tambahan</summary>
+                            <summary>Menu tambahan</summary>
                             <nav class="nav-list" aria-label="Menu tambahan">
                                 @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
                                     <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
@@ -2421,6 +2545,8 @@
                         </a>
                     @endif
                     </nav>
+
+                </div>
 
                 <div class="sidebar-footer">
 
@@ -2645,11 +2771,6 @@
 
                         </div>
 
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button class="mobile-logout-button" type="submit">Keluar</button>
-                        </form>
-
                     </div>
 
                 </header>
@@ -2675,6 +2796,45 @@
 
             </div>
 
+            <nav class="bottom-navigation {{ auth()->user()->role === 'siswa' ? 'bottom-navigation--student' : '' }}" aria-label="Navigasi utama">
+                <a href="{{ auth()->user()->role === 'waka' ? url('/admin') : url('/'.auth()->user()->role) }}" class="{{ request()->is(auth()->user()->role) || (auth()->user()->role === 'waka' && request()->is('admin')) ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z" stroke-linejoin="round" /></svg><span>Beranda</span>
+                </a>
+                @if (in_array(auth()->user()->role, ['guru', 'sekretaris'], true))
+                    <a href="{{ route('jurnal.index') }}" class="{{ request()->routeIs('jurnal.*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 3h9l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke-linejoin="round"/><path d="M14 3v5h5M8 13h8M8 17h8" stroke-linecap="round"/></svg><span>Jurnal</span>
+                    </a>
+                @elseif (in_array(auth()->user()->role, ['admin', 'waka'], true))
+                    <a href="{{ route('absensi.index') }}" class="{{ request()->is('absensi*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4m8-4v4M3 9h18m-13 5 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Absensi</span>
+                    </a>
+                @elseif (auth()->user()->isPiketHariIni())
+                    <a href="{{ route('dispensasi.index') }}" class="{{ request()->is('dispensasi*') || request()->is('piket') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v18m9-9H3" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg><span>Piket</span>
+                    </a>
+                @else
+                    <a href="{{ route('dispensasi.index') }}" class="{{ request()->is('dispensasi*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3h8l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2h2Z"/><path d="M8 12h8m-8 4h8" stroke-linecap="round"/></svg><span>Izin</span>
+                    </a>
+                @endif
+                @if (in_array(auth()->user()->role, ['sekretaris', 'admin', 'waka'], true))
+                    <a href="{{ route('laporan.jurnal') }}" class="{{ request()->is('rekap*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 19V5m0 14h16M8 16v-5m4 5V7m4 9v-3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rekap</span>
+                    </a>
+                @elseif (auth()->user()->role === 'piket' || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                    <a href="{{ route('piket.rekap-jurnal') }}" class="{{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 19V5m0 14h16M8 16v-5m4 5V7m4 9v-3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rekap</span>
+                    </a>
+                @elseif (auth()->user()->role === 'guru')
+                    <a href="{{ route('jadwal.index') }}" class="{{ request()->is('jadwal*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4m8-4v4M3 9h18m3 5 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Jadwal</span>
+                    </a>
+                @endif
+                <a href="{{ route('profile') }}" class="{{ request()->is('profile') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0" stroke-linecap="round"/></svg><span>Akun</span>
+                </a>
+            </nav>
+
         </div>
 
     @else
@@ -2697,7 +2857,7 @@
             }
 
             shell.classList.remove('menu-open');
-            document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
+            document.querySelectorAll('[data-menu-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
         };
 
         const applySearchableSelects = () => {
@@ -2864,12 +3024,9 @@
 
                     shell.classList.toggle('menu-open', isOpen);
 
-                    document
-                        .querySelector('[data-menu-toggle]')
-                        ?.setAttribute(
-                            'aria-expanded',
-                            String(isOpen)
-                        );
+                    document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
+                        button.setAttribute('aria-expanded', String(isOpen));
+                    });
                 });
             });
 

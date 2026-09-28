@@ -11,7 +11,9 @@ class StoreJurnalRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        $guru = Guru::where('user_id', $this->user()?->id)->first();
+        $guru = $this->user()?->isMaster() && session('master_bypass_enabled')
+            ? Guru::find(session('master_bypass_guru_id'))
+            : Guru::where('user_id', $this->user()?->id)->first();
         $active = $guru ? Jadwal::sessionsForGuru($guru, now())->where('active', true) : collect();
         $submittedSchedule = $this->input('jadwal_id');
         $session = $submittedSchedule
@@ -43,7 +45,8 @@ class StoreJurnalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->is_active && auth()->user()->role === 'guru';
+        return auth()->check() && auth()->user()->is_active
+            && (auth()->user()->role === 'guru' || (auth()->user()->isMaster() && session('master_bypass_enabled') && session('master_bypass_guru_id')));
     }
 
     /**

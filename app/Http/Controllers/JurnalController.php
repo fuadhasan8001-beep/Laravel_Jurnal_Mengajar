@@ -49,7 +49,8 @@ class JurnalController extends Controller
 
         return view('jurnal.index', [
             'jurnals' => $query->paginate(15)->withQueryString(),
-            'kelas' => Kelas::orderBy('nama_kelas')->get(),
+            'kelas' => Kelas::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('id', auth()->user()->kelasSekretaris()->select('kelas.id')))
+                ->orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
         ]);
     }
@@ -62,6 +63,9 @@ class JurnalController extends Controller
     public function store(StoreJurnalRequest $request, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $data = $request->validated();
+        if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
+            $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
+        }
         $absensis = $data['absensi'] ?? [];
         unset($data['absensi'], $data['tanda_tangan'], $data['jadwal_id']);
         $data = [...$data, ...$this->locationData($data, $locationVerifier)];
@@ -70,7 +74,7 @@ class JurnalController extends Controller
 
         $jurnal = DB::transaction(function () use ($data, $absensis, &$isNewJournal): Jurnal {
             $isNewJournal = false;
-            $guru = Guru::where('user_id', auth()->id())->lockForUpdate()->firstOrFail();
+            $guru = Guru::query()->lockForUpdate()->findOrFail($this->currentGuru()->id);
             $existingJournal = Jurnal::query()
                 ->where('guru_id', $guru->id)
                 ->whereDate('tanggal', $data['tanggal'])
@@ -161,6 +165,9 @@ class JurnalController extends Controller
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
+        if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
+            $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
+        }
         $absensis = $data['absensi'] ?? [];
         unset($data['absensi'], $data['tanda_tangan']);
         $data = [...$data, ...$this->locationData($data, $locationVerifier)];
@@ -230,6 +237,10 @@ class JurnalController extends Controller
 
     private function currentGuru(): Guru
     {
+        if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
+            return Guru::findOrFail(session('master_bypass_guru_id'));
+        }
+
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 

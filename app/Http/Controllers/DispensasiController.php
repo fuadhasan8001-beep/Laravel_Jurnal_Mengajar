@@ -13,6 +13,7 @@ use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
+use App\Services\ClassAbsenceNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,7 +66,7 @@ class DispensasiController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, ClassAbsenceNotifier $absenceNotifier): RedirectResponse
     {
         $this->authorizePiketAccess();
         $isPiket = auth()->user()->isPiketHariIni();
@@ -156,6 +157,7 @@ class DispensasiController extends Controller
                 ->each->notify((new DispensasiNotification($first, 'submitted'))->afterCommit());
         } elseif ($first && $isPiket) {
             $this->notifyAdmins($first);
+            $absenceNotifier->notify(Siswa::query()->whereIn('id', $studentIds)->get(), 'dispensasi');
         }
 
         return redirect()->route('dispensasi.index')

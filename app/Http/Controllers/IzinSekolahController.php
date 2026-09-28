@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use App\Models\IzinSekolah;
 use App\Models\Jurnal;
 use App\Models\Siswa;
+use App\Services\ClassAbsenceNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ class IzinSekolahController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, ClassAbsenceNotifier $absenceNotifier): RedirectResponse
     {
         $this->authorizePiketAccess($request);
         $data = $request->validate([
@@ -89,6 +90,8 @@ class IzinSekolahController extends Controller
             Storage::delete($path);
             throw $exception;
         }
+
+        $absenceNotifier->notify($students, $data['status'] === 'S' ? 'sakit' : 'izin');
 
         return redirect()->route('piket.izin-sekolah.index')
             ->with('success', ($data['status'] === 'S' ? 'Surat sakit seharian' : 'Surat izin seharian').' berhasil dicatat. Absensi jurnal hari tersebut sudah diperbarui.');
