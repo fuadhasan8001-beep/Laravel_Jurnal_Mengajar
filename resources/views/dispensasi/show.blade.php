@@ -56,18 +56,18 @@
                     <dd>{{ $dispensasi->alasan }}</dd>
                 </div>
                 <div class="detail-item">
-                    <dt>Verifikasi piket</dt>
+                    <dt>Guru piket yang mengajukan / memeriksa</dt>
                     <dd>{{ $dispensasi->status_piket }}{{ $dispensasi->piket ? ' · ' . $dispensasi->piket->name : '' }}
                     </dd>
                 </div>
                 <div class="detail-item">
-                    <dt>Verifikasi admin</dt>
+                    <dt>Verifikasi akhir</dt>
                     <dd>{{ $dispensasi->status_admin }}{{ $dispensasi->admin ? ' · ' . $dispensasi->admin->name : '' }}
                     </dd>
                 </div>
                 <div class="detail-item">
-                    <dt>Disetujui oleh waka</dt>
-                    <dd>{{ $dispensasi->waka?->name ?? '-' }}</dd>
+                    <dt>Waka yang memverifikasi</dt>
+                    <dd>{{ $dispensasi->waka?->role === 'waka' ? $dispensasi->waka->name : '-' }}</dd>
                 </div>
                 @if ($dispensasi->surat_izin_path)
                     <div class="detail-item"><dt>Surat izin orang tua</dt><dd><a href="{{ route('dispensasi.parent-letter', $dispensasi) }}">Unduh foto surat izin ↗</a></dd></div>
@@ -93,8 +93,8 @@
     @endif
 
     @if ($dispensasi->status_akhir === 'Menunggu' &&
-        ((auth()->user()->role === 'piket' && $dispensasi->status_piket === 'Menunggu') ||
-        (auth()->user()->role === 'admin' && $dispensasi->status_piket === 'Disetujui')))
+        ((auth()->user()->isPiketHariIni() && $dispensasi->status_piket === 'Menunggu') ||
+        (in_array(auth()->user()->role, ['admin', 'waka'], true) && $dispensasi->status_piket === 'Disetujui')))
         <section class="panel form-panel">
             <div class="panel-head">
                 <h2>Ambil keputusan</h2><span class="eyebrow">Tahap

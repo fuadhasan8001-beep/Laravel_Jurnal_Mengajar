@@ -40,6 +40,6 @@ class DispensasiApprovalMail extends Notification implements ShouldQueue
             ->line('Waktu: '.$start.' – '.$end)
             ->line('Alasan: '.$this->dispensasi->alasan)
             ->action('Periksa dan verifikasi dispensasi', route('dispensasi.show', $this->dispensasi))
-            ->line('Masuk menggunakan akun admin untuk menyetujui atau menolak. Status siswa berubah menjadi dispen setelah disetujui.');
+            ->line('Masuk menggunakan akun Waka atau admin untuk menyetujui atau menolak. Status siswa berubah menjadi dispen setelah disetujui.');
     }
 }

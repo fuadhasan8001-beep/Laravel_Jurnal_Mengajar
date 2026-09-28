@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 });
 
-Route::middleware('role:admin')->group(function () {
+Route::middleware('role:admin,waka')->group(function () {
     Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
     Route::get('/admin/jadwal-piket', [AdminPiketController::class, 'index'])->name('admin.piket.index');
     Route::post('/admin/jadwal-piket', [AdminPiketController::class, 'store'])->name('admin.piket.store');
@@ -65,7 +65,7 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/admin/jadwal-piket/{jadwalPiket}', [AdminPiketController::class, 'destroy'])->name('admin.piket.destroy');
 });
 
-Route::middleware('role:admin')->prefix('admin/data')->group(function () {
+Route::middleware('role:admin,waka')->prefix('admin/data')->group(function () {
     Route::get('/guru', [AdminDataController::class, 'gurus'])->name('admin.gurus.index');
     Route::get('/guru/create', [AdminDataController::class, 'createGuru'])->name('admin.gurus.create');
     Route::post('/guru', [AdminDataController::class, 'storeGuru'])->name('admin.gurus.store');
@@ -99,19 +99,19 @@ Route::middleware('role:admin')->prefix('admin/data')->group(function () {
     Route::delete('/jam/{jam}', [AdminReferenceController::class, 'destroyJam'])->name('admin.jam.destroy');
 });
 
-Route::middleware('role:admin')->prefix('admin/registrations')->name('admin.registrations.')->group(function () {
+Route::middleware('role:admin,waka')->prefix('admin/registrations')->name('admin.registrations.')->group(function () {
     Route::get('/', [AdminRegistrationController::class, 'index'])->name('index');
     Route::get('/{registration}', [AdminRegistrationController::class, 'show'])->name('show');
     Route::post('/{registration}/approve', [AdminRegistrationController::class, 'approve'])->name('approve');
     Route::post('/{registration}/reject', [AdminRegistrationController::class, 'reject'])->name('reject');
 });
 
-Route::middleware('role:admin')->prefix('admin')->group(function () {
+Route::middleware('role:admin,waka')->prefix('admin')->group(function () {
     Route::get('/secretaries', [AdminDataController::class, 'secretaries'])->name('admin.secretaries.index');
     Route::post('/secretaries/{kelas}/reset', [AdminDataController::class, 'resetSecretary'])->name('admin.secretaries.reset');
 });
 
-Route::middleware('role:admin,guru,sekretaris,piket')->prefix('rekap')->group(function () {
+Route::middleware('role:admin,waka,guru,sekretaris,piket')->prefix('rekap')->group(function () {
     Route::get('/jurnal', [LaporanController::class, 'jurnal'])->name('laporan.jurnal');
     Route::get('/jurnal/export', [LaporanController::class, 'jurnalExport'])->name('laporan.jurnal.export');
     Route::get('/absensi', [LaporanController::class, 'absensi'])->name('laporan.absensi');
@@ -125,7 +125,7 @@ Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(fun
     Route::get('/rekap-jurnal/export', [LaporanController::class, 'jurnalPiketExport'])->name('rekap-jurnal.export');
 });
 
-Route::middleware('role:guru,admin,sekretaris')->group(function () {
+Route::middleware('role:guru,admin,waka,sekretaris')->group(function () {
     Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
     Route::get('/jurnal/{jurnal}/tanda-tangan', [JurnalController::class, 'signature'])
         ->whereNumber('jurnal')
@@ -154,14 +154,14 @@ Route::middleware('role:guru')->group(function () {
         ->name('jurnal.destroy');
 });
 
-Route::middleware('role:admin,guru,sekretaris')->group(function () {
+Route::middleware('role:admin,waka,guru,sekretaris')->group(function () {
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::get('/jadwal/{jadwal}', [JadwalController::class, 'show'])
         ->whereNumber('jadwal')
         ->name('jadwal.show');
 });
 
-Route::middleware('role:admin')->group(function () {
+Route::middleware('role:admin,waka')->group(function () {
     Route::get('/jadwal/create', [JadwalController::class, 'create'])->name('jadwal.create');
     Route::post('/jadwal', [JadwalController::class, 'store'])->name('jadwal.store');
     Route::get('/jadwal/{jadwal}/edit', [JadwalController::class, 'edit'])
@@ -175,7 +175,8 @@ Route::middleware('role:admin')->group(function () {
         ->name('jadwal.destroy');
 });
 
-Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin');
+Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin,waka');
+Route::get('/waka', fn () => redirect('/admin'))->middleware('role:waka');
 Route::get('/guru', [DashboardController::class, 'guru'])->middleware('role:guru');
 Route::get('/siswa', [DashboardController::class, 'siswa'])->middleware('role:siswa');
 Route::get('/sekretaris', [DashboardController::class, 'sekretaris'])->middleware('role:sekretaris');
@@ -188,22 +189,22 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/absensi', [AbsensiController::class, 'index'])
-    ->middleware('role:admin,guru,sekretaris')
+    ->middleware('role:admin,waka,guru,sekretaris')
     ->name('absensi.index');
 
 Route::get('/absensi/{absensi}/surat-izin', [AbsensiController::class, 'downloadParentLetter'])
-    ->middleware('role:admin,guru,sekretaris')
+    ->middleware('role:admin,waka,guru,sekretaris')
     ->name('absensi.parent-letter');
 
 Route::post('/absensi', [AbsensiController::class, 'store'])
-    ->middleware('role:admin,guru,sekretaris')
+    ->middleware('role:admin,waka,guru,sekretaris')
     ->name('absensi.store');
 
 Route::get('/dispensasi/create', [DispensasiController::class, 'create'])
     ->middleware('role:siswa,piket,guru')
     ->name('dispensasi.create');
 
-Route::middleware('role:siswa,piket,guru,admin')->group(function () {
+Route::middleware('role:siswa,piket,guru,admin,waka')->group(function () {
     Route::get('/dispensasi', [DispensasiController::class, 'index'])->name('dispensasi.index');
     Route::get('/dispensasi/{dispensasi}/bukti', [DispensasiController::class, 'downloadEvidence'])
         ->name('dispensasi.evidence');
@@ -217,7 +218,7 @@ Route::middleware('role:siswa,piket,guru')->group(function () {
 });
 
 Route::post('/dispensasi/{dispensasi}/verify', [DispensasiController::class, 'verify'])
-    ->middleware('role:piket,guru,admin')
+    ->middleware('role:piket,guru,admin,waka')
     ->name('dispensasi.verify');
 
 Route::get('/bukti-dispensasi/{dispensasi}', [DispensasiController::class, 'publicProof'])

@@ -35,6 +35,9 @@ class LoginController extends Controller
             $user = Auth::user();
 
             switch ($user->role) {
+                case 'waka':
+                    return redirect()->intended('/admin');
+
                 case 'admin':
                     return redirect()->intended('/admin');
 

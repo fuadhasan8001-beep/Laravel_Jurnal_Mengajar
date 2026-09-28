@@ -55,6 +55,9 @@ class User extends Authenticatable
 
     public function isPiketHariIni(): bool
     {
+        if (! $this->is_active) {
+            return false;
+        }
         if ($this->role === 'piket') {
             return true;
         }

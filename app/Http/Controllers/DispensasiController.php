@@ -189,7 +189,7 @@ class DispensasiController extends Controller
         abort_unless($dispensasi->status_akhir === 'Disetujui', 404);
 
         return view('dispensasi.public-proof', [
-            'dispensasi' => $dispensasi->load(['siswa.kelas', 'jamMulai', 'jamSelesai', 'piket', 'waka']),
+            'dispensasi' => $dispensasi->load(['siswa.kelas', 'jamMulai', 'jamSelesai', 'piket', 'waka', 'admin']),
         ]);
     }
 
@@ -235,11 +235,12 @@ class DispensasiController extends Controller
                 $dispensasi->piket_id = $user->id;
                 $dispensasi->verified_piket_at = Carbon::now();
             } else {
+                abort_unless(in_array($user->role, ['admin', 'waka'], true), 403);
                 $dispensasi->status_admin = $data['status'];
-                $dispensasi->admin_id = $user->id;
+                $dispensasi->admin_id = $user->role === 'admin' ? $user->id : null;
                 $dispensasi->verified_admin_at = Carbon::now();
-                $dispensasi->waka_id = $user->id;
-                $dispensasi->verified_waka_at = Carbon::now();
+                $dispensasi->waka_id = $user->role === 'waka' ? $user->id : null;
+                $dispensasi->verified_waka_at = $user->role === 'waka' ? Carbon::now() : null;
             }
 
             $dispensasi->catatan_verifikasi = $data['catatan_verifikasi'] ?? null;
@@ -274,7 +275,7 @@ class DispensasiController extends Controller
                     $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
                 }
             } else {
-                $event = $data['status'] === 'Disetujui' ? 'admin_approved' : 'admin_rejected';
+                $event = $user->role.'_'.($data['status'] === 'Disetujui' ? 'approved' : 'rejected');
                 $dispensasi->siswa->user?->notify(new DispensasiNotification($dispensasi, $event));
             }
 
@@ -307,7 +308,7 @@ class DispensasiController extends Controller
 
     private function notifyAdmins(Dispensasi $dispensasi): void
     {
-        User::where('role', 'admin')->where('is_active', true)->get()->each(function (User $admin) use ($dispensasi): void {
+        User::whereIn('role', ['admin', 'waka'])->where('is_active', true)->get()->each(function (User $admin) use ($dispensasi): void {
             $admin->notify(new DispensasiNotification($dispensasi, 'piket_approved'));
             $admin->notify((new DispensasiApprovalMail($dispensasi))->afterCommit());
         });
@@ -320,6 +321,7 @@ class DispensasiController extends Controller
 
     private function authorizeView(Dispensasi $dispensasi): void
     {
+        $this->authorizePiketAccess();
         if (auth()->user()->role === 'siswa' && $dispensasi->siswa_id !== $this->student()->id) {
             abort(403);
         }

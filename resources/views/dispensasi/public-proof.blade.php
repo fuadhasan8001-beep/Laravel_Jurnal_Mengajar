@@ -12,8 +12,12 @@
                 <div class="detail-item"><dt>Kelas</dt><dd>{{ $dispensasi->siswa->kelas->nama_kelas }}</dd></div>
                 <div class="detail-item"><dt>Tanggal</dt><dd>{{ $dispensasi->tanggal->format('d M Y') }}</dd></div>
                 <div class="detail-item"><dt>Waktu</dt><dd>{{ $dispensasi->jamMulai->jam_mulai }} – {{ $dispensasi->jamSelesai->jam_selesai }}</dd></div>
-                <div class="detail-item"><dt>Guru piket</dt><dd>{{ $dispensasi->piket?->name ?? '-' }}</dd></div>
-                <div class="detail-item"><dt>Disetujui waka</dt><dd>{{ $dispensasi->waka?->name ?? '-' }}</dd></div>
+                <div class="detail-item"><dt>Guru piket yang mengajukan</dt><dd>{{ $dispensasi->piket?->name ?? '-' }}</dd></div>
+                <div class="detail-item"><dt>Waka yang memverifikasi</dt><dd>{{ $dispensasi->waka?->role === 'waka' ? $dispensasi->waka->name : '-' }}</dd></div>
+                @if ($dispensasi->admin_id)
+                    <div class="detail-item"><dt>Admin yang memverifikasi</dt><dd>{{ $dispensasi->admin?->name ?? '-' }}</dd></div>
+                @endif
+                <div class="detail-item"><dt>Waktu verifikasi</dt><dd>{{ ($dispensasi->verified_waka_at ?? $dispensasi->verified_admin_at)?->format('d-m-Y H:i') ?? '-' }}</dd></div>
                 <div class="detail-item detail-item-full"><dt>Keperluan</dt><dd>{{ $dispensasi->alasan }}</dd></div>
             </dl>
         </div>

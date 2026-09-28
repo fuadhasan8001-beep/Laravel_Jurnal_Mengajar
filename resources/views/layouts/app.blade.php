@@ -2222,13 +2222,13 @@
                 <nav class="nav-list">
 
                     <a
-                        class="nav-link {{ request()->is(auth()->user()->role) ? 'active' : '' }}"
-                        href="{{ url('/' . auth()->user()->role) }}"
+                        class="nav-link {{ request()->is(auth()->user()->role) || (auth()->user()->role === 'waka' && request()->is('admin')) ? 'active' : '' }}"
+                        href="{{ auth()->user()->role === 'waka' ? url('/admin') : url('/' . auth()->user()->role) }}"
                     >
                         Dashboard
                     </a>
 
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
+                    @if (in_array(auth()->user()->role, ['admin', 'waka', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"
@@ -2245,7 +2245,7 @@
                         @endif
                     @endif
 
-                    @if (in_array(auth()->user()->role, ['admin', 'guru', 'sekretaris'], true))
+                    @if (in_array(auth()->user()->role, ['admin', 'waka', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
                             href="{{ route('jurnal.index') }}"
@@ -2254,12 +2254,15 @@
                         </a>
                     @endif
 
+                    @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
+                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Verifikasi dispensasi</a>
+                    @endif
                     @if (auth()->user()->role === 'guru' && auth()->user()->kelasWali()->exists())
                         <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Lihat rekap jurnal</a>
                     @endif
                     </nav>
 
-                    @if (auth()->user()->role === 'admin')
+                    @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
                         <details class="nav-extra" @if (request()->is('admin/data*') || request()->is('admin/secretaries*')) open @endif>
                             <summary class="nav-label">Data & akun</summary>
                             <nav class="nav-list" aria-label="Data dan akun">
