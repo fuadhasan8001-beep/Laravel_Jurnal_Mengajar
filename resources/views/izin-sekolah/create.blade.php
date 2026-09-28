@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Catat izin sekolah seharian</h1>
+            <h1>Catat Izin atau Sakit Seharian</h1>
             <p>Catat siswa yang tidak masuk sekolah dan unggah surat dari orang tua.</p>
         </div>
         <a class="btn btn-muted" href="{{ route('piket.izin-sekolah.index') }}">Riwayat izin</a>
@@ -17,6 +17,14 @@
             <form action="{{ route('piket.izin-sekolah.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
+                    <div class="field">
+                        <label for="status">Status siswa</label>
+                        <select id="status" name="status" required>
+                            <option value="I" @selected(old('status', 'I') === 'I')>Izin</option>
+                            <option value="S" @selected(old('status') === 'S')>Sakit</option>
+                        </select>
+                        @error('status')<small class="error">{{ $message }}</small>@enderror
+                    </div>
                     <div class="field">
                         <label for="tanggal">Tanggal izin</label>
                         <input id="tanggal" type="date" value="{{ today()->toDateString() }}" readonly>

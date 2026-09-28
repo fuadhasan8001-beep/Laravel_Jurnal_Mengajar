@@ -70,6 +70,11 @@
                             @foreach ($jurnal->kelas->siswas as $siswa)
                                 @php
                                     $absensi = $jurnal->absensis->firstWhere('siswa_id', $siswa->id);
+                                    $izinSekolah = $jurnal->izinSekolahSiswa->get($siswa->id);
+                                    $dispensasiDisetujui = $jurnal->dispensasiDisetujuiSiswa->get($siswa->id);
+                                    $forcedIzin = $izinSekolah !== null;
+                                    $forcedStatus = $forcedIzin ? $izinSekolah->status : ($dispensasiDisetujui ? 'D' : null);
+                                    $statusAbsensi = $forcedStatus ?? ($absensi?->status ?? 'H');
                                 @endphp
                                 <tr data-student-search="{{ $siswa->nama_siswa }} {{ $siswa->nis }}">
                                     <td class="attendance-name">
@@ -77,22 +82,27 @@
                                         <strong>{{ $loop->iteration }}. {{ $siswa->nama_siswa }}</strong><small>{{ $siswa->nis }}</small>
                                     </td>
                                     <td>
-                                            @if ($absensi?->status === 'D')
-                                                <input type="hidden" name="absensis[{{ $siswa->id }}][status]" value="D">
+                                            @if ($forcedStatus || $absensi?->status === 'D')
+                                                <input type="hidden" name="absensis[{{ $siswa->id }}][status]" value="{{ $forcedStatus ?? 'D' }}">
                                             @endif
                                             <div class="attendance-options" role="group" aria-label="Status {{ $siswa->nama_siswa }}">
                                                 @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $status => $label)
                                                     <label @if ($status === 'D') title="Dispensasi mengikuti persetujuan admin" @endif>
-                                                        <input type="radio" data-absence-status name="absensis[{{ $siswa->id }}][status]" value="{{ $status }}" style="width:18px;height:18px;margin:0;" @checked(($absensi?->status === 'D' ? 'D' : old('absensis.'.$siswa->id.'.status', $absensi->status ?? 'H')) === $status) @disabled($absensi?->status === 'D' || $status === 'D')>
-                                                        {{ $label }}
+                                                        <input type="radio" data-absence-status name="absensis[{{ $siswa->id }}][status]" value="{{ $status }}" style="width:18px;height:18px;margin:0;" @checked($statusAbsensi === $status) @disabled($forcedStatus !== null || $absensi?->status === 'D' || $status === 'D')>
+                                                        {{ $forcedIzin && $status === 'I' ? 'Izin · dari guru piket' : ($forcedIzin && $status === 'S' ? 'Sakit · dari guru piket' : ($dispensasiDisetujui && $status === 'D' ? 'Dispen · disetujui' : $label)) }}
                                                     </label>
                                                 @endforeach
                                             </div>
                                     </td>
                                     <td>
-                                        <input type="text" data-absence-note name="absensis[{{ $siswa->id }}][catatan]" value="{{ old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? '') }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($absensi?->status === 'D')>
-                                        @if ($absensi?->surat_izin_path)
+                                        <input type="text" data-absence-note name="absensis[{{ $siswa->id }}][catatan]" value="{{ $forcedIzin ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($dispensasiDisetujui ? 'Dispensasi disetujui.' : old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? '')) }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($forcedStatus !== null || $absensi?->status === 'D')>
+                                        @if ($izinSekolah)
+                                            <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat orang tua</a>
+                                        @elseif ($absensi?->surat_izin_path)
                                             <a href="{{ route('absensi.parent-letter', $absensi) }}">Lihat surat izin</a>
+                                        @endif
+                                        @if ($dispensasiDisetujui)
+                                            <a href="{{ route('dispensasi.show', $dispensasiDisetujui) }}">Lihat dispensasi</a>
                                         @endif
                                     </td>
                                 </tr>

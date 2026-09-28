@@ -17,12 +17,12 @@
                 <span>Pilih siswa, isi alasan, dan kirim pengajuan ke admin.</span>
             </a>
             <a class="quick-card" href="{{ route('piket.izin-sekolah.create') }}">
-                <strong>Catat izin sekolah seharian</strong>
-                <span>Unggah surat orang tua agar izin tercatat untuk seluruh hari sekolah.</span>
+                <strong>Catat izin atau sakit seharian</strong>
+                <span>Unggah surat orang tua agar status siswa tercatat untuk seluruh hari sekolah.</span>
             </a>
             <a class="quick-card" href="{{ route('piket.izin-sekolah.index') }}">
-                <strong>Riwayat izin sekolah</strong>
-                <span>Lihat siswa yang izin seharian dan surat yang sudah dicatat.</span>
+                <strong>Riwayat izin dan sakit</strong>
+                <span>Lihat siswa yang tidak masuk seharian dan surat yang sudah dicatat.</span>
             </a>
             <a class="quick-card" href="{{ route('dispensasi.index') }}">
                 <strong>Riwayat dispensasi</strong>

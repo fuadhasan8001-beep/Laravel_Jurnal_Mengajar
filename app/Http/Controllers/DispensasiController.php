@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\IzinSekolah;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -368,12 +369,16 @@ class DispensasiController extends Controller
             });
 
         foreach ($jurnals as $jurnal) {
+            $allDayAbsence = IzinSekolah::where('siswa_id', $dispensasi->siswa_id)
+                ->whereDate('tanggal', $dispensasi->tanggal)->first();
             Absensi::updateOrCreate(
                 ['jurnal_id' => $jurnal->id, 'siswa_id' => $dispensasi->siswa_id],
                 [
-                    'status' => 'D',
-                    'catatan' => $dispensasi->surat_izin_path ? 'Izin orang tua / surat dispensasi terlampir.' : 'Dispensasi disetujui.',
-                    'surat_izin_path' => $dispensasi->surat_izin_path,
+                    'status' => $allDayAbsence?->status ?? 'D',
+                    'catatan' => $allDayAbsence
+                        ? ($allDayAbsence->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.')
+                        : ($dispensasi->surat_izin_path ? 'Izin orang tua / surat dispensasi terlampir.' : 'Dispensasi disetujui.'),
+                    'surat_izin_path' => $allDayAbsence?->surat_izin_path ?? $dispensasi->surat_izin_path,
                 ]
             );
         }

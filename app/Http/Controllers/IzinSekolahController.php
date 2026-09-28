@@ -39,10 +39,12 @@ class IzinSekolahController extends Controller
         $data = $request->validate([
             'siswa_ids' => ['required', 'array', 'min:1', 'max:100'],
             'siswa_ids.*' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
+            'status' => ['nullable', 'in:I,S'],
             'alasan' => ['nullable', 'string', 'max:5000'],
             'surat_izin' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
         $data['tanggal'] = today()->toDateString();
+        $data['status'] = $data['status'] ?? 'I';
 
         $alreadyRecorded = IzinSekolah::whereDate('tanggal', $data['tanggal'])
             ->whereIn('siswa_id', $data['siswa_ids'])->exists();
@@ -61,6 +63,7 @@ class IzinSekolahController extends Controller
                     IzinSekolah::create([
                         'siswa_id' => $student->id,
                         'tanggal' => $data['tanggal'],
+                        'status' => $data['status'],
                         'alasan' => $data['alasan'] ?? null,
                         'surat_izin_path' => $path,
                         'piket_id' => auth()->id(),
@@ -72,8 +75,10 @@ class IzinSekolahController extends Controller
                         Absensi::updateOrCreate(
                             ['jurnal_id' => $jurnal->id, 'siswa_id' => $student->id],
                             [
-                                'status' => 'I',
-                                'catatan' => 'Izin sekolah seharian berdasarkan surat orang tua.',
+                                'status' => $data['status'],
+                                'catatan' => $data['status'] === 'S'
+                                    ? 'Sakit seharian berdasarkan surat orang tua.'
+                                    : 'Izin sekolah seharian berdasarkan surat orang tua.',
                                 'surat_izin_path' => $path,
                             ]
                         );
@@ -86,7 +91,7 @@ class IzinSekolahController extends Controller
         }
 
         return redirect()->route('piket.izin-sekolah.index')
-            ->with('success', 'Surat izin seharian berhasil dicatat. Absensi jurnal hari tersebut sudah diperbarui.');
+            ->with('success', ($data['status'] === 'S' ? 'Surat sakit seharian' : 'Surat izin seharian').' berhasil dicatat. Absensi jurnal hari tersebut sudah diperbarui.');
     }
 
     private function authorizePiketAccess(Request $request): void

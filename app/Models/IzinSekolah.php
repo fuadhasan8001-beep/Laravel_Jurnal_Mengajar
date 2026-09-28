@@ -10,6 +10,7 @@ class IzinSekolah extends Model
     protected $fillable = [
         'siswa_id',
         'tanggal',
+        'status',
         'alasan',
         'surat_izin_path',
         'piket_id',

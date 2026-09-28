@@ -55,8 +55,16 @@ class AbsensiController extends Controller
             ->when($request->filled('mapel_id'), fn ($builder) => $builder->where('mapel_id', $request->integer('mapel_id')))
             ->when($request->filled('siswa_id'), fn ($builder) => $builder->whereHas('absensis', fn ($attendance) => $attendance->where('siswa_id', $request->integer('siswa_id'))));
 
+        $jurnals = $query->paginate(15)->withQueryString();
+        $jurnals->getCollection()->each(function (Jurnal $jurnal): void {
+            $jurnal->setRelation('izinSekolahSiswa', IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
+                ->whereIn('siswa_id', $jurnal->kelas->siswas->pluck('id'))
+                ->get()->keyBy('siswa_id'));
+            $jurnal->setRelation('dispensasiDisetujuiSiswa', Dispensasi::approvedForJournal($jurnal)->keyBy('siswa_id'));
+        });
+
         return view('absensi.index', [
-            'jurnals' => $query->paginate(15)->withQueryString(),
+            'jurnals' => $jurnals,
             'gurus' => Guru::orderBy('nama_guru')->get(),
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
@@ -98,8 +106,10 @@ class AbsensiController extends Controller
         $allDayIzin = IzinSekolah::where('siswa_id', $data['siswa_id'])
             ->whereDate('tanggal', $jurnal->tanggal)->first();
         if ($allDayIzin) {
-            $data['status'] = 'I';
-            $data['catatan'] = 'Izin sekolah seharian berdasarkan surat orang tua.';
+            $data['status'] = $allDayIzin->status;
+            $data['catatan'] = $allDayIzin->status === 'S'
+                ? 'Sakit seharian berdasarkan surat orang tua.'
+                : 'Izin sekolah seharian berdasarkan surat orang tua.';
         }
 
         Absensi::updateOrCreate(
@@ -150,8 +160,10 @@ class AbsensiController extends Controller
                 Absensi::updateOrCreate(
                     ['jurnal_id' => $jurnal->id, 'siswa_id' => $studentId],
                     [
-                        'status' => $allDayLeave ? 'I' : ($hasApprovedDispensation ? 'D' : $record['status']),
-                        'catatan' => $allDayLeave ? 'Izin sekolah seharian berdasarkan surat orang tua.' : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null)),
+                        'status' => $allDayLeave ? $allDayLeave->status : ($hasApprovedDispensation ? 'D' : $record['status']),
+                        'catatan' => $allDayLeave
+                            ? ($allDayLeave->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.')
+                            : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null)),
                         'surat_izin_path' => $allDayLeave?->surat_izin_path,
                     ]
                 );

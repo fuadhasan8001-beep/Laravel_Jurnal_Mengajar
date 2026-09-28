@@ -80,7 +80,7 @@
                             && $dispensationStart < $journalEnd && $dispensationEnd > $journalStart;
                     });
                             $izinSekolah = $izinSekolahSiswa->get($student->id);
-                            $forcedStatus = $izinSekolah ? 'I' : ($dispensed ? 'D' : null);
+                            $forcedStatus = $izinSekolah ? $izinSekolah->status : ($dispensed ? 'D' : null);
                     $saved = collect($attendance)->firstWhere('siswa_id', $student->id) ?? $attendance[$student->id] ?? [];
                 @endphp
                 <tr data-attendance-student="{{ $student->nama_siswa }} {{ $student->nis }}">
@@ -100,9 +100,9 @@
                         </div>
                     </td>
                     <td>
-                        <input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($izinSekolah ? 'Izin sekolah seharian berdasarkan surat orang tua.' : ($saved['catatan'] ?? '')) }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($forcedStatus !== null)>
+                        <input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($izinSekolah ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($saved['catatan'] ?? '')) }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($forcedStatus !== null)>
                         @if ($izinSekolah)
-                            <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat izin</a>
+                            <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat orang tua</a>
                         @endif
                     </td>
                 </tr>
