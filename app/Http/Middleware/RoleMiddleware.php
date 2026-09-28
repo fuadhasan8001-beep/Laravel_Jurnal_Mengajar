@@ -14,7 +14,7 @@ class RoleMiddleware
             return redirect()->guest(route('login'));
         }
 
-        if (! auth()->user()->is_active || ! in_array(auth()->user()->role, $roles, true)) {
+        if (! auth()->user()->is_active || (! auth()->user()->isMaster() && ! in_array(auth()->user()->role, $roles, true))) {
             abort(403);
         }
 

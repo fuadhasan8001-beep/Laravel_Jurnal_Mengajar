@@ -237,6 +237,10 @@
             scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
         }
 
+        .sidebar-backdrop {
+            display: none;
+        }
+
         .sidebar::-webkit-scrollbar {
             width: 8px;
         }
@@ -299,6 +303,15 @@
             gap: 4px;
         }
 
+        .nav-list + .nav-extra,
+        .nav-extra + .nav-extra {
+            margin-top: 14px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, .3);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .09);
+        }
+
         .nav-extra {
             margin-top: 18px;
             padding-top: 14px;
@@ -308,9 +321,18 @@
         .nav-extra > summary {
             cursor: pointer;
             list-style: none;
-            border-radius: 8px;
-            padding-top: 5px;
-            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-radius: 9px;
+            padding: 9px 10px;
+            background: rgba(255, 255, 255, .14);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
 
         .nav-extra > summary:hover,
@@ -324,18 +346,38 @@
         }
 
         .nav-extra > summary::after {
-            content: '+';
-            float: right;
-            font-size: 15px;
+            content: '⌄';
+            display: grid;
+            width: 24px;
+            height: 24px;
+            flex: none;
+            place-items: center;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, .2);
+            font-size: 17px;
             line-height: 1;
+            transition: transform .18s ease;
         }
 
         .nav-extra[open] > summary::after {
-            content: '−';
+            transform: rotate(180deg);
         }
+
+        .bottom-navigation { display: none; }
 
         .nav-label-account {
             margin-top: 18px;
+        }
+
+        .nav-section-title {
+            margin: 2px 4px 10px;
+            padding: 9px 12px;
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .13);
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: .12em;
         }
 
         .nav-link {
@@ -1175,6 +1217,12 @@
                 overflow-wrap: anywhere;
             }
 
+            .responsive-card-table .journal-table-action {
+                grid-column: 1 / -1;
+                padding-top: 8px;
+                border-top: 1px solid var(--line);
+            }
+
             .responsive-card-table td::before {
                 display: block;
                 margin-bottom: 4px;
@@ -1870,7 +1918,70 @@
 
         @media (max-width: 900px) {
             .sidebar {
-                display: none;
+                width: min(82vw, 320px);
+                height: 100vh;
+                padding: 22px 18px;
+                transform: translateX(-105%);
+                visibility: hidden;
+                pointer-events: none;
+                transition: transform .2s ease, visibility .2s ease;
+            }
+
+            .sidebar {
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+            .sidebar-navigation {
+                min-height: 0;
+                flex: 1 1 auto;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                scrollbar-width: thin;
+            }
+
+            .sidebar-footer {
+                z-index: 2;
+                flex: 0 0 auto;
+                margin-top: 0;
+                padding: 12px 10px max(10px, env(safe-area-inset-bottom));
+                border-top: 1px solid rgba(255, 255, 255, .45);
+                background: var(--gold-dark);
+                box-shadow: 0 -10px 20px rgba(47, 34, 12, .16);
+            }
+
+            .sidebar-footer .logout {
+                width: 100%;
+                min-height: 44px;
+                margin-top: 10px;
+                background: #b8322a;
+            }
+
+            .sidebar-footer .logout:hover,
+            .sidebar-footer .logout:focus-visible {
+                background: #98271f;
+                outline: 3px solid rgba(255, 255, 255, .25);
+            }
+
+            .app-shell.menu-open .sidebar {
+                transform: translateX(0);
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .sidebar-backdrop[data-menu-close] {
+                position: fixed;
+                z-index: 40;
+                inset: 0;
+                background: rgba(25, 22, 17, .58);
+            }
+
+            .app-shell.menu-open .sidebar-backdrop {
+                display: block;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
             }
 
             .main {
@@ -1960,6 +2071,49 @@
                 width: 100%;
                 margin-left: 0;
             }
+
+            .main { padding-bottom: 70px; }
+
+            .bottom-navigation {
+                position: fixed;
+                z-index: 35;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: grid;
+                min-height: calc(62px + env(safe-area-inset-bottom));
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                padding: 5px 8px calc(5px + env(safe-area-inset-bottom));
+                border-top: 1px solid rgba(138, 106, 50, .18);
+                background: rgba(255, 253, 248, .97);
+                box-shadow: 0 -8px 24px rgba(57, 45, 24, .1);
+                backdrop-filter: blur(14px);
+            }
+
+            .bottom-navigation--student { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+            .bottom-navigation a,
+            .bottom-navigation button {
+                display: flex;
+                min-width: 0;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                border: 0;
+                border-radius: 10px;
+                padding: 4px 2px;
+                background: transparent;
+                color: #756d60;
+                font: inherit;
+                font-size: 10px;
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+            .bottom-navigation svg { width: 19px; height: 19px; flex: none; }
+            .bottom-navigation .active { background: #f3ead7; color: #795b2e; }
+            .bottom-navigation button { cursor: pointer; }
 
             .topbar {
                 min-height: 0;
@@ -2481,7 +2635,9 @@
     @auth
         <div class="app-shell">
 
-            <aside class="sidebar">
+            <div class="sidebar-backdrop" data-menu-close></div>
+
+            <aside class="sidebar" id="mobile-secondary-menu">
 
                 <a
                     href="{{ url('/' . auth()->user()->role) }}"
@@ -2504,7 +2660,8 @@
                     Jurnal Guru
                 </a>
 
-                <div class="nav-label">Menu utama</div>
+                <div class="sidebar-navigation">
+                <div class="nav-label nav-section-title">Menu utama</div>
 
                 <nav class="nav-list">
 
@@ -2555,7 +2712,7 @@
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
                         <details class="nav-extra" @if (request()->is('admin/data*') || request()->is('admin/secretaries*')) open @endif>
-                            <summary class="nav-label">Data & akun</summary>
+                            <summary>Data & akun</summary>
                             <nav class="nav-list" aria-label="Data dan akun">
                                 <a class="nav-link {{ request()->is('admin/data/guru*') ? 'active' : '' }}" href="{{ route('admin.gurus.index') }}">Guru</a>
                                 <a class="nav-link {{ request()->is('admin/data/siswa*') ? 'active' : '' }}" href="{{ route('admin.siswas.index') }}">Siswa</a>
@@ -2566,7 +2723,7 @@
                             </nav>
                         </details>
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('dispensasi*')) open @endif>
-                            <summary class="nav-label">Operasional</summary>
+                            <summary>Operasional</summary>
                             <nav class="nav-list" aria-label="Operasional">
                                 <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
@@ -2576,7 +2733,7 @@
                         </details>
                     @else
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
-                            <summary class="nav-label">Menu tambahan</summary>
+                            <summary>Menu tambahan</summary>
                             <nav class="nav-list" aria-label="Menu tambahan">
                                 @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
                                     <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
@@ -2622,6 +2779,8 @@
                         </a>
                     @endif
                     </nav>
+
+                </div>
 
                 <div class="sidebar-footer">
 
@@ -2881,6 +3040,12 @@
         const mobileMoreDialog = document.querySelector('[data-mobile-more-sheet]');
         const mobileMoreButtons = document.querySelectorAll('[data-mobile-more-open]');
 
+        const closeSidebarMenu = () => {
+            const shell = document.querySelector('.app-shell');
+            shell?.classList.remove('menu-open');
+            document.querySelectorAll('[data-menu-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+        };
+
         mobileMoreButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 closeNotificationMenus();
@@ -3087,6 +3252,38 @@
             window.setInterval(updateClock, 1000);
         });
 
+        document
+            .querySelectorAll('[data-menu-toggle], [data-menu-close]')
+            .forEach((element) => {
+
+                element.addEventListener('click', () => {
+
+                    const shell = document.querySelector('.app-shell');
+
+                    if (!shell) {
+                        return;
+                    }
+
+                    closeNotificationMenus();
+
+                    const isCloseButton = element.matches('[data-menu-close]');
+                    const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
+
+                    shell.classList.toggle('menu-open', isOpen);
+
+                    document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
+                        button.setAttribute('aria-expanded', String(isOpen));
+                    });
+                });
+            });
+
+        document.querySelectorAll('.notification-menu details').forEach((details) => {
+            details.addEventListener('toggle', () => {
+                if (details.open) {
+                    closeSidebarMenu();
+                }
+            });
+        });
         document.addEventListener('scroll', (event) => {
             if (event.target instanceof Element && event.target.closest('.notification-list')) return;
             document.querySelectorAll('.notification-menu details[open]').forEach(details => { details.open = false; });

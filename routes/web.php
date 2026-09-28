@@ -12,6 +12,7 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MasterBypassController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('role:admin,waka')->group(function () {
+    Route::post('/admin/master-bypass', [MasterBypassController::class, 'update'])->name('admin.master-bypass');
     Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
     Route::get('/admin/jadwal-piket', [AdminPiketController::class, 'index'])->name('admin.piket.index');
     Route::post('/admin/jadwal-piket', [AdminPiketController::class, 'store'])->name('admin.piket.store');

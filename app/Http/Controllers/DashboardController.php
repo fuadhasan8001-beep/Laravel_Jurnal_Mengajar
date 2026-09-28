@@ -29,6 +29,7 @@ class DashboardController extends Controller
             'menungguVerifikasi' => Dispensasi::where('status_akhir', 'Menunggu')->count(),
             'disetujuiBulanIni' => Dispensasi::where('status_akhir', 'Disetujui')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
             'perluPerhatian' => Dispensasi::where('status_akhir', 'Ditolak')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
+            'masterGurus' => auth()->user()->isMaster() ? Guru::with('user')->orderBy('nama_guru')->get() : collect(),
         ]);
     }
 

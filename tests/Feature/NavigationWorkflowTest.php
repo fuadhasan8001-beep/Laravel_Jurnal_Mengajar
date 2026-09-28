@@ -39,12 +39,10 @@ it('renders role-approved mobile destinations and account actions', function (st
     $response = $this->actingAs($user)->get($path);
 
     $response->assertSee('data-mobile-bottom-nav', false)
-        ->assertSee('data-mobile-more-open', false)
-        ->assertSee('data-mobile-more-sheet', false)
-        ->assertSee('data-mobile-logout-button', false)
+        ->assertSee('data-menu-toggle', false)
+        ->assertSee('id="mobile-secondary-menu"', false)
         ->assertSee('class="sidebar"', false)
-        ->assertSee('class="mobile-nav-item is-active"', false)
-        ->assertDontSee('data-menu-toggle', false);
+        ->assertSee('class="mobile-nav-item is-active"', false);
 
     foreach ($destinations as $destination) {
         $response->assertSee('data-mobile-nav-destination="'.$destination.'"', false);
@@ -54,13 +52,6 @@ it('renders role-approved mobile destinations and account actions', function (st
         $response->assertDontSee('data-mobile-nav-destination="'.$destination.'"', false);
     }
 
-    foreach ($moreDestinations as $destination) {
-        $response->assertSee('data-mobile-more-destination="'.$destination.'"', false);
-    }
-
-    foreach ($unavailableMore as $destination) {
-        $response->assertDontSee('data-mobile-more-destination="'.$destination.'"', false);
-    }
 })->with([
     'admin' => ['admin', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
     'waka' => ['waka', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
@@ -86,7 +77,7 @@ it('shows the class recap or piket destination only when the teacher qualifies',
 
     $response->assertSee('data-mobile-nav-destination="piket"', false)
         ->assertDontSee('data-mobile-nav-destination="homeroom"', false)
-        ->assertSee('data-mobile-more-destination="teacher-homeroom"', false);
+        ->assertSee('Rekap jurnal kelas');
 });
 
 it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {

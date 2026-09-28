@@ -26,7 +26,8 @@ class UpdateJurnalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->is_active && auth()->user()->role === 'guru';
+        return auth()->check() && auth()->user()->is_active
+            && (auth()->user()->role === 'guru' || (auth()->user()->isMaster() && session('master_bypass_enabled')));
     }
 
     /**

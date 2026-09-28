@@ -38,6 +38,9 @@
         @case('logout')
             <path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6" />
             @break
+        @case('menu')
+            <path d="M4 6h16M4 12h16M4 18h16" />
+            @break
         @default
             <circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" />
     @endswitch

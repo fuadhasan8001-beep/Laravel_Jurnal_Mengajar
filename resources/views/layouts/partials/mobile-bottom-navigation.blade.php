@@ -69,33 +69,8 @@
             <span class="mobile-nav-label">{{ $item['label'] }}</span>
         </a>
     @endforeach
-    <button class="mobile-nav-item{{ $mobileMoreIsActive ? ' is-active' : '' }}" type="button" data-mobile-more-open aria-haspopup="dialog" aria-controls="mobile-more-sheet" aria-expanded="false" @if ($mobileMoreIsActive) aria-current="page" @endif>
-        <span class="mobile-nav-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => 'more'])</span>
+    <button class="mobile-nav-item{{ $mobileMoreIsActive ? ' is-active' : '' }}" type="button" data-menu-toggle aria-controls="mobile-secondary-menu" aria-expanded="false" @if ($mobileMoreIsActive) aria-current="page" @endif>
+        <span class="mobile-nav-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => 'menu'])</span>
         <span class="mobile-nav-label">Lainnya</span>
     </button>
 </nav>
-
-<dialog class="mobile-more-sheet" id="mobile-more-sheet" data-mobile-more-sheet aria-labelledby="mobile-more-title">
-    <div class="mobile-more-heading"><h2 id="mobile-more-title">Lainnya</h2><form method="dialog"><button class="mobile-more-close" type="submit" aria-label="Tutup menu lainnya">&times;</button></form></div>
-    @php($currentMoreGroup = null)
-    <nav class="mobile-more-list" aria-label="Menu lainnya">
-        @foreach ($mobileMoreItems as $item)
-            @if ($currentMoreGroup !== $item['group'])
-                @php($currentMoreGroup = $item['group'])
-                <h3 class="mobile-more-group">{{ $currentMoreGroup }}</h3>
-            @endif
-            <a class="mobile-more-link{{ $item['active'] ? ' is-active' : '' }}" href="{{ $item['url'] }}" data-mobile-more-destination="{{ $item['key'] }}" @if ($item['active']) aria-current="page" @endif>
-                <span class="mobile-more-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => $item['icon']])</span><span>{{ $item['label'] }}</span>
-            </a>
-        @endforeach
-        @if ($role !== 'admin' && filled(config('app.admin_whatsapp')))
-            <a class="mobile-more-link" href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}" target="_blank" rel="noopener noreferrer" data-mobile-more-destination="contact-admin">
-                <span class="mobile-more-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => 'chat'])</span><span>Hubungi Admin</span>
-            </a>
-        @endif
-    </nav>
-    <form class="mobile-more-logout" action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button class="mobile-logout-button" data-mobile-logout-button type="submit">@include('layouts.partials.mobile-nav-icon', ['icon' => 'logout']) Keluar dari akun</button>
-    </form>
-</dialog>
