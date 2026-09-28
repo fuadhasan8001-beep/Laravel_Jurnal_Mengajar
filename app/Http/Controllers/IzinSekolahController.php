@@ -46,11 +46,12 @@ class IzinSekolahController extends Controller
         $data['tanggal'] = today()->toDateString();
         $data['status'] = $data['status'] ?? 'I';
 
-        $alreadyRecorded = IzinSekolah::whereDate('tanggal', $data['tanggal'])
-            ->whereIn('siswa_id', $data['siswa_ids'])->exists();
-        if ($alreadyRecorded) {
+        $existingStudents = Siswa::whereIn('id', $data['siswa_ids'])
+            ->whereHas('izinSekolahs', fn ($query) => $query->whereDate('tanggal', $data['tanggal']))
+            ->orderBy('nama_siswa')->pluck('nama_siswa');
+        if ($existingStudents->isNotEmpty()) {
             return back()->withInput()->withErrors([
-                'siswa_ids' => 'Salah satu siswa sudah tercatat izin sekolah pada tanggal tersebut.',
+                'siswa_ids' => 'Siswa berikut sudah tercatat pada tanggal tersebut: '.$existingStudents->join(', ').'. Hapus dari pilihan atau gunakan tanggal lain.',
             ]);
         }
 
@@ -60,14 +61,13 @@ class IzinSekolahController extends Controller
         try {
             DB::transaction(function () use ($data, $students, $path): void {
                 foreach ($students as $student) {
-                    IzinSekolah::create([
-                        'siswa_id' => $student->id,
-                        'tanggal' => $data['tanggal'],
+                    $attributes = [
                         'status' => $data['status'],
                         'alasan' => $data['alasan'] ?? null,
                         'surat_izin_path' => $path,
                         'piket_id' => auth()->id(),
-                    ]);
+                    ];
+                    IzinSekolah::create(['siswa_id' => $student->id, 'tanggal' => $data['tanggal'], ...$attributes]);
 
                     $jurnals = Jurnal::whereDate('tanggal', $data['tanggal'])
                         ->where('kelas_id', $student->kelas_id)->get();
