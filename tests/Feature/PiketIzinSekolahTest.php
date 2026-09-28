@@ -330,3 +330,28 @@ it('keeps a full-day Sakit status when a lesson dispensasi is approved later', f
         'surat_izin_path' => 'izin-sekolah/surat/sakit.jpg',
     ]);
 });
+
+it('rejects an existing same-day permission when Piket uploads the batch again', function (): void {
+    $payload = [
+        'siswa_ids' => [$this->student->id],
+        'status' => 'I',
+        'alasan' => 'Izin pertama',
+        'surat_izin' => UploadedFile::fake()->image('surat-pertama.jpg'),
+    ];
+    $this->actingAs($this->piket)->post(route('piket.izin-sekolah.store'), $payload)->assertRedirect();
+    $first = IzinSekolah::firstOrFail();
+
+    $this->post(route('piket.izin-sekolah.store'), [
+        'siswa_ids' => [$this->student->id],
+        'status' => 'S',
+        'alasan' => 'Berubah menjadi sakit',
+        'surat_izin' => UploadedFile::fake()->image('surat-kedua.jpg'),
+    ])->assertSessionHasErrors('siswa_ids');
+
+    $updated = IzinSekolah::firstOrFail();
+    expect($updated->id)->toBe($first->id)
+        ->and($updated->status)->toBe('I')
+        ->and($updated->alasan)->toBe('Izin pertama')
+        ->and($updated->surat_izin_path)->toBe($first->surat_izin_path);
+    $this->assertDatabaseCount('izin_sekolahs', 1);
+});

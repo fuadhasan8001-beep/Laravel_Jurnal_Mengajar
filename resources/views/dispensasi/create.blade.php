@@ -109,10 +109,23 @@
                     >Batal</a><button
                         class="btn"
                         type="submit"
-                    >Kirim pengajuan</button></div>
+                    >Tinjau sebelum kirim</button></div>
             </form>
         </div>
     </section>
+    <div id="dispensasi-confirm" hidden style="position:fixed;inset:0;background:rgba(11,18,32,.62);z-index:1000;align-items:center;justify-content:center;padding:1rem;">
+        <div style="width:min(680px,100%);background:#fff;border-radius:18px;padding:1.5rem;max-height:80vh;overflow:auto;">
+            <h2>Periksa pengajuan sebelum kirim</h2>
+            <dl class="detail-grid">
+                <div class="detail-item"><dt>Tanggal</dt><dd>{{ today()->format('d M Y') }}</dd></div>
+                <div class="detail-item"><dt>Waktu</dt><dd id="confirm-dispensasi-time"></dd></div>
+                <div class="detail-item detail-item-full"><dt>Siswa</dt><dd id="confirm-dispensasi-students"></dd></div>
+                <div class="detail-item detail-item-full"><dt>Alasan/kegiatan</dt><dd id="confirm-dispensasi-reason"></dd></div>
+                <div class="detail-item detail-item-full"><dt>Bukti</dt><dd id="confirm-dispensasi-file"></dd></div>
+            </dl>
+            <div class="form-actions"><button type="button" class="btn btn-muted" id="cancel-dispensasi">Kembali</button><button type="button" class="btn" id="submit-dispensasi">Kirim sekarang</button></div>
+        </div>
+    </div>
     @if (auth()->user()->isPiketHariIni())
     <script>
     (() => {
@@ -143,6 +156,24 @@
     @endif
     <script>
     (() => {
+        const dispensasiForm = document.querySelector('form[action="{{ route('dispensasi.store') }}"]');
+        const dispensasiConfirm = document.getElementById('dispensasi-confirm');
+        const submitButton = dispensasiForm.querySelector('button[type="submit"]');
+        submitButton.type = 'button';
+        submitButton.addEventListener('click', () => {
+            const startField = document.getElementById('jam_mulai_id');
+            const endField = document.getElementById('jam_selesai_id');
+            const file = document.getElementById('bukti')?.files[0];
+            const students = [...dispensasiForm.querySelectorAll('input[name="siswa_ids[]"]')].map((input) => input.previousElementSibling?.textContent?.trim() || input.value);
+            document.getElementById('confirm-dispensasi-time').textContent = `${startField?.selectedOptions[0]?.textContent.trim() || '-'} sampai ${endField?.selectedOptions[0]?.textContent.trim() || '-'}`;
+            document.getElementById('confirm-dispensasi-students').textContent = students.join(', ') || 'Siswa yang sedang login';
+            document.getElementById('confirm-dispensasi-reason').textContent = document.getElementById('alasan').value.trim() || '-';
+            document.getElementById('confirm-dispensasi-file').textContent = file?.name || 'Tidak ada bukti foto';
+            dispensasiConfirm.hidden = false;
+            dispensasiConfirm.style.display = 'flex';
+        });
+        document.getElementById('cancel-dispensasi').addEventListener('click', () => { dispensasiConfirm.hidden = true; dispensasiConfirm.style.display = 'none'; });
+        document.getElementById('submit-dispensasi').addEventListener('click', () => dispensasiForm.submit());
         const start = document.getElementById('jam_mulai_id');
         const end = document.getElementById('jam_selesai_id');
 
