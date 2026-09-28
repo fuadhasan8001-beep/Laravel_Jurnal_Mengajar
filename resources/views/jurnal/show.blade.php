@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@include('absensi._styles')
 
 @section('title', 'Detail Jurnal')
 
@@ -9,7 +10,7 @@
             <p>{{ $jurnal->tanggal->format('d M Y') }} · {{ $jurnal->kelas->nama_kelas }} · {{ $jurnal->mapel->nama_mapel }}</p>
         </div>
         <div class="form-actions">
-            @if (auth()->user()->role === 'guru' && $jurnal->status_verifikasi === 'Menunggu')
+            @if (! ($readOnlyWali ?? false) && auth()->user()->role === 'guru' && $jurnal->status_verifikasi === 'Menunggu')
                 <a class="btn btn-muted" href="{{ route('jurnal.edit', $jurnal) }}">Edit</a>
                 <form action="{{ route('jurnal.destroy', $jurnal) }}" method="POST" data-confirm="Hapus jurnal ini?">
                     @csrf
@@ -17,7 +18,7 @@
                     <button class="btn" type="submit">Hapus</button>
                 </form>
             @endif
-            <a class="btn btn-muted" href="{{ route('jurnal.index') }}">Kembali</a>
+            <a class="btn btn-muted" href="{{ ($readOnlyWali ?? false) ? route('wali-kelas.jurnal.index', ['tanggal' => $jurnal->tanggal->toDateString()]) : route('jurnal.index') }}">Kembali</a>
         </div>
     </div>
 
@@ -44,27 +45,34 @@
         <section class="panel panel-top-spaced signature-card">
             <div class="panel-head"><h2>Tanda tangan guru</h2></div>
             <div class="signature-space">
-                <img class="saved-signature" src="{{ route('jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
+                <img class="saved-signature" src="{{ route(($readOnlyWali ?? false) ? 'wali-kelas.jurnal.signature' : 'jurnal.signature', $jurnal) }}" alt="Tanda tangan {{ $jurnal->guru->nama_guru }}">
             </div>
         </section>
     @endif
 
     <section class="panel panel-top-spaced">
-        <div class="panel-head"><h2>Absensi siswa</h2><span class="eyebrow">{{ $jurnal->absensis->count() }} siswa</span></div>
-        <div class="table-wrap"><table>
-            <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
-            <tbody>
-                @forelse ($jurnal->absensis as $absensi)
-                    <tr>
-                        <td>{{ $absensi->siswa->nama_siswa }}</td>
-                        <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
-                        <td>{{ $absensi->catatan ?: '-' }}</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="3">Belum ada absensi siswa.</td></tr>
-                @endforelse
-            </tbody>
-        </table></div>
+        <div class="panel-head"><h2>Absensi siswa</h2></div>
+        @if ($jurnal->absensis->isEmpty())
+            <div class="panel-body">Nihil</div>
+        @else
+            <div class="panel-body">
+                <details class="attendance-dropdown">
+                    <summary>{{ $jurnal->absensis->count() }} siswa tercatat · Lihat absensi</summary>
+                    <div class="table-wrap"><table>
+                        <thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead>
+                        <tbody>
+                            @foreach ($jurnal->absensis as $absensi)
+                                <tr>
+                                    <td>{{ $absensi->siswa->nama_siswa }}</td>
+                                    <td><span class="status {{ $absensi->status === 'D' ? 'approved' : '' }}">{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispen'][$absensi->status] ?? $absensi->status }}</span></td>
+                                    <td>{{ $absensi->catatan ?: '-' }}@if ($absensi->surat_izin_path)<br><a href="{{ route('absensi.parent-letter', $absensi) }}">Lihat surat izin</a>@endif</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table></div>
+                </details>
+            </div>
+        @endif
     </section>
 
     @if (auth()->user()->role === 'sekretaris' && $jurnal->status_verifikasi === 'Menunggu')

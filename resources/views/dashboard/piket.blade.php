@@ -6,12 +6,34 @@
     <div class="page-head">
         <div>
             <h1>Meja piket</h1>
-            <p>Pengajuan dispensasi siswa.</p>
-        </div><a
-            class="btn"
-            href="{{ route('dispensasi.create') }}"
-        >Buat pengajuan</a>
+            <p>Dispensasi dan izin siswa.</p>
+        </div>
     </div>
+    <section class="panel panel-spaced">
+        <div class="panel-head"><h2>Menu piket hari ini</h2><span class="eyebrow">Pilih tugas</span></div>
+        <div class="panel-body quick-grid">
+            <a class="quick-card" href="{{ route('dispensasi.create') }}">
+                <strong>Ajukan dispensasi</strong>
+                <span>Pilih siswa, isi alasan, dan kirim pengajuan ke admin.</span>
+            </a>
+            <a class="quick-card" href="{{ route('piket.izin-sekolah.create') }}">
+                <strong>Catat izin atau sakit seharian</strong>
+                <span>Unggah surat orang tua agar status siswa tercatat untuk seluruh hari sekolah.</span>
+            </a>
+            <a class="quick-card" href="{{ route('piket.izin-sekolah.index') }}">
+                <strong>Riwayat izin dan sakit</strong>
+                <span>Lihat siswa yang tidak masuk seharian dan surat yang sudah dicatat.</span>
+            </a>
+            <a class="quick-card" href="{{ route('dispensasi.index') }}">
+                <strong>Riwayat dispensasi</strong>
+                <span>Lihat pengajuan piket dan status keputusan admin.</span>
+            </a>
+            <a class="quick-card" href="{{ route('piket.rekap-jurnal') }}">
+                <strong>Rekap jurnal guru</strong>
+                <span>Pantau jadwal dan jurnal yang sudah diisi semua guru hari ini.</span>
+            </a>
+        </div>
+    </section>
     <div class="stats">
         <div class="stat-card"><span class="stat-icon amber"><svg
                     width="21"

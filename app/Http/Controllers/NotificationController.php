@@ -2,11 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
+    public function feed(Request $request): JsonResponse
+    {
+        $notifications = $request->user()->unreadNotifications()->latest()->limit(20)->get();
+
+        return response()->json([
+            'unread' => $request->user()->unreadNotifications()->count(),
+            'items' => $notifications->map(fn ($notification): array => [
+                'id' => $notification->id,
+                'message' => $notification->data['message'] ?? 'Ada notifikasi baru.',
+                'read' => false,
+                'created_at' => $notification->created_at?->format('d/m H:i'),
+                'url' => route('notifications.read', $notification->id),
+            ])->values(),
+        ]);
+    }
+
     public function read(Request $request, string $notification): RedirectResponse
     {
         $item = $request->user()->notifications()->whereKey($notification)->firstOrFail();

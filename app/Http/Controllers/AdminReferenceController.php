@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dispensasi;
+use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Kelas;
 use App\Models\Mapel;
@@ -51,7 +53,7 @@ class AdminReferenceController extends Controller
 
     public function destroyKelas(Kelas $kelas): RedirectResponse
     {
-        if ($kelas->siswas()->exists() || $kelas->jurnals()->exists()) {
+        if ($kelas->siswas()->exists() || $kelas->jurnals()->exists() || $kelas->jadwals()->exists()) {
             throw ValidationException::withMessages(['kelas' => 'Kelas yang sudah dipakai tidak dapat dihapus.']);
         }
         $kelas->delete();
@@ -99,7 +101,7 @@ class AdminReferenceController extends Controller
 
     public function destroyMapel(Mapel $mapel): RedirectResponse
     {
-        if ($mapel->jurnals()->exists()) {
+        if ($mapel->jurnals()->exists() || Jadwal::where('mapel_id', $mapel->id)->exists()) {
             throw ValidationException::withMessages(['mapel' => 'Mata pelajaran yang sudah dipakai tidak dapat dihapus.']);
         }
         $mapel->delete();
@@ -122,8 +124,11 @@ class AdminReferenceController extends Controller
             'jam_ke' => ['required', 'integer', 'min:1', 'unique:jam_pelajarans,jam_ke'],
             'jam_mulai' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'jam_mulai_jumat' => ['nullable', 'required_with:jam_selesai_jumat', 'date_format:H:i'],
+            'jam_selesai_jumat' => ['nullable', 'required_with:jam_mulai_jumat', 'date_format:H:i', 'after:jam_mulai_jumat'],
             'is_active' => ['required', 'boolean'],
         ]);
+        $this->ensurePeriodDoesNotOverlap($data);
         JamPelajaran::create($data);
 
         return redirect()->route('admin.jam.index')->with('success', 'Jam pelajaran berhasil dibuat.');
@@ -140,8 +145,11 @@ class AdminReferenceController extends Controller
             'jam_ke' => ['required', 'integer', 'min:1', Rule::unique('jam_pelajarans', 'jam_ke')->ignore($jam->id)],
             'jam_mulai' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'jam_mulai_jumat' => ['nullable', 'required_with:jam_selesai_jumat', 'date_format:H:i'],
+            'jam_selesai_jumat' => ['nullable', 'required_with:jam_mulai_jumat', 'date_format:H:i', 'after:jam_mulai_jumat'],
             'is_active' => ['required', 'boolean'],
         ]);
+        $this->ensurePeriodDoesNotOverlap($data, $jam);
         $jam->update($data);
 
         return redirect()->route('admin.jam.index')->with('success', 'Jam pelajaran berhasil diperbarui.');
@@ -149,11 +157,31 @@ class AdminReferenceController extends Controller
 
     public function destroyJam(JamPelajaran $jam): RedirectResponse
     {
-        if ($jam->jurnalsMulai()->exists() || $jam->jurnalsSelesai()->exists()) {
+        if ($jam->jurnalsMulai()->exists() || $jam->jurnalsSelesai()->exists()
+            || Jadwal::where('jam_pelajaran_id', $jam->id)->exists()
+            || Dispensasi::where('jam_mulai_id', $jam->id)->orWhere('jam_selesai_id', $jam->id)->exists()) {
             throw ValidationException::withMessages(['jam' => 'Jam yang sudah dipakai tidak dapat dihapus.']);
         }
         $jam->delete();
 
         return redirect()->route('admin.jam.index')->with('success', 'Jam pelajaran berhasil dihapus.');
+    }
+
+    private function ensurePeriodDoesNotOverlap(array $data, ?JamPelajaran $period = null): void
+    {
+        if (! $data['is_active']) {
+            return;
+        }
+        $candidate = new JamPelajaran([...($period?->getAttributes() ?? []), ...$data]);
+        $others = JamPelajaran::where('is_active', true)->when($period, fn ($query) => $query->whereKeyNot($period->id))->get();
+        foreach (['Senin', 'Jumat'] as $day) {
+            [$start, $end] = $candidate->timesForDay($day);
+            foreach ($others as $other) {
+                [$otherStart, $otherEnd] = $other->timesForDay($day);
+                if (strtotime($start) < strtotime($otherEnd) && strtotime($end) > strtotime($otherStart)) {
+                    throw ValidationException::withMessages(['jam_mulai' => 'Waktu bertumpuk dengan jam pelajaran '.$other->jam_ke.' ('.$day.').']);
+                }
+            }
+        }
     }
 }

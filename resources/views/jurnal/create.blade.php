@@ -1,12 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Jurnal')
+@section('title', 'Isi Jurnal')
 
 @section('content')
     <div class="page-head">
         <div>
-            <h1>Tambah jurnal</h1>
-            <p>{{ now()->translatedFormat('l, d F Y') }}</p>
+            <h1>Isi jurnal</h1>
         </div>
     </div>
 

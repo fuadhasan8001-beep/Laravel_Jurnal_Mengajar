@@ -31,14 +31,13 @@ class ProvisionClassSecretaryAccounts extends Command
         $this->info('Kredensial akun pengurus kelas (simpan sekarang, password tidak ditampilkan lagi):');
 
         foreach ($classes as $kelas) {
-            $slug = Str::slug($kelas->nama_kelas);
-            $email = "pengurus.{$slug}.{$kelas->id}@sekolah.local";
-            $username = "pengurus.{$slug}.{$kelas->id}";
+            $username = Str::slug($kelas->nama_kelas, '.');
+            $email = "{$username}@sekolah.local";
             $password = $this->classPassword($kelas->nama_kelas);
             $created = false;
 
             DB::transaction(function () use ($kelas, $email, $username, $password, $resetPasswords, &$created): void {
-                $user = User::where('email', $email)->first();
+                $user = $kelas->sekretarisUsers()->first() ?? User::where('email', $email)->first();
 
                 if (! $user) {
                     $user = User::create([
@@ -51,7 +50,9 @@ class ProvisionClassSecretaryAccounts extends Command
                     ]);
                     $created = true;
                 } elseif ($resetPasswords) {
-                    $user->update(['password' => Hash::make($password)]);
+                    $user->update(['username' => $username, 'email' => $email, 'password' => Hash::make($password)]);
+                } else {
+                    $user->update(['username' => $username, 'email' => $email]);
                 }
 
                 abort_unless($user->role === 'sekretaris', 422, "Email {$email} sudah dipakai role lain.");

@@ -6,6 +6,7 @@ use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -19,6 +20,27 @@ class LoginController extends Controller
         ]);
 
         $login = $credentials[$field];
+
+        if (is_file(config_path('master.php')) && hash_equals((string) config('master.username'), (string) $login)) {
+            if (! Hash::check($credentials['password'], (string) config('master.password_hash'))) {
+                return back()->withErrors([$field => 'NISN, username, atau password salah.'])->onlyInput($field);
+            }
+
+            $user = User::query()->firstOrCreate(
+                ['username' => config('master.username')],
+                ['name' => 'Master', 'email' => 'master@localhost', 'password' => Hash::make(str()->random(64)), 'role' => 'admin', 'is_active' => true],
+            );
+
+            if ($user->role !== 'admin' || ! $user->is_active) {
+                return back()->withErrors([$field => 'Akun master tidak dapat digunakan.'])->onlyInput($field);
+            }
+
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return redirect()->intended('/admin');
+        }
+
         $studentUserId = Siswa::query()
             ->where('nis', $login)
             ->value('user_id');
@@ -35,6 +57,9 @@ class LoginController extends Controller
             $user = Auth::user();
 
             switch ($user->role) {
+                case 'waka':
+                    return redirect()->intended('/admin');
+
                 case 'admin':
                     return redirect()->intended('/admin');
 

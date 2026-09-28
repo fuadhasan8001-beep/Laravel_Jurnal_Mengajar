@@ -26,6 +26,11 @@ class Siswa extends Model
         return $this->hasMany(Dispensasi::class);
     }
 
+    public function izinSekolahs(): HasMany
+    {
+        return $this->hasMany(IzinSekolah::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

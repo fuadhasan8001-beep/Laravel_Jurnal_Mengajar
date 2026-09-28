@@ -11,12 +11,19 @@ class StoreJurnalRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        $guru = Guru::where('user_id', $this->user()?->id)->first();
+        $guru = $this->user()?->isMaster() && session('master_bypass_enabled')
+            ? Guru::find(session('master_bypass_guru_id'))
+            : Guru::where('user_id', $this->user()?->id)->first();
         $active = $guru ? Jadwal::sessionsForGuru($guru, now())->where('active', true) : collect();
         $submittedSchedule = $this->input('jadwal_id');
         $session = $submittedSchedule
             ? $active->firstWhere('id', (int) $submittedSchedule)
             : ($active->count() === 1 ? $active->first() : null);
+
+        if ($this->input('status_guru') === null || $this->input('status_guru') === '') {
+            $this->merge(['status_guru' => 'Hadir']);
+        }
+
         $this->merge([
             'tanggal' => today()->toDateString(), 'materi' => $this->input('materi') ?? '',
             'kelas_id' => null, 'mapel_id' => null, 'jam_mulai_id' => null, 'jam_selesai_id' => null,
@@ -38,7 +45,8 @@ class StoreJurnalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->is_active && auth()->user()->role === 'guru';
+        return auth()->check() && auth()->user()->is_active
+            && (auth()->user()->role === 'guru' || (auth()->user()->isMaster() && session('master_bypass_enabled') && session('master_bypass_guru_id')));
     }
 
     /**
@@ -60,13 +68,15 @@ class StoreJurnalRequest extends FormRequest
             'mapel_id' => ['required', 'exists:mapels,id'],
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
-            'status_guru' => ['required', 'in:Hadir,Izin,Sakit,Dinas,Tanpa Keterangan'],
+            'status_guru' => ['required', 'in:Hadir,Izin,Sakit'],
+            'latitude' => ['nullable'],
+            'longitude' => ['nullable'],
+            'location_accuracy' => ['nullable'],
             'materi' => ['nullable', 'string', 'max:200'],
             'tujuan_pembelajaran' => ['nullable', 'string', 'max:5000'],
             'kegiatan' => ['nullable', 'string', 'max:5000'],
             'tugas' => ['nullable', 'string', 'max:5000'],
             'catatan' => ['nullable', 'string', 'max:5000'],
-            'tanda_tangan' => ['nullable', 'string', 'max:1048576'],
             'absensi' => ['nullable', 'array'],
             'absensi.*.siswa_id' => ['required', 'integer', 'distinct', 'exists:siswas,id'],
             'absensi.*.status' => ['required', 'in:H,S,I,A,D'],

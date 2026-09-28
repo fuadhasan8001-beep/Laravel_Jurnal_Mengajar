@@ -9,10 +9,11 @@
             <p>Catat dan pantau kegiatan pembelajaran.</p>
         </div>
         @if (auth()->user()->role === 'guru')
-            <a class="btn" href="{{ route('jurnal.create') }}">Tambah jurnal</a>
+            <a class="btn" href="{{ route('jurnal.create') }}">Isi jurnal</a>
         @endif
     </div>
 
+    @unless (auth()->user()->role === 'sekretaris')
     <section class="panel">
         <div class="panel-head"><h2>Filter riwayat jurnal</h2></div>
         <div class="panel-body">
@@ -61,6 +62,7 @@
             </form>
         </div>
     </section>
+    @endunless
 
     <section class="panel">
         <div class="panel-head">
@@ -68,8 +70,8 @@
             <span class="eyebrow">{{ $jurnals->total() }} jurnal</span>
         </div>
         @if ($jurnals->isNotEmpty())
-            <div class="table-wrap">
-                <table>
+            <div class="table-wrap responsive-card-table-wrap">
+                <table class="responsive-card-table">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -85,14 +87,14 @@
                     <tbody>
                         @foreach ($jurnals as $jurnal)
                             <tr>
-                                <td>{{ $jurnal->tanggal->format('d M Y') }}</td>
-                                <td>{{ $jurnal->guru->nama_guru }}</td>
-                                <td>{{ $jurnal->kelas->nama_kelas }}</td>
-                                <td>{{ $jurnal->mapel->nama_mapel }}</td>
-                                <td>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
-                                <td>{{ $jurnal->materi }}</td>
-                                <td><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span></td>
-                                <td><a href="{{ route('jurnal.show', $jurnal) }}">Detail</a></td>
+                                <td data-label="Tanggal">{{ $jurnal->tanggal->format('d M Y') }}</td>
+                                <td data-label="Guru">{{ $jurnal->guru->nama_guru }}</td>
+                                <td data-label="Kelas">{{ $jurnal->kelas->nama_kelas }}</td>
+                                <td data-label="Mapel">{{ $jurnal->mapel->nama_mapel }}</td>
+                                <td data-label="Jam">{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
+                                <td data-label="Materi">{{ $jurnal->materi }}</td>
+                                <td data-label="Status"><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span></td>
+                                <td class="journal-table-action" data-label="Detail"><a href="{{ route('jurnal.show', $jurnal) }}">Detail</a></td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -38,8 +38,8 @@
                 </div>
                 <div class="detail-item">
                     <dt>Waktu</dt>
-                    <dd>{{ $dispensasi->jamMulai->jam_mulai }} -
-                        {{ $dispensasi->jamSelesai->jam_selesai }}</dd>
+                    <dd>{{ $dispensasi->jamMulai->timesForDay($dispensasi->tanggal->locale('id')->translatedFormat('l'))[0] }} -
+                        {{ $dispensasi->jamSelesai->timesForDay($dispensasi->tanggal->locale('id')->translatedFormat('l'))[1] }}</dd>
                 </div>
                 <div class="detail-item">
                     <dt>Bukti</dt>
@@ -56,15 +56,22 @@
                     <dd>{{ $dispensasi->alasan }}</dd>
                 </div>
                 <div class="detail-item">
-                    <dt>Verifikasi piket</dt>
+                    <dt>Guru piket yang mengajukan / memeriksa</dt>
                     <dd>{{ $dispensasi->status_piket }}{{ $dispensasi->piket ? ' · ' . $dispensasi->piket->name : '' }}
                     </dd>
                 </div>
                 <div class="detail-item">
-                    <dt>Verifikasi admin</dt>
+                    <dt>Verifikasi akhir</dt>
                     <dd>{{ $dispensasi->status_admin }}{{ $dispensasi->admin ? ' · ' . $dispensasi->admin->name : '' }}
                     </dd>
                 </div>
+                <div class="detail-item">
+                    <dt>Waka yang memverifikasi</dt>
+                    <dd>{{ $dispensasi->waka?->role === 'waka' ? $dispensasi->waka->name : '-' }}</dd>
+                </div>
+                @if ($dispensasi->surat_izin_path)
+                    <div class="detail-item"><dt>Surat izin orang tua</dt><dd><a href="{{ route('dispensasi.parent-letter', $dispensasi) }}">Unduh foto surat izin ↗</a></dd></div>
+                @endif
                 @if ($dispensasi->catatan_verifikasi)
                     <div class="detail-item detail-item-full">
                         <dt>Catatan verifikasi</dt>
@@ -75,9 +82,19 @@
         </div>
     </section>
 
+    @if ($proofUrl)
+        <section class="panel panel-spaced">
+            <div class="panel-head"><h2>QR bukti dispensasi</h2><span class="eyebrow">Pindai atau bagikan ke siswa</span></div>
+            <div class="panel-body" style="display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&amp;data={{ urlencode($proofUrl) }}" alt="QR bukti dispensasi {{ $dispensasi->siswa->nama_siswa }}" width="240" height="240">
+                <div><p>QR ini membuka bukti dispensasi yang sudah disetujui.</p><a class="btn btn-muted" href="{{ $proofUrl }}" target="_blank" rel="noopener">Buka bukti siswa</a></div>
+            </div>
+        </section>
+    @endif
+
     @if ($dispensasi->status_akhir === 'Menunggu' &&
-        ((auth()->user()->role === 'piket' && $dispensasi->status_piket === 'Menunggu') ||
-        (auth()->user()->role === 'admin' && $dispensasi->status_piket === 'Disetujui')))
+        ((auth()->user()->isPiketHariIni() && $dispensasi->status_piket === 'Menunggu') ||
+        (in_array(auth()->user()->role, ['admin', 'waka'], true) && $dispensasi->status_piket === 'Disetujui')))
         <section class="panel form-panel">
             <div class="panel-head">
                 <h2>Ambil keputusan</h2><span class="eyebrow">Tahap

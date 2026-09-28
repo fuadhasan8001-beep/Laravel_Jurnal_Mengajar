@@ -12,6 +12,7 @@ class Absensi extends Model
         'siswa_id',
         'status',
         'catatan',
+        'surat_izin_path',
     ];
 
     public function jurnal(): BelongsTo
