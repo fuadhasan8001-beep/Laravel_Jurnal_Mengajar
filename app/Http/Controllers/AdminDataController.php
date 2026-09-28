@@ -324,20 +324,21 @@ class AdminDataController extends Controller
 
         $secretary = $kelas->sekretarisUsers()->first();
         $password = $this->classSecretaryPassword($kelas->nama_kelas);
+        $username = Str::slug($kelas->nama_kelas, '.');
+        $email = "{$username}@sekolah.local";
 
         if (! $secretary) {
-            $slug = Str::slug($kelas->nama_kelas);
             $secretary = User::create([
                 'name' => 'Pengurus '.$kelas->nama_kelas,
-                'username' => "pengurus.{$slug}.{$kelas->id}",
-                'email' => "pengurus.{$slug}.{$kelas->id}@sekolah.local",
+            'username' => $username,
+            'email' => $email,
                 'password' => Hash::make($password),
                 'role' => 'sekretaris',
                 'is_active' => true,
             ]);
             $kelas->sekretarisUsers()->attach($secretary);
         } else {
-            $secretary->update(['password' => Hash::make($password), 'is_active' => true]);
+            $secretary->update(['username' => $username, 'email' => $email, 'password' => Hash::make($password), 'is_active' => true]);
         }
 
         return redirect()->route('admin.secretaries.index')->with('secretary_credentials', [
