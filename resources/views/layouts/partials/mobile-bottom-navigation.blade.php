@@ -62,15 +62,11 @@
     $mobileMoreIsActive = collect($mobileMoreItems)->contains(fn (array $item): bool => $item['active']);
 @endphp
 
-<nav class="mobile-bottom-nav" data-mobile-bottom-nav aria-label="Navigasi utama" style="--mobile-nav-count: {{ count($mobileNavItems) + 1 }}">
+<nav class="mobile-bottom-nav" data-mobile-bottom-nav aria-label="Navigasi utama" style="--mobile-nav-count: {{ count($mobileNavItems) }}">
     @foreach ($mobileNavItems as $item)
         <a class="mobile-nav-item{{ $item['active'] ? ' is-active' : '' }}" href="{{ $item['url'] }}" data-mobile-nav-destination="{{ $item['key'] }}" @if ($item['active']) aria-current="page" @endif>
             <span class="mobile-nav-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => $item['icon']])</span>
             <span class="mobile-nav-label">{{ $item['label'] }}</span>
         </a>
     @endforeach
-    <button class="mobile-nav-item{{ $mobileMoreIsActive ? ' is-active' : '' }}" type="button" data-menu-toggle aria-controls="mobile-secondary-menu" aria-expanded="false" @if ($mobileMoreIsActive) aria-current="page" @endif>
-        <span class="mobile-nav-icon">@include('layouts.partials.mobile-nav-icon', ['icon' => 'menu'])</span>
-        <span class="mobile-nav-label">Lainnya</span>
-    </button>
 </nav>

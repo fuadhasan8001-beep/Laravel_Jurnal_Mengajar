@@ -2388,12 +2388,7 @@
             }
 
             .sidebar {
-                display: none;
-            }
-
-            .sidebar-backdrop,
-            .menu-toggle {
-                display: none !important;
+                display: flex;
             }
 
             .content {
@@ -2822,6 +2817,18 @@
                 <header class="topbar">
 
                     <div class="topbar-brand">
+
+                        <button
+                            class="menu-toggle"
+                            type="button"
+                            aria-label="Buka menu lainnya"
+                            aria-expanded="false"
+                            aria-controls="mobile-secondary-menu"
+                            data-menu-toggle
+                        >
+                            <span class="sr-only">Buka menu lainnya</span>
+                            @include('layouts.partials.mobile-nav-icon', ['icon' => 'menu'])
+                        </button>
 
                         <div class="topbar-heading">
                             <div class="topbar-title">
