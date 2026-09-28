@@ -42,7 +42,7 @@ class WaliKelasJurnalController extends Controller
             'tanggal' => ['nullable', 'date_format:Y-m-d'],
             'guru' => ['nullable', 'string', 'max:100'],
         ]);
-        $tanggal = $filters['tanggal'] ?? today()->toDateString();
+        $tanggal = $filters['tanggal'] ?? null;
         $guru = trim($filters['guru'] ?? '');
 
         return view('wali-kelas.jurnal', [
@@ -50,7 +50,7 @@ class WaliKelasJurnalController extends Controller
             'guru' => $guru,
             'kelasWali' => $request->user()->kelasWali()->orderBy('nama_kelas')->get(),
             'jurnals' => $query->with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai'])
-                ->whereDate('tanggal', $tanggal)
+                ->when($tanggal, fn (Builder $query) => $query->whereDate('tanggal', $tanggal))
                 ->when($guru !== '', fn (Builder $query) => $query->whereHas('guru', fn (Builder $teacher) => $teacher->where('nama_guru', 'like', '%'.$guru.'%')))
                 ->orderBy('jam_mulai_id')->orderBy('id')->paginate(15)->withQueryString(),
         ]);

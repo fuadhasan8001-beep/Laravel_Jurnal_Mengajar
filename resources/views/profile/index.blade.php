@@ -40,9 +40,27 @@
             </div>
         </section>
 
-        <section class="account-card profile-panel" aria-labelledby="edit-profile-title">
+        <section class="account-card profile-panel" aria-labelledby="account-action-title">
             <div class="panel-heading">
                 <span class="panel-index">01</span>
+                <div>
+                    <h2 id="account-action-title">Akun</h2>
+                    <p>Atur informasi dasar dan keamanan akses Anda.</p>
+                </div>
+            </div>
+            <div class="account-action-list">
+                <a class="btn btn-muted" href="#edit-profile-title">Ubah data profil</a>
+                <a class="btn btn-muted" href="#password-title">Ubah password</a>
+                <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                    @csrf
+                    <button class="btn btn-logout" type="submit">Keluar dari akun</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="account-card profile-panel" aria-labelledby="edit-profile-title">
+            <div class="panel-heading">
+                <span class="panel-index">02</span>
                 <div>
                     <h2 id="edit-profile-title">Informasi dasar</h2>
                     <p>Perbarui nama dan email yang digunakan.</p>
@@ -65,7 +83,7 @@
 
         <section class="account-card profile-panel" aria-labelledby="password-title">
             <div class="panel-heading">
-                <span class="panel-index">02</span>
+                <span class="panel-index">03</span>
                 <div>
                     <h2 id="password-title">Keamanan akun</h2>
                     <p>Gunakan password yang kuat dan mudah kamu ingat.</p>
@@ -92,7 +110,7 @@
 
         <section class="account-card profile-panel account-meta" aria-labelledby="account-info-title">
             <div class="panel-heading">
-                <span class="panel-index">03</span>
+                <span class="panel-index">04</span>
                 <div>
                     <h2 id="account-info-title">Detail akun</h2>
                     <p>Ringkasan identitas akun di sistem.</p>
@@ -135,6 +153,29 @@
         border: 1px solid var(--line);
         border-radius: 14px;
         box-shadow: 0 8px 24px rgba(74, 64, 50, .08);
+    }
+
+    .account-action-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .logout-form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    .btn-logout {
+        border: 1px solid #efb6a8;
+        background: #a7463e;
+        box-shadow: 0 5px 14px rgba(35, 12, 10, .2);
+    }
+
+    .btn-logout:hover {
+        background: #89372f;
+        color: #fff;
     }
 
     .profile-card {

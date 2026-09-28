@@ -33,17 +33,7 @@ class JurnalController extends Controller
             ->latest('tanggal');
 
         if (auth()->user()->role === 'guru') {
-            $guruId = $this->currentGuru()->id;
-            $query->where(function ($builder) use ($guruId) {
-                $builder->where('guru_id', $guruId)
-                    ->orWhere(function ($nested) use ($guruId) {
-                        $nested->whereIn('kelas_id', auth()->user()->kelasWali()->select('kelas.id'))
-                            ->where('status_verifikasi', 'Disetujui')
-                            ->whereHas('verifikasiJurnals', fn ($verification) => $verification
-                                ->where('status', 'Disetujui')
-                                ->whereHas('verifikator', fn ($verifier) => $verifier->where('role', 'sekretaris')));
-                    });
-            });
+            $query->where('guru_id', $this->currentGuru()->id);
         }
 
         if (auth()->user()->role === 'sekretaris') {

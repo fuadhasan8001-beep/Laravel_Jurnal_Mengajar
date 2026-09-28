@@ -3,7 +3,7 @@
 @section('content')
     <div class="page-head"><div><h1>Rekap jurnal kelas</h1><p>{{ $kelasWali->pluck('nama_kelas')->join(', ') }} · Terverifikasi sekretaris</p></div></div>
     <form method="GET" action="{{ route('wali-kelas.jurnal.index') }}" class="form-grid wali-jurnal-filter">
-        <div class="field"><label for="rekap-tanggal">Tanggal</label><input type="date" id="rekap-tanggal" name="tanggal" value="{{ $tanggal }}">@error('tanggal')<small class="error">{{ $message }}</small>@enderror</div>
+        <div class="field"><label for="rekap-tanggal">Tanggal (opsional)</label><input type="date" id="rekap-tanggal" name="tanggal" value="{{ $tanggal }}">@error('tanggal')<small class="error">{{ $message }}</small>@enderror</div>
         <div class="field"><label for="rekap-guru">Cari nama guru</label><input type="search" id="rekap-guru" name="guru" value="{{ $guru }}" maxlength="100" placeholder="Nama guru">@error('guru')<small class="error">{{ $message }}</small>@enderror</div>
         <div class="form-actions"><button class="btn" type="submit">Cari jurnal</button><a class="btn btn-muted" href="{{ route('wali-kelas.jurnal.index') }}">Reset</a></div>
     </form>

@@ -7,11 +7,28 @@
         <div>
             <h1>Halo, {{ auth()->user()->name }}</h1>
             <p>Kelola pengajuan dispensasi dan lihat riwayat status Anda.</p>
-        </div><a
-            class="btn"
-            href="{{ route('dispensasi.index') }}"
-        >Lihat dispensasi</a>
+        </div>
+        <div class="page-actions">
+            <a class="btn" href="{{ route('dispensasi.create') }}">Ajukan dispensasi</a>
+        </div>
     </div>
+
+    <section class="panel panel-spaced">
+        <div class="panel-head"><h2>Aksi cepat</h2><span class="eyebrow">Status pengajuan</span></div>
+        <div class="panel-body">
+            <div class="quick-grid">
+                <a class="quick-card" href="{{ route('dispensasi.index') }}">
+                    <strong>Riwayat dispensasi</strong>
+                    <span>Cek status terbaru dan detail keputusan yang sudah diberikan.</span>
+                </a>
+                <a class="quick-card" href="{{ route('dispensasi.index') }}">
+                    <strong>Status saya</strong>
+                    <span>Lihat pengajuan yang menunggu, disetujui, atau ditolak.</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <div class="stats">
         <div class="stat-card"><span class="stat-icon amber"><svg
                     width="21"

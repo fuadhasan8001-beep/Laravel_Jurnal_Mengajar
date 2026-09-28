@@ -48,20 +48,12 @@
             font-size: 14px;
         }
 
-        .teacher-schedule .schedule-action-attendance {
-            color: #294575;
-        }
-
         .teacher-schedule .schedule-action:hover {
             text-decoration-thickness: 2px;
         }
 
         .teacher-schedule .schedule-action-journal:hover {
             color: #9a6200;
-        }
-
-        .teacher-schedule .schedule-action-attendance:hover {
-            color: #163d81;
         }
 
         .teacher-schedule .schedule-action:focus-visible {
@@ -175,12 +167,9 @@
             <p>Kelola jurnal dan pantau kehadiran kelas Anda.</p>
         </div>
 
-        <a
-            class="btn"
-            href="{{ route('jurnal.create') }}"
-        >
-            Isi jurnal
-        </a>
+        <div class="page-actions">
+            <a class="btn" href="{{ route('jurnal.create') }}">Isi jurnal</a>
+        </div>
     </div>
 
     <div class="stats">
@@ -376,7 +365,6 @@
                                     @else
                                         <span class="eyebrow">Belum aktif</span>
                                     @endif
-                                    <a class="schedule-action schedule-action-attendance" href="{{ route('absensi.index') }}">Absensi</a>
                                 </td>
                             </tr>
                         @endforeach

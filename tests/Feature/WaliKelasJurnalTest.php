@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Guru;
+use App\Models\Jadwal;
 use App\Models\JadwalPiket;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -29,12 +30,20 @@ beforeEach(function () {
     $this->journal->verifikasiJurnals()->create(['verifikator_id' => $this->secretary->id, 'status' => 'Disetujui', 'verified_at' => now()]);
 });
 
-it('shows the recap menu for every teacher and keeps the homeroom-only class page protected', function () {
-    $this->actingAs($this->wali)->get('/guru')->assertOk()->assertSee('Rekap jurnal');
-    $this->actingAs($this->teacher)->get('/guru')->assertOk()->assertSee('Rekap jurnal');
+it('shows the homeroom recap only to homeroom teachers and keeps it protected', function () {
+    $this->actingAs($this->wali)->get('/guru')->assertOk()->assertSee('Rekap jurnal kelas');
+    $this->actingAs($this->teacher)->get('/guru')->assertOk()->assertDontSee('Rekap jurnal');
     $this->get(route('wali-kelas.jurnal.index'))->assertForbidden();
     $this->get(route('wali-kelas.jurnal.show', $this->journal))->assertForbidden();
     $this->actingAs($this->secretary)->get(route('wali-kelas.jurnal.index'))->assertForbidden();
+});
+
+it('keeps own journals separate from the homeroom class recap', function () {
+    $this->actingAs($this->teacher)->get(route('jurnal.index'))
+        ->assertOk()->assertSee('Materi algoritma');
+    $this->actingAs($this->wali)->get(route('jurnal.index'))
+        ->assertOk()->assertDontSee('Materi algoritma');
+    $this->get(route('wali-kelas.jurnal.index'))->assertOk()->assertSee('Materi algoritma');
 });
 
 it('filters by date and teacher and shows complete readonly journal detail', function () {
@@ -44,7 +53,8 @@ it('filters by date and teacher and shows complete readonly journal detail', fun
     $this->get(route('wali-kelas.jurnal.show', $this->journal))->assertOk()->assertSee('Latihan fungsi')->assertDontSee('>Edit<', false);
     $this->get(route('jurnal.edit', $this->journal))->assertForbidden();
     $this->journal->update(['tanggal' => today()->subDay()]);
-    $this->get(route('wali-kelas.jurnal.index'))->assertOk()->assertDontSee('Materi algoritma');
+    $this->get(route('wali-kelas.jurnal.index'))->assertOk()->assertSee('Materi algoritma');
+    $this->get(route('wali-kelas.jurnal.index', ['tanggal' => today()->toDateString()]))->assertOk()->assertDontSee('Materi algoritma');
     $this->get(route('wali-kelas.jurnal.index', ['tanggal' => today()->subDay()->toDateString()]))->assertOk()->assertSee('Materi algoritma');
 });
 
@@ -95,4 +105,33 @@ it('allows the dedicated duty role to view journal recaps but not attendance rep
         ->assertOk()->assertSee('Tampilkan detail')->assertSee('Materi algoritma');
     $this->get(route('laporan.absensi'))->assertForbidden();
     $this->get(route('laporan.absensi.export'))->assertForbidden();
+});
+
+it('shows only distinct teacher journal destinations', function () {
+    $this->actingAs($this->wali)->get('/guru')
+        ->assertOk()
+        ->assertSee('Jurnal saya')
+        ->assertSee('Rekap jurnal kelas')
+        ->assertDontSee('>Rekap jurnal<', false)
+        ->assertSee('href="'.route('jurnal.index').'"', false)
+        ->assertSee('href="'.route('wali-kelas.jurnal.index').'"', false);
+});
+
+it('keeps attendance updates out of the teacher dashboard quick actions', function () {
+    Jadwal::create([
+        'guru_id' => $this->journal->guru_id,
+        'kelas_id' => $this->journal->kelas_id,
+        'mapel_id' => $this->journal->mapel_id,
+        'jam_pelajaran_id' => $this->journal->jam_mulai_id,
+        'hari' => today()->locale('id')->translatedFormat('l'),
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($this->teacher)->get('/guru')
+        ->assertOk()
+        ->assertSee('Isi jurnal')
+        ->assertSee('Perbarui absensi')
+        ->assertDontSee('Kelola absensi')
+        ->assertDontSee('schedule-action-attendance')
+        ->assertDontSee('class="quick-card" href="'.route('absensi.index').'"', false);
 });

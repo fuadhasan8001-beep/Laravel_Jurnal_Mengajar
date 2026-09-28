@@ -2193,8 +2193,8 @@
 
             .journal-main > .journal-card:first-child .form-grid,
             .journal-main > .journal-card:first-child > .field {
-                margin-right: 15px;
-                margin-left: 15px;
+                margin-right: 13px;
+                margin-left: 13px;
             }
 
             .form-grid {
@@ -2319,7 +2319,7 @@
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"
                         >
-                            Kelola absensi
+                            {{ auth()->user()->role === 'guru' ? 'Perbarui absensi' : 'Kelola absensi' }}
                         </a>
                     @endif
 
@@ -2331,23 +2331,24 @@
                         @endif
                     @endif
 
-                    @if (in_array(auth()->user()->role, ['admin', 'waka', 'guru', 'sekretaris'], true))
+                    @if (in_array(auth()->user()->role, ['admin', 'waka', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
                             href="{{ route('jurnal.index') }}"
                         >
-                            Jurnal mengajar
+                            Jurnal
                         </a>
+                    @endif
+
+                    @if (auth()->user()->role === 'guru')
+                        <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Jurnal saya</a>
+                        @if (auth()->user()->kelasWali()->exists())
+                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                        @endif
                     @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
                         <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Verifikasi dispensasi</a>
-                    @endif
-                    @if (auth()->user()->role === 'guru')
-                        <a class="nav-link {{ request()->routeIs('jurnal.index') || request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Rekap jurnal</a>
-                        @if (auth()->user()->kelasWali()->exists())
-                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
-                        @endif
                     @endif
                     </nav>
 
@@ -2506,7 +2507,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="desktop">
 
-                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
+                                    @forelse (auth()->user()->notifications()->latest()->limit(5)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2519,6 +2520,12 @@
                                                 type="submit"
                                             >
                                                 {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
+                                                <br>
+                                                <small>
+                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    ·
+                                                    {{ $notification->created_at->format('d/m H:i') }}
+                                                </small>
                                             </button>
 
                                         </form>
@@ -2580,7 +2587,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="mobile">
 
-                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2597,7 +2604,7 @@
                                                 <br>
 
                                                 <small>
-                                                    Belum dibaca
+                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>

@@ -10,9 +10,26 @@
         </div>
         <div class="page-actions">
             <a class="btn btn-muted" href="{{ route('absensi.index') }}">Kelola absensi</a>
-            <a class="btn" href="{{ route('jurnal.index') }}">Lihat jurnal</a>
+            <a class="btn" href="{{ route('jurnal.index') }}">Verifikasi jurnal</a>
         </div>
     </div>
+
+    <section class="panel panel-spaced">
+        <div class="panel-head"><h2>Aksi cepat</h2><span class="eyebrow">Tugas hari ini</span></div>
+        <div class="panel-body">
+            <div class="quick-grid">
+                <a class="quick-card" href="{{ route('jurnal.index') }}">
+                    <strong>Daftar jurnal menunggu</strong>
+                    <span>Periksa jurnal guru yang masih menunggu persetujuan.</span>
+                </a>
+                <a class="quick-card" href="{{ route('absensi.index') }}">
+                    <strong>Kelola absensi</strong>
+                    <span>Review kehadiran siswa dari kelas yang Anda tangani.</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <section class="panel assignment-panel">
         <div class="panel-head"><h2>Kelas yang ditugaskan</h2><span class="eyebrow">{{ $kelasSekretaris->count() }} kelas</span></div>
         <div class="panel-body assignment-list">
