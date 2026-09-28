@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <title>@yield('title', 'Jurnal Guru') | Jurnal Guru</title>
 
@@ -1036,6 +1036,10 @@
             overflow-x: auto;
         }
 
+        .mobile-card-table-wrap {
+            width: 100%;
+        }
+
         .journal-detail-dialog {
             width: min(620px, calc(100% - 28px));
             max-height: min(80vh, 720px);
@@ -1072,6 +1076,66 @@
         }
 
         @media (max-width: 720px) {
+            .mobile-card-table-wrap,
+            .table-wrapper.mobile-card-table-wrap {
+                overflow: visible;
+            }
+
+            .mobile-card-table {
+                width: 100%;
+                min-width: 0 !important;
+            }
+
+            .mobile-card-table,
+            .mobile-card-table tbody,
+            .mobile-card-table tr,
+            .mobile-card-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .mobile-card-table thead {
+                display: none;
+            }
+
+            .mobile-card-table tbody {
+                display: grid;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .mobile-card-table tbody tr {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 12px;
+                background: var(--surface);
+            }
+
+            .mobile-card-table td {
+                min-width: 0;
+                padding: 0;
+                border: 0;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .mobile-card-table td::before {
+                display: block;
+                margin-bottom: 4px;
+                color: var(--muted);
+                content: attr(data-label);
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            .mobile-card-table td:last-child {
+                grid-column: 1 / -1;
+            }
+
             .responsive-card-table-wrap {
                 overflow: visible;
             }
@@ -1786,10 +1850,6 @@
             overflow-wrap: anywhere;
         }
 
-        .sidebar-backdrop {
-            display: none;
-        }
-
         /* =========================================================
            TABLET
         ========================================================= */
@@ -1810,34 +1870,7 @@
 
         @media (max-width: 900px) {
             .sidebar {
-                width: min(82vw, 320px);
-                height: 100vh;
-                padding: 22px 18px;
-                transform: translateX(-105%);
-                visibility: hidden;
-                pointer-events: none;
-                transition: transform .2s ease, visibility .2s ease;
-            }
-
-            .app-shell.menu-open .sidebar {
-                transform: translateX(0);
-                visibility: visible;
-                pointer-events: auto;
-            }
-
-            .sidebar-backdrop {
-                position: fixed;
-                z-index: 40;
-                inset: 0;
-                background: rgba(25, 22, 17, .58);
-            }
-
-            .app-shell.menu-open .sidebar-backdrop {
-                display: block;
-            }
-
-            .menu-toggle {
-                display: inline-flex;
+                display: none;
             }
 
             .main {
@@ -1923,60 +1956,6 @@
                 flex: 1 1 110px;
             }
 
-            .sidebar {
-                position: fixed;
-
-                z-index: 50;
-
-                top: 0;
-                left: 0;
-
-                width: min(82vw, 300px);
-                height: 100vh;
-
-                padding: 22px 18px;
-
-                overflow-y: auto;
-
-                background: var(--gold-dark);
-
-                transform: translateX(-105%);
-
-                visibility: hidden;
-
-                pointer-events: none;
-
-                transition:
-                    transform .2s ease,
-                    visibility .2s ease;
-            }
-
-            .app-shell.menu-open .sidebar {
-                transform: translateX(0);
-
-                visibility: visible;
-
-                pointer-events: auto;
-            }
-
-            .sidebar-backdrop {
-                position: fixed;
-
-                z-index: 40;
-
-                inset: 0;
-
-                background: #08142688;
-            }
-
-            .app-shell.menu-open .sidebar-backdrop {
-                display: block;
-            }
-
-            .menu-toggle {
-                display: inline-flex;
-            }
-
             .main {
                 width: 100%;
                 margin-left: 0;
@@ -2027,10 +2006,10 @@
                 display: grid;
                 width: 100%;
                 min-width: 100%;
-                grid-template-columns: auto auto;
+                grid-template-columns: auto;
                 align-items: center;
                 justify-content: end;
-                gap: 6px 8px;
+                gap: 6px;
             }
 
             .topbar-heading .mobile-datetime {
@@ -2052,31 +2031,6 @@
                 font-size: 17px;
                 font-weight: 800;
                 line-height: 1;
-            }
-
-            .mobile-top-actions > form {
-                display: flex;
-            }
-
-            .mobile-logout-button {
-                display: inline-flex;
-                min-height: 40px;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid #efb6a8;
-                border-radius: 10px;
-                padding: 7px 10px;
-                background: #a7463e;
-                color: #fff;
-                font-size: 12px;
-                font-weight: 800;
-                white-space: nowrap;
-            }
-
-            .mobile-logout-button:hover,
-            .mobile-logout-button:focus-visible {
-                background: #89372f;
-                outline: 3px solid rgba(167, 70, 62, .2);
             }
 
             .mobile-top-actions .notification-list {
@@ -2111,7 +2065,7 @@
             }
 
             .content {
-                padding: 22px 16px 36px;
+                padding: 22px 16px calc(36px + var(--mobile-nav-space));
             }
 
             .panel-head {
@@ -2268,6 +2222,255 @@
                 padding: 9px 10px;
             }
         }
+
+        .mobile-bottom-nav,
+        .mobile-more-sheet {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            :root {
+                --mobile-nav-space: calc(72px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar-backdrop,
+            .menu-toggle {
+                display: none !important;
+            }
+
+            .content {
+                padding-bottom: calc(30px + var(--mobile-nav-space));
+            }
+
+            .mobile-bottom-nav {
+                position: fixed;
+                z-index: 70;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                display: grid;
+                grid-template-columns: repeat(var(--mobile-nav-count, 5), minmax(0, 1fr));
+                align-items: stretch;
+                gap: 4px;
+                min-height: var(--mobile-nav-space);
+                padding: 5px max(8px, env(safe-area-inset-right, 0px)) calc(5px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+                border-top: 1px solid var(--line);
+                background: var(--surface);
+                box-shadow: 0 -8px 24px rgba(35, 40, 34, .12);
+                transition: transform .18s ease, visibility .18s ease;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                min-width: 0;
+                min-height: 56px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                border: 0;
+                border-radius: 9px;
+                padding: 4px 2px;
+                background: transparent;
+                color: var(--muted);
+                cursor: pointer;
+                font: inherit;
+                text-align: center;
+                text-decoration: none;
+                touch-action: manipulation;
+            }
+
+            .mobile-nav-item:hover {
+                background: var(--cream);
+                color: var(--ink);
+                text-decoration: none;
+            }
+
+            .mobile-nav-item:focus-visible {
+                position: relative;
+                z-index: 1;
+                outline: 3px solid var(--gold-dark);
+                outline-offset: -2px;
+            }
+
+            .mobile-nav-item.is-active {
+                background: var(--cream);
+                box-shadow: inset 0 -3px 0 var(--gold-dark);
+                color: var(--gold-dark);
+                font-weight: 800;
+            }
+
+            .mobile-nav-icon,
+            .mobile-nav-icon svg {
+                display: block;
+                width: 22px;
+                height: 22px;
+                flex: 0 0 auto;
+            }
+
+            .mobile-nav-label {
+                display: block;
+                max-width: 100%;
+                overflow: hidden;
+                font-size: 10px;
+                font-weight: 700;
+                line-height: 1.2;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .mobile-more-sheet {
+                position: fixed;
+                inset: auto 0 0;
+                width: min(100%, 520px);
+                max-width: 100%;
+                max-height: min(78dvh, 680px);
+                margin: 0 auto;
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-bottom: 0;
+                border-radius: 18px 18px 0 0;
+                padding: 12px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+                background: var(--surface);
+                color: var(--ink);
+                box-shadow: 0 -16px 48px rgba(16, 24, 32, .22);
+            }
+
+            .mobile-more-sheet[open] {
+                display: block;
+            }
+
+            .mobile-more-sheet::backdrop {
+                background: rgba(22, 27, 24, .48);
+            }
+
+            .mobile-more-heading {
+                position: sticky;
+                z-index: 1;
+                top: -12px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin: -12px -18px 8px;
+                border-bottom: 1px solid var(--line);
+                padding: 14px 18px 10px;
+                background: var(--surface);
+            }
+
+            .mobile-more-heading h2 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+            .mobile-more-heading form {
+                margin: 0;
+            }
+
+            .mobile-more-close {
+                display: grid;
+                width: 44px;
+                height: 44px;
+                place-items: center;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                background: var(--surface);
+                color: var(--ink);
+                cursor: pointer;
+                font-size: 25px;
+                line-height: 1;
+            }
+
+            .mobile-more-group {
+                margin: 16px 0 6px;
+                color: var(--muted);
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+            }
+
+            .mobile-more-link {
+                display: flex;
+                min-height: 50px;
+                align-items: center;
+                gap: 13px;
+                border-radius: 9px;
+                padding: 9px 10px;
+                color: var(--ink);
+                font-weight: 650;
+                text-decoration: none;
+                touch-action: manipulation;
+            }
+
+            .mobile-more-link:hover,
+            .mobile-more-link.is-active {
+                background: var(--cream);
+                color: var(--gold-dark);
+                text-decoration: none;
+            }
+
+            .mobile-more-link:focus-visible {
+                outline: 3px solid var(--gold-dark);
+                outline-offset: -2px;
+            }
+
+            .mobile-more-icon,
+            .mobile-more-icon svg {
+                display: block;
+                width: 22px;
+                height: 22px;
+                flex: 0 0 auto;
+            }
+
+            .mobile-more-logout {
+                margin: 12px 0 0;
+                border-top: 1px solid var(--line);
+                padding-top: 12px;
+            }
+
+            .mobile-logout-button {
+                display: flex;
+                width: 100%;
+                min-height: 50px;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                border: 1px solid #e4b8b1;
+                border-radius: 9px;
+                background: #fff6f4;
+                color: #8c332b;
+                cursor: pointer;
+                font: inherit;
+                font-weight: 800;
+            }
+
+            .mobile-logout-button svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .mobile-logout-button:hover,
+            .mobile-logout-button:focus-visible {
+                background: #f8e7e3;
+                outline: 3px solid rgba(140, 51, 43, .18);
+            }
+
+            .app-shell.keyboard-open .mobile-bottom-nav {
+                transform: translateY(100%);
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .content {
+                padding-bottom: calc(36px + var(--mobile-nav-space));
+            }
+        }
     </style>
 
     @stack('styles')
@@ -2277,8 +2480,6 @@
 
     @auth
         <div class="app-shell">
-
-            <div class="sidebar-backdrop" data-menu-close></div>
 
             <aside class="sidebar">
 
@@ -2455,21 +2656,13 @@
 
             </aside>
 
+            @include('layouts.partials.mobile-bottom-navigation')
+
             <div class="main">
 
                 <header class="topbar">
 
                     <div class="topbar-brand">
-
-                        <button
-                            class="menu-toggle"
-                            type="button"
-                            aria-label="Buka menu"
-                            aria-expanded="false"
-                            data-menu-toggle
-                        >
-                            ☰
-                        </button>
 
                         <div class="topbar-heading">
                             <div class="topbar-title">
@@ -2645,11 +2838,6 @@
 
                         </div>
 
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button class="mobile-logout-button" type="submit">Keluar</button>
-                        </form>
-
                     </div>
 
                 </header>
@@ -2690,15 +2878,69 @@
             });
         };
 
-        const closeSidebarMenu = () => {
-            const shell = document.querySelector('.app-shell');
-            if (!shell) {
-                return;
-            }
+        const mobileMoreDialog = document.querySelector('[data-mobile-more-sheet]');
+        const mobileMoreButtons = document.querySelectorAll('[data-mobile-more-open]');
 
-            shell.classList.remove('menu-open');
-            document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
+        mobileMoreButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                closeNotificationMenus();
+                mobileMoreDialog?.showModal();
+                button.setAttribute('aria-expanded', 'true');
+            });
+        });
+
+        mobileMoreDialog?.addEventListener('close', () => {
+            mobileMoreButtons.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+        });
+
+        mobileMoreDialog?.addEventListener('click', (event) => {
+            const bounds = mobileMoreDialog.getBoundingClientRect();
+            if (event.target === mobileMoreDialog && (event.clientY < bounds.top || event.clientY > bounds.bottom)) {
+                mobileMoreDialog.close();
+            }
+        });
+
+        const mobileAppShell = document.querySelector('.app-shell');
+        const updateMobileKeyboardState = () => {
+            const viewport = window.visualViewport;
+            const focusedField = document.activeElement?.matches('input, textarea, select, [contenteditable="true"]');
+            const keyboardOpen = Boolean(viewport && focusedField && window.innerHeight - viewport.height > 120);
+            mobileAppShell?.classList.toggle('keyboard-open', keyboardOpen);
         };
+
+        window.visualViewport?.addEventListener('resize', updateMobileKeyboardState);
+        window.visualViewport?.addEventListener('scroll', updateMobileKeyboardState);
+        document.addEventListener('focusin', updateMobileKeyboardState);
+        document.addEventListener('focusout', () => window.requestAnimationFrame(updateMobileKeyboardState));
+
+        const applyMobileTableCards = () => {
+            document.querySelectorAll('.table-wrap > table, .table-wrapper > table').forEach((table) => {
+                if (table.classList.contains('responsive-card-table') || table.closest('.attendance-editor, .teacher-schedule')) {
+                    return;
+                }
+
+                const headers = Array.from(table.querySelectorAll('thead th')).map((header) => header.textContent.trim());
+                if (!headers.length) {
+                    return;
+                }
+
+                const wrapper = table.parentElement;
+                wrapper.classList.add('mobile-card-table-wrap');
+                table.classList.add('mobile-card-table');
+
+                table.querySelectorAll('tbody tr').forEach((row) => {
+                    Array.from(row.children).forEach((cell, index) => {
+                        if (cell.tagName !== 'TD' || cell.hasAttribute('data-label')) {
+                            return;
+                        }
+
+                        cell.dataset.label = headers[index] ?? '';
+                    });
+                });
+            });
+        };
+
+        applyMobileTableCards();
 
         const applySearchableSelects = () => {
             document.querySelectorAll('select').forEach((select) => {
@@ -2843,42 +3085,6 @@
 
             updateClock();
             window.setInterval(updateClock, 1000);
-        });
-
-        document
-            .querySelectorAll('[data-menu-toggle], [data-menu-close]')
-            .forEach((element) => {
-
-                element.addEventListener('click', () => {
-
-                    const shell = document.querySelector('.app-shell');
-
-                    if (!shell) {
-                        return;
-                    }
-
-                    closeNotificationMenus();
-
-                    const isCloseButton = element.matches('[data-menu-close]');
-                    const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
-
-                    shell.classList.toggle('menu-open', isOpen);
-
-                    document
-                        .querySelector('[data-menu-toggle]')
-                        ?.setAttribute(
-                            'aria-expanded',
-                            String(isOpen)
-                        );
-                });
-            });
-
-        document.querySelectorAll('.notification-menu details').forEach((details) => {
-            details.addEventListener('toggle', () => {
-                if (details.open) {
-                    closeSidebarMenu();
-                }
-            });
         });
 
         document.addEventListener('scroll', (event) => {

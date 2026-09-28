@@ -5,6 +5,7 @@ use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
+use App\Models\JadwalPiket;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
@@ -31,6 +32,62 @@ it('renders every role dashboard without undefined view data', function (string 
     $user = User::factory()->create(['role' => $role, 'is_active' => true]);
     $this->actingAs($user)->get('/'.$role)->assertOk();
 })->with(['admin', 'guru', 'piket', 'siswa', 'sekretaris']);
+
+it('renders role-approved mobile destinations and account actions', function (string $role, string $path, array $destinations, array $unavailable, array $moreDestinations, array $unavailableMore) {
+    $user = User::factory()->create(['role' => $role, 'is_active' => true]);
+
+    $response = $this->actingAs($user)->get($path);
+
+    $response->assertSee('data-mobile-bottom-nav', false)
+        ->assertSee('data-mobile-more-open', false)
+        ->assertSee('data-mobile-more-sheet', false)
+        ->assertSee('data-mobile-logout-button', false)
+        ->assertSee('class="sidebar"', false)
+        ->assertSee('class="mobile-nav-item is-active"', false)
+        ->assertDontSee('data-menu-toggle', false);
+
+    foreach ($destinations as $destination) {
+        $response->assertSee('data-mobile-nav-destination="'.$destination.'"', false);
+    }
+
+    foreach ($unavailable as $destination) {
+        $response->assertDontSee('data-mobile-nav-destination="'.$destination.'"', false);
+    }
+
+    foreach ($moreDestinations as $destination) {
+        $response->assertSee('data-mobile-more-destination="'.$destination.'"', false);
+    }
+
+    foreach ($unavailableMore as $destination) {
+        $response->assertDontSee('data-mobile-more-destination="'.$destination.'"', false);
+    }
+})->with([
+    'admin' => ['admin', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
+    'waka' => ['waka', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
+    'guru' => ['guru', '/guru', ['home', 'jurnal-own'], ['jurnal-create', 'piket', 'homeroom', 'dispensasi-create'], ['teacher-journal-create', 'teacher-attendance'], ['admin-guru', 'piket-report']],
+    'siswa' => ['siswa', '/siswa', ['home', 'dispensasi-create', 'dispensasi-history'], ['absensi', 'jurnal', 'piket-recap'], [], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
+    'sekretaris' => ['sekretaris', '/sekretaris', ['home', 'jurnal-verify', 'absensi'], ['dispensasi-create', 'piket-recap'], ['secretary-report'], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
+    'piket' => ['piket', '/piket', ['home', 'dispensasi', 'izin', 'piket-recap'], ['absensi', 'jurnal-verify'], ['piket-create-dispensasi', 'piket-create-izin', 'piket-report'], ['admin-guru', 'teacher-attendance']],
+]);
+
+it('shows the class recap or piket destination only when the teacher qualifies', function () {
+    $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $guru = Guru::create(['user_id' => $teacher->id, 'nip' => 'MOBILE-WALI', 'nama_guru' => 'Guru Wali', 'status_kepegawaian' => 'Honorer']);
+    Kelas::create(['nama_kelas' => 'XI MOBILE', 'tingkat' => 'XI', 'wali_kelas_id' => $guru->id]);
+
+    $response = $this->actingAs($teacher)->get('/guru');
+
+    $response->assertSee('data-mobile-nav-destination="homeroom"', false)
+        ->assertDontSee('data-mobile-nav-destination="piket"', false);
+
+    JadwalPiket::create(['guru_id' => $guru->id, 'tanggal' => today()]);
+
+    $response = $this->get('/guru');
+
+    $response->assertSee('data-mobile-nav-destination="piket"', false)
+        ->assertDontSee('data-mobile-nav-destination="homeroom"', false)
+        ->assertSee('data-mobile-more-destination="teacher-homeroom"', false);
+});
 
 it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {
     $data = navigationLesson();
