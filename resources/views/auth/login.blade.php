@@ -3,75 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f5f7f4">
     <title>Masuk - Jurnal Guru</title>
     @vite('resources/css/login.css')
 </head>
-<body class="signin-body">
-    <main class="signin-page">
-        <a class="signin-brand" href="{{ url('/') }}" aria-label="Jurnal Guru">
-            <span class="signin-brand-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </span>
-            <span>Jurnal Guru</span>
-        </a>
-
-        <section class="signin-card" aria-labelledby="signin-title">
-            <header class="signin-heading">
-                <span class="signin-kicker">PORTAL GURU</span>
-                <h1 id="signin-title">Selamat datang</h1>
-                <p>Masuk untuk melanjutkan ke jurnal mengajar Anda.</p>
-            </header>
-
-            @if ($errors->any())
-                <div class="signin-error" role="alert">{{ $errors->first() }}</div>
-            @endif
-
-            <form action="{{ route('login') }}" method="POST" class="signin-form">
-                @csrf
-                <div class="signin-field">
-                    <label for="login">NISN, username, atau email</label>
-                    <div class="signin-input-wrap">
-                        <svg class="signin-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M5 21a7 7 0 0 1 14 0" stroke-linecap="round" />
-                        </svg>
-                        <input type="text" id="login" name="login" value="{{ old('login', old('email')) }}" placeholder="Masukkan NISN, username, atau email" autocomplete="username" required autofocus>
-                    </div>
+<body>
+    <main class="login-page">
+        <section class="left-section">
+            <div class="brand">
+                <span class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+                        <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
+                    </svg>
+                </span>
+                <span>Jurnal Guru</span>
+            </div>
+            <div class="left-content">
+                <div class="illustration" aria-hidden="true">
+                    <svg viewBox="0 0 160 130" fill="none">
+                        <path d="m24 35 56-28 56 28-56 29-56-29Z" stroke="currentColor" stroke-width="3" />
+                        <path d="M43 47v24c0 13 17 23 37 23s37-10 37-23V47M136 36v43" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                        <circle cx="136" cy="82" r="3" fill="currentColor" />
+                    </svg>
                 </div>
-
-                <div class="signin-field">
-                    <div class="signin-label-row"><label for="password">Password</label><a href="{{ route('password.request') }}">Lupa password?</a></div>
-                    <div class="signin-input-wrap">
-                        <svg class="signin-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                            <rect x="4" y="10" width="16" height="11" rx="2" />
-                            <path d="M8 10V7a4 4 0 1 1 8 0v3" stroke-linecap="round" />
-                        </svg>
-                        <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password" required>
-                        <button type="button" id="toggle-password" class="signin-password-toggle" aria-label="Tampilkan password" title="Tampilkan password">
-                            <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
-                            <svg id="eye-closed" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a16 16 0 0 1-3.1 3.9M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7c1 0 1.9-.2 2.8-.5" /></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="signin-submit">Masuk<span aria-hidden="true"></span></button>
-            </form>
+                <h2>Pantau Aktivitas Mengajar Anda</h2>
+                <p>Catat topik pembelajaran, absensi, dan progres kelas dalam satu platform praktis.</p>
+            </div>
+            <p class="left-footer">Mendukung peningkatan mutu pendidikan di Indonesia</p>
         </section>
 
-        <p class="signin-footer">Jurnal Guru <span aria-hidden="true">·</span> Sistem Jurnal Mengajar Digital</p>
+        <section class="right-section">
+            <div class="login-container">
+                <div class="login-heading">
+                    <h1>Masuk Akun</h1>
+                    <p>Sistem Jurnal Mengajar Guru Berbasis Digital</p>
+                </div>
+                @if ($errors->any())
+                    <div class="error-message" role="alert">{{ $errors->first() }}</div>
+                @endif
+                <form action="{{ route('login') }}" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label for="login">NISN, username, atau email</label>
+                        <div class="input-container">
+                            <span class="input-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                                    <path d="m4 7 8 6 8-6" />
+                                </svg>
+                            </span>
+                            <input type="text" id="login" name="login" value="{{ old('login', old('email')) }}" placeholder="NISN siswa, username guru, atau email" autocomplete="username" required autofocus>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-container">
+                            <span class="input-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="m14.5 6.5 3-3 3 3-3 3" />
+                                    <path d="m17.5 6.5-7.2 7.2a3.3 3.3 0 1 1-2-2l7.2-7.2" />
+                                    <path d="m6.5 17.5 2 2" />
+                                </svg>
+                            </span>
+                            <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password" required>
+                            <button type="button" id="toggle-password" class="password-toggle" aria-label="Tampilkan password" title="Tampilkan password">
+                                <span id="eye-open">&#128065;</span>
+                                <span id="eye-closed" class="hidden">&#128584;</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="forgot-password"><a href="{{ route('password.request') }}">Lupa Password?</a></div>
+                    <button type="submit" class="login-button">Masuk</button>
+                </form>
+            </div>
+        </section>
     </main>
-
     <script>
         const togglePassword = document.getElementById('toggle-password');
         const password = document.getElementById('password');
         const eyeOpen = document.getElementById('eye-open');
         const eyeClosed = document.getElementById('eye-closed');
-
-        togglePassword.addEventListener('click', function () {
+        togglePassword.addEventListener('click', () => {
             const showPassword = password.type === 'password';
             password.type = showPassword ? 'text' : 'password';
             eyeOpen.classList.toggle('hidden', showPassword);
