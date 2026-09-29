@@ -10,6 +10,7 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 
@@ -42,6 +43,7 @@ it('renders role-approved mobile destinations and account actions', function (st
         ->assertSee('data-menu-toggle', false)
         ->assertSee('id="mobile-secondary-menu"', false)
         ->assertSee('class="sidebar"', false)
+        ->assertSee('data-mobile-primary-duplicate', false)
         ->assertSee('class="mobile-nav-item is-active"', false);
 
     foreach ($destinations as $destination) {
@@ -53,15 +55,16 @@ it('renders role-approved mobile destinations and account actions', function (st
     }
 
 })->with([
-    'admin' => ['admin', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
-    'waka' => ['waka', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
-    'guru' => ['guru', '/guru', ['home', 'jurnal-own'], ['jurnal-create', 'piket', 'homeroom', 'dispensasi-create'], ['teacher-journal-create', 'teacher-attendance'], ['admin-guru', 'piket-report']],
-    'siswa' => ['siswa', '/siswa', ['home', 'dispensasi-create', 'dispensasi-history'], ['absensi', 'jurnal', 'piket-recap'], [], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
-    'sekretaris' => ['sekretaris', '/sekretaris', ['home', 'jurnal-verify', 'absensi'], ['dispensasi-create', 'piket-recap'], ['secretary-report'], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
-    'piket' => ['piket', '/piket', ['home', 'dispensasi', 'izin', 'piket-recap'], ['absensi', 'jurnal-verify'], ['piket-create-dispensasi', 'piket-create-izin', 'piket-report'], ['admin-guru', 'teacher-attendance']],
+    'admin' => ['admin', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi', 'profile'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
+    'waka' => ['waka', '/admin', ['home', 'jurnal', 'dispensasi', 'absensi', 'profile'], ['piket', 'homeroom', 'dispensasi-create'], ['admin-guru', 'admin-pendaftaran', 'admin-laporan'], ['teacher-attendance', 'piket-report']],
+    'guru' => ['guru', '/guru', ['home', 'jurnal-own', 'profile'], ['jurnal-create', 'piket', 'homeroom', 'dispensasi-create'], ['teacher-journal-create', 'teacher-attendance'], ['admin-guru', 'piket-report']],
+    'siswa' => ['siswa', '/siswa', ['home', 'dispensasi-create', 'dispensasi-history', 'profile'], ['absensi', 'jurnal', 'piket-recap'], [], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
+    'sekretaris' => ['sekretaris', '/sekretaris', ['home', 'jurnal-verify', 'absensi', 'profile'], ['dispensasi-create', 'piket-recap'], ['secretary-report'], ['admin-guru', 'teacher-attendance', 'piket-create-izin']],
+    'piket' => ['piket', '/piket', ['home', 'dispensasi', 'izin', 'piket-recap', 'profile'], ['absensi', 'jurnal-verify'], ['piket-create-dispensasi', 'piket-create-izin', 'piket-report'], ['admin-guru', 'teacher-attendance']],
 ]);
 
 it('shows the class recap or piket destination only when the teacher qualifies', function () {
+    $this->travelTo(Carbon::parse(today()->toDateString().' 08:00:00', 'Asia/Jakarta'));
     $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
     $guru = Guru::create(['user_id' => $teacher->id, 'nip' => 'MOBILE-WALI', 'nama_guru' => 'Guru Wali', 'status_kepegawaian' => 'Honorer']);
     Kelas::create(['nama_kelas' => 'XI MOBILE', 'tingkat' => 'XI', 'wali_kelas_id' => $guru->id]);
@@ -77,8 +80,17 @@ it('shows the class recap or piket destination only when the teacher qualifies',
 
     $response->assertSee('data-mobile-nav-destination="piket"', false)
         ->assertDontSee('data-mobile-nav-destination="homeroom"', false)
+        ->assertSee('<summary>Menu tambahan</summary>', false)
         ->assertSee('Rekap jurnal kelas');
 });
+
+    it('does not render an empty secondary menu for a teacher who is not on piket duty', function () {
+        $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+
+        $this->actingAs($teacher)->get('/guru')
+        ->assertOk()
+        ->assertDontSee('<summary>Menu tambahan</summary>', false);
+    });
 
 it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {
     $data = navigationLesson();

@@ -1367,6 +1367,21 @@
             color: #a42e39;
         }
 
+        .error {
+            display: block;
+            margin-top: 6px;
+            color: #a42e39;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .field:has(.error) input,
+        .field:has(.error) select,
+        .field:has(.error) textarea {
+            border-color: #d96b73;
+            box-shadow: 0 0 0 3px rgba(217, 107, 115, .12);
+        }
+
         .empty {
             padding: 38px 20px;
 
@@ -2387,6 +2402,10 @@
                 --mobile-nav-space: calc(72px + env(safe-area-inset-bottom, 0px));
             }
 
+            [data-mobile-primary-duplicate] {
+                display: none !important;
+            }
+
             .sidebar {
                 display: flex;
             }
@@ -2608,6 +2627,7 @@
                 outline: 3px solid rgba(140, 51, 43, .18);
             }
 
+            .app-shell.menu-open .mobile-bottom-nav,
             .app-shell.keyboard-open .mobile-bottom-nav {
                 transform: translateY(100%);
                 visibility: hidden;
@@ -2663,6 +2683,7 @@
                     <a
                         class="nav-link {{ request()->is(auth()->user()->role) || (auth()->user()->role === 'waka' && request()->is('admin')) ? 'active' : '' }}"
                         href="{{ auth()->user()->role === 'waka' ? url('/admin') : url('/' . auth()->user()->role) }}"
+                        data-mobile-primary-duplicate
                     >
                         Dashboard
                     </a>
@@ -2671,6 +2692,7 @@
                         <a
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"
+                            @if (in_array(auth()->user()->role, ['admin', 'waka', 'sekretaris'], true)) data-mobile-primary-duplicate @endif
                         >
                             {{ auth()->user()->role === 'guru' ? 'Perbarui absensi' : 'Kelola absensi' }}
                         </a>
@@ -2678,7 +2700,7 @@
 
                     @if (in_array(auth()->user()->role, ['guru', 'piket'], true))
                         @if (auth()->user()->isPiketHariIni())
-                            <a class="nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}">Menu piket</a>
+                            <a class="nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}" data-mobile-primary-duplicate>Menu piket</a>
                         @else
                             <span class="nav-link" aria-disabled="true" title="Menu aktif sesuai jadwal piket">Menu piket · tidak bertugas</span>
                         @endif
@@ -2688,20 +2710,21 @@
                         <a
                             class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
                             href="{{ route('jurnal.index') }}"
+                            @if (in_array(auth()->user()->role, ['admin', 'waka', 'sekretaris'], true)) data-mobile-primary-duplicate @endif
                         >
                             Jurnal
                         </a>
                     @endif
 
                     @if (auth()->user()->role === 'guru')
-                        <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Jurnal saya</a>
+                        <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}" data-mobile-primary-duplicate>Jurnal saya</a>
                         @if (auth()->user()->kelasWali()->exists())
-                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}" @unless (auth()->user()->isPiketHariIni()) data-mobile-primary-duplicate @endunless>Rekap jurnal kelas</a>
                         @endif
                     @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
-                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Verifikasi dispensasi</a>
+                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Verifikasi dispensasi</a>
                     @endif
                     </nav>
 
@@ -2723,24 +2746,26 @@
                                 <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
                                 <a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Riwayat aktivitas</a>
-                                <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
+                                <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" @if (in_array(auth()->user()->role, ['siswa', 'piket'], true)) data-mobile-primary-duplicate @endif>Dispensasi</a>
                             </nav>
                         </details>
                     @else
-                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
-                            <summary>Menu tambahan</summary>
-                            <nav class="nav-list" aria-label="Menu tambahan">
-                                @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
-                                    <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
-                                @endif
-                                @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                    <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal semua guru</a>
-                                @endif
-                                @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                    <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
-                                @endif
-                            </nav>
-                        </details>
+                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                            <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
+                                <summary>Menu tambahan</summary>
+                                <nav class="nav-list" aria-label="Menu tambahan">
+                                    @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
+                                        <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                    @endif
+                                    @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal semua guru</a>
+                                    @endif
+                                    @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Dispensasi</a>
+                                    @endif
+                                </nav>
+                            </details>
+                        @endif
                     @endif
 
                     <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
@@ -2759,6 +2784,7 @@
                     <a
                         class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
                         href="{{ route('profile') }}"
+                        data-mobile-primary-duplicate
                     >
                         Profil
                     </a>
@@ -3053,6 +3079,28 @@
             document.querySelectorAll('[data-menu-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
         };
 
+        const sidebarMenuToggle = document.querySelector('[data-menu-toggle]');
+        const sidebarBackdrop = document.querySelector('[data-menu-close]');
+        const appShell = document.querySelector('.app-shell');
+
+        sidebarMenuToggle?.addEventListener('click', () => {
+            if (!appShell) {
+                return;
+            }
+
+            closeNotificationMenus();
+            const isOpen = appShell.classList.toggle('menu-open');
+            sidebarMenuToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        sidebarBackdrop?.addEventListener('click', closeSidebarMenu);
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeSidebarMenu();
+            }
+        });
+
         mobileMoreButtons.forEach((button) => {
             button.addEventListener('click', () => {
                 closeNotificationMenus();
@@ -3258,31 +3306,6 @@
             updateClock();
             window.setInterval(updateClock, 1000);
         });
-
-        document
-            .querySelectorAll('[data-menu-toggle], [data-menu-close]')
-            .forEach((element) => {
-
-                element.addEventListener('click', () => {
-
-                    const shell = document.querySelector('.app-shell');
-
-                    if (!shell) {
-                        return;
-                    }
-
-                    closeNotificationMenus();
-
-                    const isCloseButton = element.matches('[data-menu-close]');
-                    const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
-
-                    shell.classList.toggle('menu-open', isOpen);
-
-                    document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
-                        button.setAttribute('aria-expanded', String(isOpen));
-                    });
-                });
-            });
 
         document.querySelectorAll('.notification-menu details').forEach((details) => {
             details.addEventListener('toggle', () => {

@@ -19,6 +19,7 @@
                         @endforeach
                     </select>@error('guru_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field"><label for="tanggal">Tanggal piket</label><input id="tanggal" type="date" name="tanggal" value="{{ old('tanggal', today()->toDateString()) }}" min="{{ today()->toDateString() }}" required><small id="tanggal-hari">{{ today()->locale('id')->translatedFormat('l') }}</small>@error('tanggal')<small class="error">{{ $message }}</small>@enderror</div>
+                    <div class="field"><label for="shift">Shift piket</label><select id="shift" name="shift" required><option value="pagi" @selected(old('shift', 'pagi') === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected(old('shift') === 'siang')>Siang · 11.00–15.00</option></select>@error('shift')<small class="error">{{ $message }}</small>@enderror</div>
                 </div>
                 <div class="form-actions"><button class="btn" type="submit">Simpan jadwal</button></div>
             </form>
@@ -52,10 +53,11 @@
         <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Guru piket</th><th>Ubah jadwal</th><th></th></tr></thead><tbody>
             @forelse ($jadwals as $jadwal)
                 <tr>
-                    <td>{{ $jadwal->tanggal->locale('id')->translatedFormat('l, d/m/Y') }}</td><td>{{ $jadwal->guru->nama_guru }}</td>
+                    <td>{{ $jadwal->tanggal->locale('id')->translatedFormat('l, d/m/Y') }}<br><span class="eyebrow">{{ $jadwal->shiftLabel() }}</span></td><td>{{ $jadwal->guru->nama_guru }}</td>
                     <td><details><summary>Edit jadwal</summary><form action="{{ route('admin.piket.update', $jadwal) }}" method="POST">@csrf @method('PUT')
                         <input type="hidden" name="guru_id" value="{{ $jadwal->guru_id }}">
                         <label>Tanggal piket<input class="piket-edit-date" type="date" name="tanggal" value="{{ $jadwal->tanggal->toDateString() }}" min="{{ today()->toDateString() }}" required></label>
+                        <label>Shift piket<select name="shift" required><option value="pagi" @selected($jadwal->shift === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected($jadwal->shift === 'siang')>Siang · 11.00–15.00</option></select></label>
                         <small>Hari: <span data-day-output>{{ $jadwal->tanggal->locale('id')->translatedFormat('l') }}</span></small>
                         <button class="btn btn-muted" type="submit">Simpan perubahan</button>
                     </form></details></td>

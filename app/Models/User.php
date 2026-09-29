@@ -72,7 +72,10 @@ class User extends Authenticatable
 
         $guruId = Guru::where('user_id', $this->id)->value('id');
 
-        return $guruId !== null && JadwalPiket::where('guru_id', $guruId)->whereDate('tanggal', today())->exists();
+        return $guruId !== null && JadwalPiket::where('guru_id', $guruId)
+            ->whereDate('tanggal', today())
+            ->get()
+            ->contains(fn (JadwalPiket $jadwalPiket): bool => $jadwalPiket->isActiveNow());
     }
 
     public function isMaster(): bool

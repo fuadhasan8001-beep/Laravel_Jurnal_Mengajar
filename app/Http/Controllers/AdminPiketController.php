@@ -44,11 +44,12 @@ class AdminPiketController extends Controller
         $data = $request->validate([
             'guru_id' => ['required', 'exists:gurus,id'],
             'tanggal' => ['required', 'date', 'after_or_equal:today'],
+            'shift' => ['required', 'in:pagi,siang'],
         ]);
 
         JadwalPiket::updateOrCreate(
             ['guru_id' => $data['guru_id'], 'tanggal' => $data['tanggal']],
-            ['dibuat_oleh' => $request->user()->id],
+            ['shift' => $data['shift'], 'dibuat_oleh' => $request->user()->id],
         );
 
         return back()->with('success', 'Jadwal piket guru berhasil disimpan.');
@@ -65,6 +66,7 @@ class AdminPiketController extends Controller
                     ->ignore($jadwalPiket->id),
             ],
             'tanggal' => ['required', 'date', 'after_or_equal:today'],
+            'shift' => ['required', 'in:pagi,siang'],
         ]);
 
         $jadwalPiket->update($data);

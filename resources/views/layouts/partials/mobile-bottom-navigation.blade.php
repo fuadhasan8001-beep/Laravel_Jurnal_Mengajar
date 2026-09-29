@@ -58,8 +58,7 @@
         $mobileMoreItems[] = $makeMoreItem('piket-report', 'Menu lainnya', 'Rekap laporan', route('laporan.jurnal'), 'report', request()->is('rekap*'));
     }
 
-    $mobileMoreItems[] = $makeMoreItem('profile', 'Akun', 'Profil', route('profile'), 'person', request()->is('profile*'));
-    $mobileMoreIsActive = collect($mobileMoreItems)->contains(fn (array $item): bool => $item['active']);
+    $mobileNavItems[] = $makeNavItem('profile', 'Profil', route('profile'), 'person', request()->routeIs('profile', 'profile.update', 'profile.password'));
 @endphp
 
 <nav class="mobile-bottom-nav" data-mobile-bottom-nav aria-label="Navigasi utama" style="--mobile-nav-count: {{ count($mobileNavItems) }}">
