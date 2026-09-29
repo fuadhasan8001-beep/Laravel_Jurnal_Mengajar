@@ -2892,7 +2892,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="desktop">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(5)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2907,7 +2907,7 @@
                                                 {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
                                                 <br>
                                                 <small>
-                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    Belum dibaca
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>
@@ -2972,7 +2972,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="mobile">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2989,7 +2989,7 @@
                                                 <br>
 
                                                 <small>
-                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    Belum dibaca
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>
