@@ -680,9 +680,28 @@ form {
     box-shadow: 0 24px 70px rgba(90, 68, 31, .1), 0 3px 10px rgba(90, 68, 31, .04);
 }
 
-.signin-heading { margin-bottom: 28px; }
+.signin-heading {
+    margin-bottom: 28px;
+    text-align: center;
+}
 .signin-kicker { color: #8a6a32; font-size: 11px; font-weight: 800; letter-spacing: .16em; }
-.signin-heading h1 { margin: 9px 0 7px; color: #3f3a32; font-size: clamp(27px, 4vw, 32px); line-height: 1.15; letter-spacing: -.045em; }
+.signin-heading h1,
+.signin-heading p {
+    text-align: center;
+}
+.signin-heading h1 {
+    width: fit-content;
+    margin: 9px auto 7px;
+    padding: 5px 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f0d8, #fff9e9);
+    color: #755722;
+    font-size: clamp(30px, 4.5vw, 36px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.045em;
+    box-shadow: 0 3px 10px rgba(138, 106, 50, .09);
+}
 .signin-heading p { margin: 0; color: #756d60; font-size: 14px; line-height: 1.55; }
 
 .signin-error {
@@ -764,7 +783,9 @@ form {
 @media (max-width: 480px) {
     .signin-page { padding-right: 16px; padding-left: 16px; }
     .signin-card { border-radius: 18px; }
-    .signin-heading { margin-bottom: 23px; }
+    .signin-heading { margin-bottom: 23px; text-align: center; }
+    .signin-heading h1,
+    .signin-heading p { text-align: center; }
     .signin-form { gap: 17px; }
     .signin-note { font-size: 11px; }
 }
