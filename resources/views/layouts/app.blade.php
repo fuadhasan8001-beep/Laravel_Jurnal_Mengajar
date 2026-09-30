@@ -2758,7 +2758,7 @@
                                         <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                     @endif
                                     @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal semua guru</a>
+                                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal per kelas</a>
                                     @endif
                                     @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
                                         <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Dispensasi</a>
@@ -2779,31 +2779,31 @@
                         >{{ now()->format('H:i:s') }}</time>
                     </div>
 
-                    <div class="nav-label nav-label-account">Akun</div>
-                    <nav class="nav-list" aria-label="Menu akun">
-                    <a
-                        class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
-                        href="{{ route('profile') }}"
-                        data-mobile-primary-duplicate
-                    >
-                        Profil
-                    </a>
-
-                    @if (auth()->user()->role !== 'admin' && filled(config('app.admin_whatsapp')))
-                        <a
-                            class="contact-admin"
-                            href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Hubungi Admin
-                        </a>
-                    @endif
-                    </nav>
-
                 </div>
 
                 <div class="sidebar-footer">
+
+                    <div class="nav-label nav-label-account">Akun</div>
+                    <nav class="nav-list" aria-label="Menu akun">
+                        <a
+                            class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
+                            href="{{ route('profile') }}"
+                            data-mobile-primary-duplicate
+                        >
+                            Profil
+                        </a>
+
+                        @if (auth()->user()->role !== 'admin' && filled(config('app.admin_whatsapp')))
+                            <a
+                                class="contact-admin"
+                                href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Hubungi Admin
+                            </a>
+                        @endif
+                    </nav>
 
                     <div class="user-mini">
 

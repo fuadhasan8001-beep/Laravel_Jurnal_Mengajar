@@ -13,7 +13,6 @@ use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
-use App\Services\ClassAbsenceNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -66,7 +65,7 @@ class DispensasiController extends Controller
         ]);
     }
 
-    public function store(Request $request, ClassAbsenceNotifier $absenceNotifier): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $this->authorizePiketAccess();
         $isPiket = auth()->user()->isPiketHariIni();
@@ -157,7 +156,6 @@ class DispensasiController extends Controller
                 ->each->notify((new DispensasiNotification($first, 'submitted'))->afterCommit());
         } elseif ($first && $isPiket) {
             $this->notifyAdmins($first);
-            $absenceNotifier->notify(Siswa::query()->whereIn('id', $studentIds)->get(), 'dispensasi');
         }
 
         return redirect()->route('dispensasi.index')
@@ -293,15 +291,27 @@ class DispensasiController extends Controller
     private function notifyTeachers(Dispensasi $dispensasi): void
     {
         $dispensasi->loadMissing(['siswa', 'jamMulai', 'jamSelesai']);
-        $start = $dispensasi->jamMulai->jam_mulai;
-        $end = $dispensasi->jamSelesai->jam_selesai;
-        $scheduledGuruIds = Jadwal::where('kelas_id', $dispensasi->siswa->kelas_id)
-            ->where('hari', $dispensasi->tanggal->locale('id')->translatedFormat('l'))->where('is_active', true)
-            ->whereHas('jamPelajaran', fn ($query) => $query->where('jam_mulai', '<', $end)->where('jam_selesai', '>', $start))
+        $hari = $dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$startTime] = $dispensasi->jamMulai->timesForDay($hari);
+        [, $endTime] = $dispensasi->jamSelesai->timesForDay($hari);
+        $start = Carbon::parse($startTime);
+        $end = Carbon::parse($endTime);
+        $scheduledGuruIds = Jadwal::with('jamPelajaran')
+            ->where('kelas_id', $dispensasi->siswa->kelas_id)
+            ->where('hari', $hari)
+            ->where('is_active', true)
+            ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
+            ->get()
+            ->filter(fn (Jadwal $schedule): bool => $schedule->jamPelajaran !== null
+                && $this->periodOverlapsDispensation($schedule->jamPelajaran, $schedule->jamPelajaran, $hari, $start, $end))
             ->pluck('guru_id');
-        $journalGuruIds = Jurnal::where('kelas_id', $dispensasi->siswa->kelas_id)->whereDate('tanggal', $dispensasi->tanggal)
-            ->whereHas('jamMulai', fn ($query) => $query->where('jam_mulai', '<', $end))
-            ->whereHas('jamSelesai', fn ($query) => $query->where('jam_selesai', '>', $start))->pluck('guru_id');
+        $journalGuruIds = Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->where('kelas_id', $dispensasi->siswa->kelas_id)
+            ->whereDate('tanggal', $dispensasi->tanggal)
+            ->get()
+            ->filter(fn (Jurnal $journal): bool => $journal->jamMulai !== null && $journal->jamSelesai !== null
+                && $this->periodOverlapsDispensation($journal->jamMulai, $journal->jamSelesai, $hari, $start, $end))
+            ->pluck('guru_id');
         User::whereIn('id', Guru::whereIn('id', $scheduledGuruIds->merge($journalGuruIds)->unique())->select('user_id'))
             ->where('is_active', true)->where('role', 'guru')->get()
             ->each->notify(new DispensasiNotification($dispensasi, 'teacher_approved'));
@@ -351,24 +361,18 @@ class DispensasiController extends Controller
     private function markAttendanceAsDispensed(Dispensasi $dispensasi): void
     {
         $dispensasi->loadMissing(['siswa', 'jamMulai', 'jamSelesai']);
-
-        $start = Carbon::parse($dispensasi->jamMulai->jam_mulai);
-        $end = Carbon::parse($dispensasi->jamSelesai->jam_selesai);
+        $hari = $dispensasi->tanggal->locale('id')->translatedFormat('l');
+        [$startTime] = $dispensasi->jamMulai->timesForDay($hari);
+        [, $endTime] = $dispensasi->jamSelesai->timesForDay($hari);
+        $start = Carbon::parse($startTime);
+        $end = Carbon::parse($endTime);
 
         $jurnals = Jurnal::with(['jamMulai', 'jamSelesai'])
             ->whereDate('tanggal', $dispensasi->tanggal)
             ->where('kelas_id', $dispensasi->siswa->kelas_id)
             ->get()
-            ->filter(function (Jurnal $jurnal) use ($start, $end): bool {
-                if (! $jurnal->jamMulai || ! $jurnal->jamSelesai) {
-                    return false;
-                }
-
-                $jurnalStart = Carbon::parse($jurnal->jamMulai->jam_mulai);
-                $jurnalEnd = Carbon::parse($jurnal->jamSelesai->jam_selesai);
-
-                return $jurnalStart < $end && $jurnalEnd > $start;
-            });
+            ->filter(fn (Jurnal $jurnal): bool => $jurnal->jamMulai !== null && $jurnal->jamSelesai !== null
+                && $this->periodOverlapsDispensation($jurnal->jamMulai, $jurnal->jamSelesai, $hari, $start, $end));
 
         foreach ($jurnals as $jurnal) {
             $allDayAbsence = IzinSekolah::where('siswa_id', $dispensasi->siswa_id)
@@ -384,5 +388,19 @@ class DispensasiController extends Controller
                 ]
             );
         }
+    }
+
+    private function periodOverlapsDispensation(
+        JamPelajaran $jamMulai,
+        JamPelajaran $jamSelesai,
+        string $hari,
+        Carbon $dispensasiMulai,
+        Carbon $dispensasiSelesai,
+    ): bool {
+        [$journalStart] = $jamMulai->timesForDay($hari);
+        [, $journalEnd] = $jamSelesai->timesForDay($hari);
+
+        return Carbon::parse($journalStart) < $dispensasiSelesai
+            && Carbon::parse($journalEnd) > $dispensasiMulai;
     }
 }

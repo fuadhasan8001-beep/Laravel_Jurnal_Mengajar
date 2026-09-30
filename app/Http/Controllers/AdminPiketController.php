@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Guru;
 use App\Models\JadwalPiket;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -14,9 +16,15 @@ class AdminPiketController extends Controller
     public function index(Request $request): View
     {
         $search = trim($request->string('q')->toString());
+        $filters = $request->validate(['bulan' => ['nullable', 'date_format:Y-m']]);
+        $bulan = $filters['bulan'] ?? today()->format('Y-m');
+        $monthStart = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth()->toDateString();
+        $monthEnd = Carbon::createFromFormat('Y-m', $bulan)->endOfMonth()->toDateString();
 
         return view('admin.piket.index', [
+            'bulan' => $bulan,
             'allGurus' => Guru::with('user')->orderBy('nama_guru')->get(),
+            'allWakas' => User::where('role', 'waka')->where('is_active', true)->orderBy('name')->get(),
             'gurus' => Guru::with(['user', 'jadwalPikets' => fn ($query) => $query
                 ->whereDate('tanggal', '>=', today())
                 ->orderBy('tanggal')])
@@ -27,12 +35,13 @@ class AdminPiketController extends Controller
                 ->orderBy('nama_guru')
                 ->paginate(20)
                 ->withQueryString(),
-            'jadwals' => JadwalPiket::with('guru')
-                ->whereDate('tanggal', '>=', today())
-                ->when($search !== '', fn ($query) => $query->whereHas('guru', fn ($query) => $query->where(function ($query) use ($search): void {
-                    $query->where('nama_guru', 'like', '%'.$search.'%')
-                        ->orWhere('nip', 'like', '%'.$search.'%');
-                })))
+            'jadwals' => JadwalPiket::with(['guru', 'user'])
+                ->whereDate('tanggal', '>=', $monthStart)->whereDate('tanggal', '<=', $monthEnd)
+                ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search): void {
+                    $query->whereHas('guru', fn ($query) => $query->where(function ($query) use ($search): void {
+                        $query->where('nama_guru', 'like', '%'.$search.'%')->orWhere('nip', 'like', '%'.$search.'%');
+                    }))->orWhereHas('user', fn ($query) => $query->where('name', 'like', '%'.$search.'%'));
+                }))
                 ->orderBy('tanggal')
                 ->orderBy('id')
                 ->get(),
@@ -42,15 +51,24 @@ class AdminPiketController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'guru_id' => ['required', 'exists:gurus,id'],
+            'jenis_tugas' => ['required', 'in:kbm,waka'],
+            'guru_id' => ['nullable', 'required_if:jenis_tugas,kbm', 'exists:gurus,id'],
+            'user_id' => ['nullable', 'required_if:jenis_tugas,waka', Rule::exists('users', 'id')->where('role', 'waka')->where('is_active', true)],
             'tanggal' => ['required', 'date', 'after_or_equal:today'],
-            'shift' => ['required', 'in:pagi,siang'],
+            'shift' => ['nullable', 'required_if:jenis_tugas,kbm', 'in:pagi,siang'],
+            'is_koordinator' => ['sometimes', 'boolean'],
         ]);
 
-        JadwalPiket::updateOrCreate(
-            ['guru_id' => $data['guru_id'], 'tanggal' => $data['tanggal']],
-            ['shift' => $data['shift'], 'dibuat_oleh' => $request->user()->id],
-        );
+        $assignee = $data['jenis_tugas'] === 'kbm'
+            ? ['guru_id' => $data['guru_id'], 'user_id' => null, 'tanggal' => $data['tanggal'], 'shift' => $data['shift']]
+            : ['guru_id' => null, 'user_id' => $data['user_id'], 'tanggal' => $data['tanggal'], 'shift' => JadwalPiket::SHIFT_WAKA];
+        $assignment = JadwalPiket::query()
+            ->where($data['jenis_tugas'] === 'kbm' ? 'guru_id' : 'user_id', $data['jenis_tugas'] === 'kbm' ? $data['guru_id'] : $data['user_id'])
+            ->whereDate('tanggal', $data['tanggal'])
+            ->where('shift', $data['jenis_tugas'] === 'kbm' ? $data['shift'] : JadwalPiket::SHIFT_WAKA)
+            ->first() ?? new JadwalPiket;
+        $assignment->fill([...$assignee, 'dibuat_oleh' => $request->user()->id,
+            'is_koordinator' => $data['jenis_tugas'] === 'kbm' && $request->boolean('is_koordinator')])->save();
 
         return back()->with('success', 'Jadwal piket guru berhasil disimpan.');
     }
@@ -58,18 +76,41 @@ class AdminPiketController extends Controller
     public function update(Request $request, JadwalPiket $jadwalPiket): RedirectResponse
     {
         $data = $request->validate([
-            'guru_id' => [
-                'required',
-                'exists:gurus,id',
-                Rule::unique('jadwal_pikets', 'guru_id')
-                    ->where('tanggal', $request->input('tanggal'))
-                    ->ignore($jadwalPiket->id),
-            ],
+            'jenis_tugas' => ['required', 'in:kbm,waka'],
+            'guru_id' => ['nullable', 'required_if:jenis_tugas,kbm', 'exists:gurus,id'],
+            'user_id' => ['nullable', 'required_if:jenis_tugas,waka', Rule::exists('users', 'id')->where('role', 'waka')->where('is_active', true)],
             'tanggal' => ['required', 'date', 'after_or_equal:today'],
-            'shift' => ['required', 'in:pagi,siang'],
+            'shift' => ['nullable', 'required_if:jenis_tugas,kbm', 'in:pagi,siang'],
+            'is_koordinator' => ['sometimes', 'boolean'],
         ]);
 
-        $jadwalPiket->update($data);
+        if ($data['jenis_tugas'] === 'kbm') {
+            $duplicate = JadwalPiket::where('guru_id', $data['guru_id'])
+                ->whereDate('tanggal', $data['tanggal'])
+                ->where('shift', $data['shift'])
+                ->where('id', '!=', $jadwalPiket->id)
+                ->exists();
+            abort_if($duplicate, 422, 'Guru tersebut sudah dijadwalkan pada shift ini.');
+
+            $jadwalPiket->update([
+                'guru_id' => $data['guru_id'], 'user_id' => null,
+                'tanggal' => $data['tanggal'], 'shift' => $data['shift'],
+                'is_koordinator' => $request->has('is_koordinator') ? $request->boolean('is_koordinator') : $jadwalPiket->is_koordinator,
+            ]);
+        } else {
+            $duplicate = JadwalPiket::where('user_id', $data['user_id'])
+                ->whereDate('tanggal', $data['tanggal'])
+                ->where('shift', JadwalPiket::SHIFT_WAKA)
+                ->where('id', '!=', $jadwalPiket->id)
+                ->exists();
+            abort_if($duplicate, 422, 'Petugas Waka tersebut sudah dijadwalkan pada tanggal ini.');
+
+            $jadwalPiket->update([
+                'guru_id' => null, 'user_id' => $data['user_id'],
+                'tanggal' => $data['tanggal'], 'shift' => JadwalPiket::SHIFT_WAKA,
+                'is_koordinator' => false,
+            ]);
+        }
 
         return back()->with('success', 'Jadwal piket guru berhasil diperbarui.');
     }

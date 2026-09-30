@@ -59,7 +59,7 @@ it('opens teacher piket access only during the assigned shift', function () {
 
 it('lets waka use the admin workflow and admin-like navigation without being able to submit student dispensasi', function () {
     $this->post('/login', ['login' => 'waka.test', 'password' => 'password'])->assertRedirect('/admin');
-    $this->get('/admin')->assertOk()->assertSee('Buka verifikasi');
+    $this->get('/admin')->assertOk()->assertSee('Verifikasi dispensasi');
     $this->get('/admin/data/guru')->assertOk();
     $this->get('/waka')->assertRedirect('/admin');
     $this->get(route('dispensasi.index'))->assertOk()->assertSee('Verifikasi dispensasi');

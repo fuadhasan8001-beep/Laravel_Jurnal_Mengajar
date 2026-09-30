@@ -12,14 +12,25 @@
             <form action="{{ route('admin.piket.store') }}" method="POST">
                 @csrf
                 <div class="form-grid">
-                    <div class="field"><label for="guru_id">Guru</label><select id="guru_id" name="guru_id" required>
+                    <div class="field"><label for="jenis_tugas">Jenis tugas</label><select id="jenis_tugas" name="jenis_tugas" required><option value="kbm" @selected(old('jenis_tugas', 'kbm') === 'kbm')>Piket KBM</option><option value="waka" @selected(old('jenis_tugas') === 'waka')>Piket Waka</option></select>@error('jenis_tugas')<small class="error">{{ $message }}</small>@enderror</div>
+                    <div class="field" data-assignment-field="kbm"><label for="guru_id">Guru</label><select id="guru_id" name="guru_id">
                         <option value="">Pilih guru</option>
                         @foreach ($allGurus as $guru)
                             <option value="{{ $guru->id }}" @selected(old('guru_id') == $guru->id)>{{ $guru->nama_guru }}</option>
                         @endforeach
                     </select>@error('guru_id')<small class="error">{{ $message }}</small>@enderror</div>
+                    <div class="field" data-assignment-field="waka" hidden><label for="user_id">Petugas Waka</label><select id="user_id" name="user_id" disabled>
+                        <option value="">Pilih petugas Waka</option>
+                        @foreach ($allWakas as $waka)
+                            <option value="{{ $waka->id }}" @selected(old('user_id') == $waka->id)>{{ $waka->name }}</option>
+                        @endforeach
+                    </select>@error('user_id')<small class="error">{{ $message }}</small>@enderror</div>
                     <div class="field"><label for="tanggal">Tanggal piket</label><input id="tanggal" type="date" name="tanggal" value="{{ old('tanggal', today()->toDateString()) }}" min="{{ today()->toDateString() }}" required><small id="tanggal-hari">{{ today()->locale('id')->translatedFormat('l') }}</small>@error('tanggal')<small class="error">{{ $message }}</small>@enderror</div>
-                    <div class="field"><label for="shift">Shift piket</label><select id="shift" name="shift" required><option value="pagi" @selected(old('shift', 'pagi') === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected(old('shift') === 'siang')>Siang · 11.00–15.00</option></select>@error('shift')<small class="error">{{ $message }}</small>@enderror</div>
+                    <div class="field" data-assignment-field="kbm"><label for="shift">Shift KBM</label><select id="shift" name="shift"><option value="pagi" @selected(old('shift', 'pagi') === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected(old('shift') === 'siang')>Siang · 11.00–15.00</option></select>@error('shift')<small class="error">{{ $message }}</small>@enderror</div>
+                </div>
+                <div class="field" data-assignment-field="kbm">
+                    <label><input type="checkbox" name="is_koordinator" value="1" @checked(old('is_koordinator'))> Koordinator shift</label>
+                    @error('is_koordinator')<small class="error">{{ $message }}</small>@enderror
                 </div>
                 <div class="form-actions"><button class="btn" type="submit">Simpan jadwal</button></div>
             </form>
@@ -37,7 +48,7 @@
                 <tr>
                     <td>{{ $guru->nama_guru }}</td><td>{{ $guru->nip }}</td>
                     <td>
-                        @if ($guru->jadwalPikets->isNotEmpty())<strong>Aktif piket</strong>@else Tidak ada jadwal @endif
+                        @if ($guru->jadwalPikets->isNotEmpty())<strong>Terjadwal</strong>@else Tidak ada jadwal @endif
                     </td>
                     <td>{{ $guru->jadwalPikets->first()?->tanggal->locale('id')->translatedFormat('l, d F Y') ?? '—' }}</td>
                 </tr>
@@ -49,26 +60,56 @@
         </div>
     </section>
     <section class="panel panel-spaced">
-        <div class="panel-head"><h2>Jadwal mendatang</h2></div>
-        <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Guru piket</th><th>Ubah jadwal</th><th></th></tr></thead><tbody>
+        <div class="panel-head"><h2>Jadwal piket per bulan</h2><span class="eyebrow">KBM, koordinator, dan Piket Waka</span></div>
+        <div class="panel-body">
+        <form class="piket-search" method="GET" action="{{ route('admin.piket.index') }}">
+            @if (request('q'))<input type="hidden" name="q" value="{{ request('q') }}">@endif
+            <div class="field"><label for="bulan">Bulan jadwal</label><input type="month" id="bulan" name="bulan" value="{{ $bulan }}"></div>
+            <div class="form-actions"><button class="btn" type="submit">Tampilkan bulan</button></div>
+        </form>
+        <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Petugas piket</th><th>Ubah jadwal</th><th></th></tr></thead><tbody>
             @forelse ($jadwals as $jadwal)
                 <tr>
-                    <td>{{ $jadwal->tanggal->locale('id')->translatedFormat('l, d/m/Y') }}<br><span class="eyebrow">{{ $jadwal->shiftLabel() }}</span></td><td>{{ $jadwal->guru->nama_guru }}</td>
+                    <td>{{ $jadwal->tanggal->locale('id')->translatedFormat('l, d/m/Y') }}<br><span class="eyebrow">{{ $jadwal->shiftLabel() }}</span></td><td>{{ $jadwal->guru?->nama_guru ?? $jadwal->user?->name ?? 'Petugas tidak ditemukan' }}@if ($jadwal->is_koordinator)<br><strong>Koordinator {{ $jadwal->shift }}</strong>@endif</td>
                     <td><details><summary>Edit jadwal</summary><form action="{{ route('admin.piket.update', $jadwal) }}" method="POST">@csrf @method('PUT')
-                        <input type="hidden" name="guru_id" value="{{ $jadwal->guru_id }}">
+                        @if ($jadwal->guru_id)
+                            <input type="hidden" name="jenis_tugas" value="kbm">
+                            <input type="hidden" name="guru_id" value="{{ $jadwal->guru_id }}">
+                            <input type="hidden" name="is_koordinator" value="0">
+                            <label><input type="checkbox" name="is_koordinator" value="1" @checked($jadwal->is_koordinator)> Koordinator shift</label>
+                            <label>Shift KBM<select name="shift" required><option value="pagi" @selected($jadwal->shift === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected($jadwal->shift === 'siang')>Siang · 11.00–15.00</option></select></label>
+                        @else
+                            <input type="hidden" name="jenis_tugas" value="waka">
+                            <input type="hidden" name="user_id" value="{{ $jadwal->user_id }}">
+                        @endif
                         <label>Tanggal piket<input class="piket-edit-date" type="date" name="tanggal" value="{{ $jadwal->tanggal->toDateString() }}" min="{{ today()->toDateString() }}" required></label>
-                        <label>Shift piket<select name="shift" required><option value="pagi" @selected($jadwal->shift === 'pagi')>Pagi · 07.00–11.00</option><option value="siang" @selected($jadwal->shift === 'siang')>Siang · 11.00–15.00</option></select></label>
                         <small>Hari: <span data-day-output>{{ $jadwal->tanggal->locale('id')->translatedFormat('l') }}</span></small>
                         <button class="btn btn-muted" type="submit">Simpan perubahan</button>
                     </form></details></td>
-                    <td><form action="{{ route('admin.piket.destroy', $jadwal) }}" method="POST" class="inline-form" data-confirm="Nonaktifkan jadwal piket {{ $jadwal->guru->nama_guru }} tanggal {{ $jadwal->tanggal->format('d/m/Y') }}?">@csrf @method('DELETE')<button class="btn btn-muted" type="submit">Nonaktifkan piket</button></form></td>
+                    <td><form action="{{ route('admin.piket.destroy', $jadwal) }}" method="POST" class="inline-form" data-confirm="Nonaktifkan jadwal piket {{ $jadwal->guru?->nama_guru ?? $jadwal->user?->name }} tanggal {{ $jadwal->tanggal->format('d/m/Y') }}?">@csrf @method('DELETE')<button class="btn btn-muted" type="submit">Nonaktifkan piket</button></form></td>
                 </tr>
             @empty
-                <tr><td colspan="4">Belum ada jadwal piket yang akan datang.</td></tr>
+                <tr><td colspan="4">Belum ada jadwal piket pada bulan ini.</td></tr>
             @endforelse
         </tbody></table></div></div>
     </section>
     <script>
+        const assignmentType = document.getElementById('jenis_tugas');
+        const assignmentFields = document.querySelectorAll('[data-assignment-field]');
+        const syncAssignmentFields = () => {
+            assignmentFields.forEach((field) => {
+                const visible = field.dataset.assignmentField === assignmentType.value;
+                field.hidden = !visible;
+                field.querySelectorAll('select').forEach((select) => {
+                    select.disabled = !visible;
+                    select.required = visible;
+                });
+                field.querySelectorAll('input').forEach((input) => { input.disabled = !visible; });
+            });
+        };
+        assignmentType.addEventListener('change', syncAssignmentFields);
+        syncAssignmentFields();
+
         const scheduleDate = document.getElementById('tanggal');
         const scheduleDay = document.getElementById('tanggal-hari');
         const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];

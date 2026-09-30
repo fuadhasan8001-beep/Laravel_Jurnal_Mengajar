@@ -19,12 +19,12 @@
             <span>Jurnal Guru</span>
         </a>
 
+        <header class="signin-heading">
+            <h1 id="signin-title">Selamat datang</h1>
+            <p>Masuk untuk melanjutkan ke jurnal mengajar Anda.</p>
+        </header>
+
         <section class="signin-card" aria-labelledby="signin-title">
-            <header class="signin-heading">
-                <span class="signin-kicker">PORTAL GURU</span>
-                <h1 id="signin-title">Selamat datang</h1>
-                <p>Masuk untuk melanjutkan ke jurnal mengajar Anda.</p>
-            </header>
 
             @if ($errors->any())
                 <div class="signin-error" role="alert">{{ $errors->first() }}</div>

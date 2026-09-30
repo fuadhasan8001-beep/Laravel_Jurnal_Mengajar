@@ -11,9 +11,11 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\User;
+use App\Notifications\ClassAbsenceRecorded;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
@@ -101,6 +103,24 @@ it('records a full-day parent permission without lesson hours and applies it to 
     expect($attendance->fresh()->status)->toBe('I');
 
     $this->get(route('piket.izin-sekolah.surat', $izin))->assertOk();
+});
+
+it('notifies the assigned class secretary when piket records a parent permission', function (): void {
+    Notification::fake();
+    $secretary = User::factory()->create(['role' => 'sekretaris', 'is_active' => true]);
+    $secretary->kelasSekretaris()->attach($this->kelas);
+
+    $this->actingAs($this->piket)->post(route('piket.izin-sekolah.store'), [
+        'siswa_ids' => [$this->student->id],
+        'status' => 'I',
+        'alasan' => 'Kontrol kesehatan',
+        'surat_izin' => UploadedFile::fake()->image('surat-orang-tua.jpg'),
+    ])->assertRedirect(route('piket.izin-sekolah.index'));
+
+    Notification::assertSentTo($secretary, ClassAbsenceRecorded::class, fn (ClassAbsenceRecorded $notification): bool => str_contains($notification->message, $this->student->nama_siswa)
+        && str_contains($notification->message, 'izin')
+        && str_contains($notification->url, 'kelas_id='.$this->kelas->id)
+    );
 });
 
 it('updates existing journals for the whole class when Piket records an all-day permission', function (): void {

@@ -14,6 +14,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MasterBypassController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PiketJurnalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RekapController;
@@ -127,8 +128,8 @@ Route::middleware('role:admin,waka,guru,sekretaris')->prefix('rekap')->group(fun
 });
 
 Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(function () {
-    Route::get('/rekap-jurnal', [LaporanController::class, 'jurnalPiket'])->name('rekap-jurnal');
-    Route::get('/rekap-jurnal/export', [LaporanController::class, 'jurnalPiketExport'])->name('rekap-jurnal.export');
+    Route::get('/rekap-jurnal', [PiketJurnalController::class, 'index'])->name('rekap-jurnal');
+    Route::get('/rekap-jurnal/export', [PiketJurnalController::class, 'export'])->name('rekap-jurnal.export');
     Route::get('/izin-sekolah', [IzinSekolahController::class, 'index'])->name('izin-sekolah.index');
     Route::get('/izin-sekolah/create', [IzinSekolahController::class, 'create'])->name('izin-sekolah.create');
     Route::post('/izin-sekolah', [IzinSekolahController::class, 'store'])->name('izin-sekolah.store');

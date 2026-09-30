@@ -29,8 +29,8 @@
                 <span>Lihat pengajuan piket dan status keputusan admin.</span>
             </a>
             <a class="quick-card" href="{{ route('piket.rekap-jurnal') }}">
-                <strong>Rekap jurnal guru</strong>
-                <span>Pantau jadwal dan jurnal yang sudah diisi semua guru hari ini.</span>
+                <strong>Rekap jurnal per kelas</strong>
+                <span>Jadwal KBM dan jurnal kelas.</span>
             </a>
         </div>
     </section>

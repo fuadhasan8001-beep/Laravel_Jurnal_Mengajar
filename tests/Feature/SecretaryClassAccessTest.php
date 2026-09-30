@@ -75,7 +75,7 @@ it('provisions one secretary account for each scheduled class', function () {
 
     expect(Artisan::call('app:provision-class-secretary-accounts'))->toBe(0);
 
-    $email = 'pengurus.'.Str::slug($data['assigned']->nama_kelas).'.'.$data['assigned']->id.'@sekolah.local';
+    $email = Str::slug($data['assigned']->nama_kelas, '.').'@sekolah.local';
     $user = User::where('email', $email)->first();
     expect($user)->not->toBeNull();
     $this->assertDatabaseHas('sekretaris_kelas', ['user_id' => $user->id, 'kelas_id' => $data['assigned']->id]);
