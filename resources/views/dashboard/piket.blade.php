@@ -24,6 +24,10 @@
                 <strong>Catat izin atau sakit seharian</strong>
                 <span>Unggah surat orang tua agar status siswa tercatat untuk seluruh hari sekolah.</span>
             </a>
+            <a class="quick-card" href="{{ route('piket.izin-masuk.create') }}">
+                <strong>Buat surat izin masuk</strong>
+                <span>Catat siswa terlambat, jam kedatangan, dan perbarui absensi mulai jam tersebut.</span>
+            </a>
             <a class="quick-card" href="{{ route('piket.izin-sekolah.index') }}">
                 <strong>Riwayat izin dan sakit</strong>
                 <span>Lihat siswa yang tidak masuk seharian dan surat yang sudah dicatat.</span>

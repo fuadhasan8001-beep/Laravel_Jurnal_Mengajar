@@ -133,6 +133,8 @@ Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(fun
     Route::get('/izin-sekolah', [IzinSekolahController::class, 'index'])->name('izin-sekolah.index');
     Route::get('/izin-sekolah/create', [IzinSekolahController::class, 'create'])->name('izin-sekolah.create');
     Route::post('/izin-sekolah', [IzinSekolahController::class, 'store'])->name('izin-sekolah.store');
+    Route::get('/izin-masuk/create', [IzinSekolahController::class, 'createArrival'])->name('izin-masuk.create');
+    Route::post('/izin-masuk', [IzinSekolahController::class, 'storeArrival'])->name('izin-masuk.store');
 });
 
 Route::get('/piket/izin-sekolah/{izinSekolah}/surat', [AbsensiController::class, 'downloadSchoolPermissionLetter'])

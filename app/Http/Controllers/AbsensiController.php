@@ -6,11 +6,13 @@ use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\IzinSekolah;
+use App\Models\IzinMasuk;
 use App\Models\Jadwal;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -60,11 +62,35 @@ class AbsensiController extends Controller
             $jurnal->setRelation('izinSekolahSiswa', IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
                 ->whereIn('siswa_id', $jurnal->kelas->siswas->pluck('id'))
                 ->get()->keyBy('siswa_id'));
+            $jurnal->setRelation('izinMasukSiswa', IzinMasuk::whereDate('tanggal', $jurnal->tanggal)
+                ->whereIn('siswa_id', $jurnal->kelas->siswas->pluck('id'))
+                ->get()->keyBy('siswa_id'));
             $jurnal->setRelation('dispensasiDisetujuiSiswa', Dispensasi::approvedForJournal($jurnal)->keyBy('siswa_id'));
         });
 
+        $arrivalDate = $selectedDate ?? today()->toDateString();
+        $izinMasuks = IzinMasuk::with(['siswa.kelas', 'piket'])
+            ->whereDate('tanggal', $arrivalDate)
+            ->when($request->filled('kelas_id'), fn ($builder) => $builder->whereHas('siswa', fn ($student) => $student->where('kelas_id', $request->integer('kelas_id'))));
+
+        if ($request->user()->role === 'sekretaris') {
+            $izinMasuks->whereHas('siswa', fn ($student) => $student->whereIn('kelas_id', $request->user()->kelasSekretaris()->select('kelas.id')));
+        }
+
+        if ($request->user()->role === 'guru') {
+            $weekday = Carbon::parse($arrivalDate)->locale('id')->translatedFormat('l');
+            $izinMasuks->whereHas('siswa', fn ($student) => $student->whereIn('kelas_id', Jadwal::query()
+                ->where('guru_id', $this->currentGuru()->id)
+                ->where('hari', $weekday)
+                ->where('is_active', true)
+                ->select('kelas_id')));
+        }
+
+        $izinMasuks = $izinMasuks->latest('waktu_masuk')->get();
+
         return view('absensi.index', [
             'jurnals' => $jurnals,
+            'izinMasuks' => $izinMasuks,
             'gurus' => Guru::orderBy('nama_guru')->get(),
             'kelas' => Kelas::orderBy('nama_kelas')->get(),
             'mapels' => Mapel::orderBy('nama_mapel')->get(),
@@ -111,6 +137,11 @@ class AbsensiController extends Controller
                 ? 'Sakit seharian berdasarkan surat orang tua.'
                 : 'Izin sekolah seharian berdasarkan surat orang tua.';
         }
+            $arrivalPermission = IzinMasuk::where('siswa_id', $data['siswa_id'])->whereDate('tanggal', $jurnal->tanggal)->first();
+            if (! $allDayIzin && ! $hasApprovedDispensasi && $arrivalPermission && $this->journalAtOrAfterArrival($jurnal, $arrivalPermission)) {
+                $data['status'] = 'H';
+                $data['catatan'] = $this->arrivalNote($arrivalPermission);
+            }
 
         Absensi::updateOrCreate(
             [
@@ -150,20 +181,24 @@ class AbsensiController extends Controller
         $approvedDispensations = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
         $allDayIzin = IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
             ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
-        DB::transaction(function () use ($records, $jurnal, $approvedDispensations, $allDayIzin): void {
+        $arrivalPermissions = IzinMasuk::whereDate('tanggal', $jurnal->tanggal)
+            ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
+        DB::transaction(function () use ($records, $jurnal, $approvedDispensations, $allDayIzin, $arrivalPermissions): void {
             foreach ($records as $record) {
                 $studentId = (int) $record['siswa_id'];
                 $hasApprovedDispensation = $approvedDispensations->contains($studentId);
                 abort_if($record['status'] === 'D' && ! $hasApprovedDispensation, 422, 'Status dispensasi memerlukan persetujuan admin.');
                 $allDayLeave = $allDayIzin->get($studentId);
+                $arrivalPermission = $arrivalPermissions->get($studentId);
+                $arrivalApplies = ! $allDayLeave && ! $hasApprovedDispensation && $arrivalPermission && $this->journalAtOrAfterArrival($jurnal, $arrivalPermission);
 
                 Absensi::updateOrCreate(
                     ['jurnal_id' => $jurnal->id, 'siswa_id' => $studentId],
                     [
-                        'status' => $allDayLeave ? $allDayLeave->status : ($hasApprovedDispensation ? 'D' : $record['status']),
+                        'status' => $allDayLeave ? $allDayLeave->status : ($hasApprovedDispensation ? 'D' : ($arrivalApplies ? 'H' : $record['status'])),
                         'catatan' => $allDayLeave
                             ? ($allDayLeave->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.')
-                            : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($record['catatan'] ?? null)),
+                            : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($arrivalApplies ? $this->arrivalNote($arrivalPermission) : ($record['catatan'] ?? null))),
                         'surat_izin_path' => $allDayLeave?->surat_izin_path,
                     ]
                 );
@@ -171,6 +206,20 @@ class AbsensiController extends Controller
         });
 
         return back()->with('success', 'Absensi berhasil disimpan.');
+    }
+
+    private function journalAtOrAfterArrival(Jurnal $jurnal, IzinMasuk $permission): bool
+    {
+        $day = $jurnal->tanggal->locale('id')->translatedFormat('l');
+
+        return $jurnal->jamSelesai->timesForDay($day)[1] > $permission->waktu_masuk;
+    }
+
+    private function arrivalNote(IzinMasuk $permission): string
+    {
+        $note = 'Terlambat, izin masuk jam ke-'.$permission->jam_masuk_ke.' pukul '.substr($permission->waktu_masuk, 0, 5).'.';
+
+        return $permission->alasan ? $note.' Alasan: '.$permission->alasan : $note;
     }
 
     public function downloadParentLetter(Absensi $absensi): BinaryFileResponse

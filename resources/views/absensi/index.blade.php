@@ -32,6 +32,32 @@
             </div>
         </section>
     @endif
+    @if ($izinMasuks->isNotEmpty())
+        <section class="panel panel-spaced">
+            <div class="panel-head">
+                <div>
+                    <h2>Surat izin masuk · {{ \Illuminate\Support\Carbon::parse($selectedDate ?? today())->translatedFormat('d F Y') }}</h2>
+                    <span class="eyebrow">Catatan kedatangan siswa</span>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Siswa</th><th>Kelas</th><th>Status</th><th>Catatan</th><th>Dicatat oleh</th></tr></thead>
+                    <tbody>
+                        @foreach ($izinMasuks as $izinMasuk)
+                            <tr>
+                                <td>{{ $izinMasuk->siswa->nama_siswa }}</td>
+                                <td>{{ $izinMasuk->siswa->kelas->nama_kelas }}</td>
+                                <td>Hadir mulai jam ke-{{ $izinMasuk->jam_masuk_ke }} · {{ substr($izinMasuk->waktu_masuk, 0, 5) }}</td>
+                                <td>{{ $izinMasuk->alasan ? 'Terlambat. Alasan: '.$izinMasuk->alasan : 'Terlambat.' }}</td>
+                                <td>{{ $izinMasuk->piket?->name ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    @endif
     @forelse ($jurnals as $jurnal)
         <section class="panel panel-spaced">
             <div class="panel-head">
@@ -71,10 +97,14 @@
                                 @php
                                     $absensi = $jurnal->absensis->firstWhere('siswa_id', $siswa->id);
                                     $izinSekolah = $jurnal->izinSekolahSiswa->get($siswa->id);
+                                    $izinMasuk = $jurnal->izinMasukSiswa->get($siswa->id);
                                     $dispensasiDisetujui = $jurnal->dispensasiDisetujuiSiswa->get($siswa->id);
                                     $forcedIzin = $izinSekolah !== null;
                                     $forcedStatus = $forcedIzin ? $izinSekolah->status : ($dispensasiDisetujui ? 'D' : null);
                                     $statusAbsensi = $forcedStatus ?? ($absensi?->status ?? 'H');
+                                    $arrivalNote = $izinMasuk && $jurnal->jamSelesai->timesForDay($jurnal->tanggal->locale('id')->translatedFormat('l'))[1] > $izinMasuk->waktu_masuk
+                                        ? 'Terlambat, izin masuk jam ke-'.$izinMasuk->jam_masuk_ke.' pukul '.substr($izinMasuk->waktu_masuk, 0, 5).($izinMasuk->alasan ? '. Alasan: '.$izinMasuk->alasan : '.')
+                                        : null;
                                 @endphp
                                 <tr data-student-search="{{ $siswa->nama_siswa }} {{ $siswa->nis }}">
                                     <td class="attendance-name">
@@ -95,7 +125,7 @@
                                             </div>
                                     </td>
                                     <td>
-                                        <input type="text" data-absence-note name="absensis[{{ $siswa->id }}][catatan]" value="{{ $forcedIzin ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($dispensasiDisetujui ? 'Dispensasi disetujui.' : old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? '')) }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($forcedStatus !== null || $absensi?->status === 'D')>
+                                        <input type="text" data-absence-note @if ($arrivalNote) data-always-show @endif name="absensis[{{ $siswa->id }}][catatan]" value="{{ $forcedIzin ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($dispensasiDisetujui ? 'Dispensasi disetujui.' : ($arrivalNote ?? old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? ''))) }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($forcedStatus !== null || $absensi?->status === 'D' || $arrivalNote)>
                                         @if ($izinSekolah)
                                             <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat orang tua</a>
                                         @elseif ($absensi?->surat_izin_path)
@@ -151,9 +181,10 @@
             const updateNotes = () => {
                 form.querySelectorAll('[data-absence-note]').forEach(note => {
                     const present = note.closest('tr').querySelector('[data-absence-status]:checked')?.value === 'H';
-                    note.hidden = present;
-                    note.style.display = present ? 'none' : '';
-                    note.disabled = present;
+                    const alwaysShow = note.hasAttribute('data-always-show');
+                    note.hidden = present && !alwaysShow;
+                    note.style.display = present && !alwaysShow ? 'none' : '';
+                    note.disabled = present && !alwaysShow;
                 });
             };
             form.addEventListener('change', updateNotes);

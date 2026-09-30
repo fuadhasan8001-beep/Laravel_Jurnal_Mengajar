@@ -8,6 +8,7 @@ use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\IzinSekolah;
+use App\Models\IzinMasuk;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -312,6 +313,8 @@ class JurnalController extends Controller
         $dispensedStudentIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
         $allDayIzin = IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
             ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
+        $arrivalPermissions = IzinMasuk::whereDate('tanggal', $jurnal->tanggal)
+            ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
         abort_if(
@@ -321,7 +324,7 @@ class JurnalController extends Controller
         );
 
         $timestamp = now();
-        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds, $allDayIzin): array {
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds, $allDayIzin, $arrivalPermissions): array {
             $absensi = $submittedAbsensis->get($student->id, []);
 
             if ($allDayIzin->has($student->id)) {
@@ -335,6 +338,15 @@ class JurnalController extends Controller
                 ];
             } elseif ($dispensedStudentIds->contains($student->id)) {
                 $absensi = ['status' => 'D', 'catatan' => 'Dispensasi disetujui.'];
+            } elseif ($arrivalPermissions->has($student->id) && $this->journalAtOrAfterArrival($jurnal, $arrivalPermissions->get($student->id))) {
+                $permission = $arrivalPermissions->get($student->id);
+                $absensi = [
+                    'status' => 'H',
+                    'catatan' => 'Terlambat, izin masuk jam ke-'.$permission->jam_masuk_ke.' pukul '.substr($permission->waktu_masuk, 0, 5).'.',
+                ];
+                if ($permission->alasan) {
+                    $absensi['catatan'] .= ' Alasan: '.$permission->alasan;
+                }
             }
 
             return [
@@ -366,6 +378,13 @@ class JurnalController extends Controller
                 ->values()
                 ->all(),
         ]);
+    }
+
+    private function journalAtOrAfterArrival(Jurnal $jurnal, IzinMasuk $permission): bool
+    {
+        $day = $jurnal->tanggal->locale('id')->translatedFormat('l');
+
+        return $jurnal->jamSelesai->timesForDay($day)[1] > $permission->waktu_masuk;
     }
 
     /**

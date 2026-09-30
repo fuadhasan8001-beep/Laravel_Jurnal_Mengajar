@@ -4,6 +4,7 @@ use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\IzinSekolah;
+use App\Models\IzinMasuk;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
@@ -121,6 +122,75 @@ it('notifies the assigned class secretary when piket records a parent permission
         && str_contains($notification->message, 'izin')
         && str_contains($notification->url, 'kelas_id='.$this->kelas->id)
     );
+});
+
+it('records izin masuk, updates eligible lesson attendance, and notifies class recipients', function (): void {
+    Notification::fake();
+    $secretary = User::factory()->create(['role' => 'sekretaris', 'is_active' => true]);
+    $secretary->kelasSekretaris()->attach($this->kelas);
+    $journal = Jurnal::create([
+        'guru_id' => $this->guru->id,
+        'kelas_id' => $this->kelas->id,
+        'mapel_id' => $this->mapel->id,
+        'jam_mulai_id' => $this->jam->id,
+        'jam_selesai_id' => $this->jam->id,
+        'tanggal' => today(),
+        'status_guru' => 'Hadir',
+        'materi' => 'Bilangan',
+    ]);
+
+    $this->actingAs($this->piket)->get(route('piket.izin-masuk.create'))
+        ->assertOk()
+        ->assertSee('Surat izin masuk');
+
+    $this->post(route('piket.izin-masuk.store'), [
+        'siswa_id' => $this->student->id,
+        'jam_masuk_ke' => 1,
+        'alasan' => 'Terlambat karena kendaraan umum.',
+    ])->assertRedirect(route('piket.izin-masuk.create'));
+
+    $permission = IzinMasuk::firstOrFail();
+    $attendance = Absensi::where('jurnal_id', $journal->id)->where('siswa_id', $this->student->id)->firstOrFail();
+    expect($permission->jam_masuk_ke)->toBe(1)
+        ->and($attendance->status)->toBe('H')
+        ->and($attendance->catatan)->toContain('Terlambat, izin masuk jam ke-1')
+        ->and($attendance->catatan)->toContain('Alasan: Terlambat karena kendaraan umum.');
+
+    $this->actingAs($this->teacher)->get(route('absensi.index'))
+        ->assertOk()
+        ->assertSee('Terlambat, izin masuk jam ke-1')
+        ->assertSee('Alasan: Terlambat karena kendaraan umum.');
+
+    $this->post(route('absensi.store'), [
+        'jurnal_id' => $journal->id,
+        'absensis' => [$this->student->id => [
+            'siswa_id' => $this->student->id,
+            'status' => 'H',
+            'catatan' => 'Catatan lain',
+        ]],
+    ])->assertRedirect();
+    expect($attendance->fresh()->catatan)->toContain('Alasan: Terlambat karena kendaraan umum.');
+
+    foreach ([$this->teacher, $secretary] as $recipient) {
+        Notification::assertSentTo($recipient, ClassAbsenceRecorded::class, fn (ClassAbsenceRecorded $notification): bool => str_contains($notification->message, $this->student->nama_siswa)
+            && str_contains($notification->message, 'jam ke-1')
+            && str_contains($notification->url, 'kelas_id='.$this->kelas->id));
+    }
+});
+
+it('shows izin masuk on the attendance page even when the class has no journal yet', function (): void {
+    $this->actingAs($this->piket)->post(route('piket.izin-masuk.store'), [
+        'siswa_id' => $this->student->id,
+        'jam_masuk_ke' => 1,
+        'alasan' => 'Terlambat karena kendaraan umum.',
+    ])->assertRedirect(route('piket.izin-masuk.create'));
+
+    $this->actingAs($this->teacher)->get(route('absensi.index'))
+        ->assertOk()
+        ->assertSee('Surat izin masuk')
+        ->assertSee($this->student->nama_siswa)
+        ->assertSee('Hadir mulai jam ke-1')
+        ->assertSee('Terlambat. Alasan: Terlambat karena kendaraan umum.');
 });
 
 it('updates existing journals for the whole class when Piket records an all-day permission', function (): void {
