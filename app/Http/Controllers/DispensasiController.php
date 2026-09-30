@@ -394,7 +394,7 @@ class DispensasiController extends Controller
                 [
                     'status' => $allDayAbsence?->status ?? 'D',
                     'catatan' => $allDayAbsence
-                        ? ($allDayAbsence->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.')
+                        ? ($allDayAbsence->status === 'S' ? 'Sakit berdasarkan surat dari orang tua.' : 'Izin berdasarkan surat dari orang tua.')
                         : ($dispensasi->surat_izin_path ? 'Izin orang tua / surat dispensasi terlampir.' : 'Dispensasi disetujui.'),
                     'surat_izin_path' => $allDayAbsence?->surat_izin_path ?? $dispensasi->surat_izin_path,
                 ]

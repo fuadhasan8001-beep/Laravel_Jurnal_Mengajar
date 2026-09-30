@@ -134,8 +134,8 @@ class AbsensiController extends Controller
         if ($allDayIzin) {
             $data['status'] = $allDayIzin->status;
             $data['catatan'] = $allDayIzin->status === 'S'
-                ? 'Sakit seharian berdasarkan surat orang tua.'
-                : 'Izin sekolah seharian berdasarkan surat orang tua.';
+                ? 'Sakit berdasarkan surat dari orang tua.'
+                : 'Izin berdasarkan surat dari orang tua.';
         }
             $arrivalPermission = IzinMasuk::where('siswa_id', $data['siswa_id'])->whereDate('tanggal', $jurnal->tanggal)->first();
             if (! $allDayIzin && ! $hasApprovedDispensasi && $arrivalPermission && $this->journalAtOrAfterArrival($jurnal, $arrivalPermission)) {
@@ -197,7 +197,7 @@ class AbsensiController extends Controller
                     [
                         'status' => $allDayLeave ? $allDayLeave->status : ($hasApprovedDispensation ? 'D' : ($arrivalApplies ? 'H' : $record['status'])),
                         'catatan' => $allDayLeave
-                            ? ($allDayLeave->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.')
+                            ? ($allDayLeave->status === 'S' ? 'Sakit berdasarkan surat dari orang tua.' : 'Izin berdasarkan surat dari orang tua.')
                             : ($hasApprovedDispensation ? 'Dispensasi disetujui.' : ($arrivalApplies ? $this->arrivalNote($arrivalPermission) : ($record['catatan'] ?? null))),
                         'surat_izin_path' => $allDayLeave?->surat_izin_path,
                     ]

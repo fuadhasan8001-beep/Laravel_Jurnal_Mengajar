@@ -125,7 +125,7 @@
                                             </div>
                                     </td>
                                     <td>
-                                        <input type="text" data-absence-note @if ($arrivalNote) data-always-show @endif name="absensis[{{ $siswa->id }}][catatan]" value="{{ $forcedIzin ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($dispensasiDisetujui ? 'Dispensasi disetujui.' : ($arrivalNote ?? old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? ''))) }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($forcedStatus !== null || $absensi?->status === 'D' || $arrivalNote)>
+                                        <input type="text" data-absence-note @if ($arrivalNote) data-always-show @endif name="absensis[{{ $siswa->id }}][catatan]" value="{{ $forcedIzin ? ($izinSekolah->status === 'S' ? 'Sakit berdasarkan surat dari orang tua.' : 'Izin berdasarkan surat dari orang tua.') : ($dispensasiDisetujui ? 'Dispensasi disetujui.' : ($arrivalNote ?? old('absensis.'.$siswa->id.'.catatan', $absensi->catatan ?? ''))) }}" placeholder="Catatan" aria-label="Catatan {{ $siswa->nama_siswa }}" @readonly($forcedStatus !== null || $absensi?->status === 'D' || $arrivalNote)>
                                         @if ($izinSekolah)
                                             <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat orang tua</a>
                                         @elseif ($absensi?->surat_izin_path)

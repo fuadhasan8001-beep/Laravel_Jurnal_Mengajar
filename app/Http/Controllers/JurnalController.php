@@ -332,8 +332,8 @@ class JurnalController extends Controller
                 $absensi = [
                     'status' => $izin->status,
                     'catatan' => $izin->status === 'S'
-                        ? 'Sakit seharian berdasarkan surat orang tua.'
-                        : 'Izin sekolah seharian berdasarkan surat orang tua.',
+                        ? 'Sakit berdasarkan surat dari orang tua.'
+                        : 'Izin berdasarkan surat dari orang tua.',
                     'surat_izin_path' => $izin->surat_izin_path,
                 ];
             } elseif ($dispensedStudentIds->contains($student->id)) {
