@@ -75,18 +75,22 @@ class AdminPiketController extends Controller
 
     public function update(Request $request, JadwalPiket $jadwalPiket): RedirectResponse
     {
+        $fixedDate = $jadwalPiket->tanggal->toDateString();
+
         $data = $request->validate([
             'jenis_tugas' => ['required', 'in:kbm,waka'],
             'guru_id' => ['nullable', 'required_if:jenis_tugas,kbm', 'exists:gurus,id'],
             'user_id' => ['nullable', 'required_if:jenis_tugas,waka', Rule::exists('users', 'id')->where('role', 'waka')->where('is_active', true)],
-            'tanggal' => ['required', 'date', 'after_or_equal:today'],
+            'tanggal' => ['sometimes', 'nullable', 'date', 'after_or_equal:today'],
             'shift' => ['nullable', 'required_if:jenis_tugas,kbm', 'in:pagi,siang'],
             'is_koordinator' => ['sometimes', 'boolean'],
         ]);
 
+        $data['tanggal'] = $fixedDate;
+
         if ($data['jenis_tugas'] === 'kbm') {
             $duplicate = JadwalPiket::where('guru_id', $data['guru_id'])
-                ->whereDate('tanggal', $data['tanggal'])
+                ->whereDate('tanggal', $fixedDate)
                 ->where('shift', $data['shift'])
                 ->where('id', '!=', $jadwalPiket->id)
                 ->exists();
@@ -94,12 +98,12 @@ class AdminPiketController extends Controller
 
             $jadwalPiket->update([
                 'guru_id' => $data['guru_id'], 'user_id' => null,
-                'tanggal' => $data['tanggal'], 'shift' => $data['shift'],
+                'tanggal' => $fixedDate, 'shift' => $data['shift'],
                 'is_koordinator' => $request->has('is_koordinator') ? $request->boolean('is_koordinator') : $jadwalPiket->is_koordinator,
             ]);
         } else {
             $duplicate = JadwalPiket::where('user_id', $data['user_id'])
-                ->whereDate('tanggal', $data['tanggal'])
+                ->whereDate('tanggal', $fixedDate)
                 ->where('shift', JadwalPiket::SHIFT_WAKA)
                 ->where('id', '!=', $jadwalPiket->id)
                 ->exists();
@@ -107,7 +111,7 @@ class AdminPiketController extends Controller
 
             $jadwalPiket->update([
                 'guru_id' => null, 'user_id' => $data['user_id'],
-                'tanggal' => $data['tanggal'], 'shift' => JadwalPiket::SHIFT_WAKA,
+                'tanggal' => $fixedDate, 'shift' => JadwalPiket::SHIFT_WAKA,
                 'is_koordinator' => false,
             ]);
         }

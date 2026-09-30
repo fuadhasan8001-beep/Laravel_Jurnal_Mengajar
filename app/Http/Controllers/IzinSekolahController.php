@@ -91,7 +91,7 @@ class IzinSekolahController extends Controller
             throw $exception;
         }
 
-        $absenceNotifier->notify($students, $data['status'] === 'S' ? 'sakit' : 'izin');
+        $absenceNotifier->notify($students, $data['status'] === 'S' ? 'sakit' : 'izin', $data['tanggal']);
 
         return redirect()->route('piket.izin-sekolah.index')
             ->with('success', ($data['status'] === 'S' ? 'Surat sakit seharian' : 'Surat izin seharian').' berhasil dicatat. Absensi jurnal hari tersebut sudah diperbarui.');

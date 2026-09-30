@@ -26,7 +26,7 @@ it('rejects a dispensation for a lesson that has already ended', function () {
     $this->assertDatabaseCount('dispensasis', 0);
 });
 
-it('rejects a non-image file as dispensation evidence', function () {
+it('allows a dispensation without attaching evidence photos', function () {
     $student = dispensasiValidationStudent();
     $lesson = JamPelajaran::create(['jam_ke' => 1, 'jam_mulai' => '07:00:00', 'jam_selesai' => '07:45:00', 'is_active' => true]);
     $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
@@ -36,10 +36,13 @@ it('rejects a non-image file as dispensation evidence', function () {
         'jam_selesai_id' => $lesson->id,
         'alasan' => 'Kegiatan sekolah',
         'siswa_ids' => [$student->id],
-        'bukti' => UploadedFile::fake()->create('surat.pdf', 100, 'application/pdf'),
-    ])->assertSessionHasErrors('bukti');
+    ])->assertRedirect(route('dispensasi.index'));
 
-    $this->assertDatabaseCount('dispensasis', 0);
+    $this->assertDatabaseHas('dispensasis', [
+        'siswa_id' => $student->id,
+        'jam_mulai_id' => $lesson->id,
+        'jam_selesai_id' => $lesson->id,
+    ]);
 });
 
 it('allows a dispensation to end in the same lesson that it starts', function () {

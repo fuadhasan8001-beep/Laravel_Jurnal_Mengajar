@@ -82,7 +82,8 @@
                             <input type="hidden" name="jenis_tugas" value="waka">
                             <input type="hidden" name="user_id" value="{{ $jadwal->user_id }}">
                         @endif
-                        <label>Tanggal piket<input class="piket-edit-date" type="date" name="tanggal" value="{{ $jadwal->tanggal->toDateString() }}" min="{{ today()->toDateString() }}" required></label>
+                        <input type="hidden" name="tanggal" value="{{ $jadwal->tanggal->toDateString() }}">
+                        <label>Tanggal piket<input type="date" value="{{ $jadwal->tanggal->toDateString() }}" min="{{ today()->toDateString() }}" readonly aria-readonly="true"></label>
                         <small>Hari: <span data-day-output>{{ $jadwal->tanggal->locale('id')->translatedFormat('l') }}</span></small>
                         <button class="btn btn-muted" type="submit">Simpan perubahan</button>
                     </form></details></td>

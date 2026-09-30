@@ -13,9 +13,11 @@ use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
+use App\Services\ClassAbsenceNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -79,7 +81,6 @@ class DispensasiController extends Controller
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
             'alasan' => ['required', 'string', 'max:5000'],
-            'bukti' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'attendance_status' => ['exclude'],
         ]);
 
@@ -128,10 +129,7 @@ class DispensasiController extends Controller
                 ->withErrors(['siswa_ids' => 'Siswa tersebut sudah memiliki dispensasi pada jam yang beririsan.']);
         }
 
-        unset($data['siswa_ids'], $data['bukti']);
-        if ($request->hasFile('bukti')) {
-            $data['bukti'] = $request->file('bukti')->store('dispensasi/bukti');
-        }
+        unset($data['siswa_ids']);
         $groupKey = $isPiket ? (string) Str::uuid() : null;
         try {
             $first = DB::transaction(function () use ($studentIds, $data, $isPiket, $groupKey): ?Dispensasi {
@@ -147,7 +145,6 @@ class DispensasiController extends Controller
                 return $first;
             });
         } catch (\Throwable $exception) {
-            Storage::delete(array_filter([$data['bukti'] ?? null]));
             throw $exception;
         }
 
@@ -280,12 +277,27 @@ class DispensasiController extends Controller
 
             if ($dispensasi->status_akhir === 'Disetujui') {
                 $group->each(fn (Dispensasi $item): mixed => $this->markAttendanceAsDispensed($item));
+                $this->notifyClassAbsence($group);
                 $this->notifyTeachers($dispensasi);
             }
         });
 
         return redirect()->route('dispensasi.show', $dispensasi)
             ->with('success', 'Verifikasi dispensasi berhasil disimpan.');
+    }
+
+    private function notifyClassAbsence(Collection $dispensasis): void
+    {
+        $students = $dispensasis
+            ->map(fn (Dispensasi $dispensasi): ?Siswa => $dispensasi->siswa)
+            ->filter()
+            ->unique('id');
+
+        if ($students->isEmpty()) {
+            return;
+        }
+
+        app(ClassAbsenceNotifier::class)->notify($students, 'dispen', $dispensasis->first()->tanggal);
     }
 
     private function notifyTeachers(Dispensasi $dispensasi): void

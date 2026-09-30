@@ -77,3 +77,28 @@ it('preserves the coordinator assignment through the admin form and enables its 
     $this->put(route('admin.piket.update', $schedule), [...$payload, 'is_koordinator' => '0'])->assertRedirect();
     expect($schedule->fresh()->is_koordinator)->toBeFalse();
 });
+
+it('keeps the original piket date fixed when editing a scheduled assignment', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+    $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+    $guru = Guru::create(['user_id' => $teacher->id, 'nip' => 'FIXED-DATE', 'nama_guru' => 'Guru Tanggal Tetap', 'status_kepegawaian' => 'Honorer']);
+
+    $this->actingAs($admin)->post(route('admin.piket.store'), [
+        'jenis_tugas' => 'kbm',
+        'guru_id' => $guru->id,
+        'tanggal' => '2026-09-30',
+        'shift' => 'pagi',
+    ])->assertRedirect();
+
+    $schedule = JadwalPiket::where('guru_id', $guru->id)->firstOrFail();
+
+    $this->put(route('admin.piket.update', $schedule), [
+        'jenis_tugas' => 'kbm',
+        'guru_id' => $guru->id,
+        'tanggal' => '2026-10-02',
+        'shift' => 'siang',
+    ])->assertRedirect();
+
+    expect($schedule->fresh()->tanggal->toDateString())->toBe('2026-09-30')
+        ->and($schedule->fresh()->shift)->toBe('siang');
+});

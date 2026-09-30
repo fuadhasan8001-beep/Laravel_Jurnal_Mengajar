@@ -59,6 +59,21 @@ it('shows todays date as readonly even after validation fails with old input', f
     expect($field->hasAttribute('readonly'))->toBeTrue();
 });
 
+it('hides the photo requirement from the non-piket dispensasi form and review modal', function () {
+    $data = dispensasiSetup();
+
+    $response = $this->actingAs($data['student'] ?? $data['students']->first()->user)->get(route('dispensasi.create'));
+    $response->assertOk();
+
+    $document = new DOMDocument;
+    @$document->loadHTML($response->getContent());
+    $xpath = new DOMXPath($document);
+
+    expect($xpath->query('//input[@name="bukti"]')->length)->toBe(0)
+        ->and($response->getContent())->not->toContain('Tidak ada bukti foto')
+        ->and($response->getContent())->not->toContain('Bukti foto');
+});
+
 function dispensasiSetup(): array
 {
     config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => 100, 'school.max_gps_accuracy' => 25]);
@@ -194,6 +209,25 @@ it('marks only overlapping journals and notifies the teacher once after admin ap
     $this->assertDatabaseMissing('absensis', ['jurnal_id' => $later->id, 'status' => 'D']);
     Notification::assertSentToTimes($data['teacher'], DispensasiNotification::class, 1);
     Notification::assertSentTo($data['teacher'], DispensasiNotification::class, fn ($notification) => $notification->event === 'teacher_approved');
+});
+
+it('notifies the class and teacher when a dispensation is approved for a student', function () {
+    $data = dispensasiSetup();
+    Notification::fake();
+    $secretary = User::factory()->create(['role' => 'sekretaris', 'is_active' => true]);
+    $secretary->kelasSekretaris()->attach($data['kelas']);
+    $student = $data['students']->first();
+    $journal = Jurnal::create($data['journal']);
+    $dispensasi = Dispensasi::create([...$data['payload'], 'siswa_id' => $student->id, 'status_piket' => 'Disetujui']);
+
+    $this->actingAs($data['admin'])->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
+
+    Notification::assertSentTo($data['teacher'], DispensasiNotification::class, fn ($notification) => $notification->event === 'teacher_approved');
+    Notification::assertSentTo($secretary, ClassAbsenceRecorded::class, fn (ClassAbsenceRecorded $notification): bool => str_contains($notification->message, $student->nama_siswa)
+        && str_contains($notification->message, 'dispen')
+        && str_contains($notification->url, 'kelas_id='.$data['kelas']->id)
+        && str_contains($notification->url, $dispensasi->tanggal->toDateString()));
+    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
 });
 
 it('notifies a scheduled teacher even before their journal exists', function () {
