@@ -50,16 +50,33 @@
         @else
             <div class="table-wrap responsive-card-table-wrap">
                 <table class="responsive-card-table">
-                    <thead><tr><th>Tanggal / hari</th><th>Jam pelajaran</th><th>Mata pelajaran</th><th>Guru pengajar</th><th>Jurnal</th><th>Verifikasi</th><th></th></tr></thead>
+                    <thead><tr><th>Tanggal / hari</th><th>Jam pelajaran</th><th>Mata pelajaran</th><th>Guru pengajar</th><th>Status jurnal dan verifikasi</th><th></th></tr></thead>
                     <tbody>
                         @foreach ($rows as $row)
+                            @php
+                                $availabilityClass = match ($row['status']) {
+                                    'Sudah Diisi' => 'is-filled',
+                                    'Belum Diisi' => 'is-missing',
+                                    'Belum waktunya', 'Terjadwal' => 'is-upcoming',
+                                    default => 'is-neutral',
+                                };
+                                $verificationStatus = $row['jurnal']?->status_verifikasi;
+                                $verificationClass = match ($verificationStatus) {
+                                    'Disetujui' => 'is-approved',
+                                    'Ditolak' => 'is-rejected',
+                                    'Menunggu' => 'is-pending',
+                                    default => 'is-neutral',
+                                };
+                            @endphp
                             <tr>
                                 <td data-label="Tanggal / hari">{{ $row['tanggal']->locale('id')->translatedFormat('l, d M Y') }}</td>
                                 <td data-label="Jam pelajaran">Ke-{{ $row['jam_ke'] }}<br>{{ $row['mulai'] }} - {{ $row['selesai'] }}</td>
                                 <td data-label="Mata pelajaran">{{ $row['mapel'] }}</td>
                                 <td data-label="Guru pengajar">{{ $row['guru'] }}</td>
-                                <td data-label="Jurnal"><strong>{{ $row['status'] }}</strong>@if ($row['jurnal'])<br>{{ $row['jurnal']->status_guru }}@endif</td>
-                                <td data-label="Verifikasi">{{ $row['jurnal']?->status_verifikasi ?? '-' }}</td>
+                                <td data-label="Status jurnal dan verifikasi" class="piket-report-status">
+                                    <span class="piket-status-pill {{ $availabilityClass }}">{{ $row['status'] }}</span>
+                                    <span class="piket-status-pill {{ $verificationClass }}">Verifikasi: {{ $verificationStatus ?? 'Belum ada jurnal' }}</span>
+                                </td>
                                 <td class="piket-report-action">
                                     @if ($row['jurnal'])
                                         <button class="btn btn-muted" type="button" data-piket-detail="piket-jurnal-{{ $row['jurnal']->id }}">Tampilkan detail</button>
@@ -95,8 +112,59 @@
 
 @push('styles')
 <style>
+    .piket-report-status {
+        min-width: 190px;
+    }
+
+    .piket-report-status .piket-status-pill {
+        display: inline-flex;
+        width: fit-content;
+        margin: 2px 4px 2px 0;
+        padding: 6px 10px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.25;
+    }
+
+    .piket-status-pill.is-filled,
+    .piket-status-pill.is-approved {
+        border-color: #a7dfbd;
+        background: #e8f8f0;
+        color: #176a3a;
+    }
+
+    .piket-status-pill.is-missing,
+    .piket-status-pill.is-rejected {
+        border-color: #f0b9b9;
+        background: #fff0f1;
+        color: #9e2828;
+    }
+
+    .piket-status-pill.is-upcoming,
+    .piket-status-pill.is-neutral {
+        border-color: #cbd8e3;
+        background: #f0f5f8;
+        color: #43596b;
+    }
+
+    .piket-status-pill.is-pending {
+        border-color: #efd879;
+        background: #fff9c4;
+        color: #705d12;
+    }
+
     .journal-detail-dialog dd { white-space: pre-wrap; overflow-wrap: anywhere; }
     @media (max-width: 720px) {
+        .piket-report-status {
+            grid-column: 1 / -1;
+            padding: 10px !important;
+            border: 1px solid #dfd5bf !important;
+            border-radius: 8px;
+            background: #fbf8f1;
+        }
+
         .piket-report-action { grid-column: 1 / -1; }
         .piket-report-action::before { content: none !important; }
         .piket-report-action .btn { width: 100%; }

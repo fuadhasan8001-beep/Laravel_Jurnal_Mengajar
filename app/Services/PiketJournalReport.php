@@ -71,6 +71,6 @@ class PiketJournalReport
         }
 
         // Weekly schedules have no historical validity dates or holiday calendar.
-        return $date->isFuture() ? 'Terjadwal' : 'Tidak ada jurnal tercatat';
+        return $date->isFuture() ? 'Belum waktunya' : 'Tidak ada jurnal tercatat';
     }
 }

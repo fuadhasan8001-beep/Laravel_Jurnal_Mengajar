@@ -2699,6 +2699,10 @@
                         Dashboard
                     </a>
 
+                    @if (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni())
+                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}" data-mobile-primary-duplicate>Rekap jurnal per kelas</a>
+                    @endif
+
                     @if (in_array(auth()->user()->role, ['admin', 'waka', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
