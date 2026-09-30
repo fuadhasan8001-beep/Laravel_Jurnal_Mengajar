@@ -789,6 +789,17 @@
             font-weight: 800;
         }
 
+        .sidebar-account-card {
+            padding: 11px;
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .sidebar-account-card .logout {
+            margin-top: 10px;
+        }
+
         .contact-admin:hover {
             background: #20bd5c;
             color: #073b1a;
@@ -2719,7 +2730,10 @@
                     @if (auth()->user()->role === 'guru')
                         <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}" data-mobile-primary-duplicate>Jurnal saya</a>
                         @if (auth()->user()->kelasWali()->exists())
-                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}" @unless (auth()->user()->isPiketHariIni()) data-mobile-primary-duplicate @endunless>Rekap jurnal kelas</a>
+                            <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                        @endif
+                        @if (filled(config('app.admin_whatsapp')))
+                            <a class="contact-admin" href="https://wa.me/{{ preg_replace('/\D+/', '', config('app.admin_whatsapp')) }}" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>
                         @endif
                     @endif
 
@@ -2750,15 +2764,12 @@
                             </nav>
                         </details>
                     @else
-                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                            <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
+                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true))
+                            <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*')) open @endif>
                                 <summary>Menu tambahan</summary>
                                 <nav class="nav-list" aria-label="Menu tambahan">
                                     @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
                                         <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
-                                    @endif
-                                    @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal per kelas</a>
                                     @endif
                                     @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
                                         <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Dispensasi</a>
@@ -2793,7 +2804,7 @@
                             Profil
                         </a>
 
-                        @if (auth()->user()->role !== 'admin' && filled(config('app.admin_whatsapp')))
+                        @if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'guru' && filled(config('app.admin_whatsapp')))
                             <a
                                 class="contact-admin"
                                 href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
@@ -2805,7 +2816,8 @@
                         @endif
                     </nav>
 
-                    <div class="user-mini">
+                    <div class="sidebar-account-card">
+                        <div class="user-mini">
 
                         <span class="avatar">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -2816,21 +2828,22 @@
                             <small>{{ auth()->user()->role }}</small>
                         </span>
 
-                    </div>
+                        </div>
 
-                    <form
-                        action="{{ route('logout') }}"
-                        method="POST"
-                    >
-                        @csrf
-
-                        <button
-                            class="logout"
-                            type="submit"
+                        <form
+                            action="{{ route('logout') }}"
+                            method="POST"
                         >
-                            Keluar dari akun
-                        </button>
-                    </form>
+                            @csrf
+
+                            <button
+                                class="logout"
+                                type="submit"
+                            >
+                                Keluar dari akun
+                            </button>
+                        </form>
+                    </div>
 
                 </div>
 
