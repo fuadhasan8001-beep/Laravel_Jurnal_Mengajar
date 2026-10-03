@@ -12,6 +12,10 @@
     <section class="panel panel-spaced">
         <div class="panel-head"><h2>Menu piket hari ini</h2><span class="eyebrow">Pilih tugas</span></div>
         <div class="panel-body quick-grid">
+            <a class="quick-card quick-card-featured" href="{{ route('piket.rekap-jurnal') }}">
+                <strong>Rekap jurnal per kelas</strong>
+                <span>Pantau jurnal guru dan status verifikasi untuk setiap kelas.</span>
+            </a>
             <a class="quick-card" href="{{ route('dispensasi.create') }}">
                 <strong>Ajukan dispensasi</strong>
                 <span>Pilih siswa, isi alasan, dan kirim pengajuan ke admin.</span>
@@ -20,6 +24,10 @@
                 <strong>Catat izin atau sakit seharian</strong>
                 <span>Unggah surat orang tua agar status siswa tercatat untuk seluruh hari sekolah.</span>
             </a>
+            <a class="quick-card" href="{{ route('piket.izin-masuk.create') }}">
+                <strong>Buat surat izin masuk</strong>
+                <span>Catat siswa terlambat, jam kedatangan, dan perbarui absensi mulai jam tersebut.</span>
+            </a>
             <a class="quick-card" href="{{ route('piket.izin-sekolah.index') }}">
                 <strong>Riwayat izin dan sakit</strong>
                 <span>Lihat siswa yang tidak masuk seharian dan surat yang sudah dicatat.</span>
@@ -27,10 +35,6 @@
             <a class="quick-card" href="{{ route('dispensasi.index') }}">
                 <strong>Riwayat dispensasi</strong>
                 <span>Lihat pengajuan piket dan status keputusan admin.</span>
-            </a>
-            <a class="quick-card" href="{{ route('piket.rekap-jurnal') }}">
-                <strong>Rekap jurnal guru</strong>
-                <span>Pantau jadwal dan jurnal yang sudah diisi semua guru hari ini.</span>
             </a>
         </div>
     </section>
@@ -148,3 +152,18 @@
         @endif
     </section>
 @endsection
+
+@push('styles')
+    <style>
+        .quick-card-featured {
+            border-color: var(--gold-dark);
+            background: linear-gradient(135deg, rgba(168, 137, 74, .16), rgba(255, 255, 255, .96));
+            box-shadow: 0 8px 22px rgba(105, 77, 28, .12);
+        }
+
+        .quick-card-featured strong {
+            color: var(--gold-dark);
+            font-size: 16px;
+        }
+    </style>
+@endpush

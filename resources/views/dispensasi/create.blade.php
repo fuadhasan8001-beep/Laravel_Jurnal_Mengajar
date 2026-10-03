@@ -6,7 +6,7 @@
     <div class="page-head">
         <div>
             <h1>{{ auth()->user()->isPiketHariIni() ? 'Buat pernyataan dispensasi' : 'Ajukan dispensasi' }}</h1>
-            <p>Lengkapi detail kegiatan dan bukti agar pengajuan dapat diverifikasi.</p>
+            <p>Lengkapi detail kegiatan dan alasan agar pengajuan dapat diverifikasi.</p>
         </div><a
             class="btn btn-muted"
             href="{{ route('dispensasi.index') }}"
@@ -94,14 +94,6 @@
                             required
                         >{{ old('alasan') }}</textarea>
                     </div>
-                    @unless (auth()->user()->isPiketHariIni())
-                    <div class="field full"><label for="bukti">Bukti foto <span class="field-help">(JPG, PNG, atau WEBP, maksimal 5 MB)</span></label><input
-                            id="bukti"
-                            type="file"
-                            name="bukti"
-                            accept="image/jpeg,image/png,image/webp"
-                        >@error('bukti')<small class="error">{{ $message }}</small>@enderror</div>
-                    @endunless
                 </div>
                 <div class="form-actions"><a
                         class="btn btn-muted"
@@ -121,7 +113,6 @@
                 <div class="detail-item"><dt>Waktu</dt><dd id="confirm-dispensasi-time"></dd></div>
                 <div class="detail-item detail-item-full"><dt>Siswa</dt><dd id="confirm-dispensasi-students"></dd></div>
                 <div class="detail-item detail-item-full"><dt>Alasan/kegiatan</dt><dd id="confirm-dispensasi-reason"></dd></div>
-                <div class="detail-item detail-item-full"><dt>Bukti</dt><dd id="confirm-dispensasi-file"></dd></div>
             </dl>
             <div class="form-actions"><button type="button" class="btn btn-muted" id="cancel-dispensasi">Kembali</button><button type="button" class="btn" id="submit-dispensasi">Kirim sekarang</button></div>
         </div>
@@ -163,12 +154,10 @@
         submitButton.addEventListener('click', () => {
             const startField = document.getElementById('jam_mulai_id');
             const endField = document.getElementById('jam_selesai_id');
-            const file = document.getElementById('bukti')?.files[0];
             const students = [...dispensasiForm.querySelectorAll('input[name="siswa_ids[]"]')].map((input) => input.previousElementSibling?.textContent?.trim() || input.value);
             document.getElementById('confirm-dispensasi-time').textContent = `${startField?.selectedOptions[0]?.textContent.trim() || '-'} sampai ${endField?.selectedOptions[0]?.textContent.trim() || '-'}`;
             document.getElementById('confirm-dispensasi-students').textContent = students.join(', ') || 'Siswa yang sedang login';
             document.getElementById('confirm-dispensasi-reason').textContent = document.getElementById('alasan').value.trim() || '-';
-            document.getElementById('confirm-dispensasi-file').textContent = file?.name || 'Tidak ada bukti foto';
             dispensasiConfirm.hidden = false;
             dispensasiConfirm.style.display = 'flex';
         });

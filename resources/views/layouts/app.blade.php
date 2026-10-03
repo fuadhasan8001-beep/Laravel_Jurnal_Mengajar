@@ -789,6 +789,17 @@
             font-weight: 800;
         }
 
+        .sidebar-account-card {
+            padding: 11px;
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .sidebar-account-card .logout {
+            margin-top: 10px;
+        }
+
         .contact-admin:hover {
             background: #20bd5c;
             color: #073b1a;
@@ -1365,6 +1376,21 @@
 
             background: #fff1f2;
             color: #a42e39;
+        }
+
+        .error {
+            display: block;
+            margin-top: 6px;
+            color: #a42e39;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .field:has(.error) input,
+        .field:has(.error) select,
+        .field:has(.error) textarea {
+            border-color: #d96b73;
+            box-shadow: 0 0 0 3px rgba(217, 107, 115, .12);
         }
 
         .empty {
@@ -2387,6 +2413,10 @@
                 --mobile-nav-space: calc(72px + env(safe-area-inset-bottom, 0px));
             }
 
+            [data-mobile-primary-duplicate] {
+                display: none !important;
+            }
+
             .sidebar {
                 display: flex;
             }
@@ -2608,6 +2638,7 @@
                 outline: 3px solid rgba(140, 51, 43, .18);
             }
 
+            .app-shell.menu-open .mobile-bottom-nav,
             .app-shell.keyboard-open .mobile-bottom-nav {
                 transform: translateY(100%);
                 visibility: hidden;
@@ -2663,14 +2694,20 @@
                     <a
                         class="nav-link {{ request()->is(auth()->user()->role) || (auth()->user()->role === 'waka' && request()->is('admin')) ? 'active' : '' }}"
                         href="{{ auth()->user()->role === 'waka' ? url('/admin') : url('/' . auth()->user()->role) }}"
+                        data-mobile-primary-duplicate
                     >
                         Dashboard
                     </a>
+
+                    @if (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni())
+                        <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}" data-mobile-primary-duplicate>Rekap jurnal per kelas</a>
+                    @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka', 'guru', 'sekretaris'], true))
                         <a
                             class="nav-link {{ request()->is('absensi*') ? 'active' : '' }}"
                             href="{{ route('absensi.index') }}"
+                            @if (in_array(auth()->user()->role, ['admin', 'waka', 'sekretaris'], true)) data-mobile-primary-duplicate @endif
                         >
                             {{ auth()->user()->role === 'guru' ? 'Perbarui absensi' : 'Kelola absensi' }}
                         </a>
@@ -2678,7 +2715,7 @@
 
                     @if (in_array(auth()->user()->role, ['guru', 'piket'], true))
                         @if (auth()->user()->isPiketHariIni())
-                            <a class="nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}">Menu piket</a>
+                            <a class="nav-link {{ request()->is('piket') || request()->is('dispensasi*') ? 'active' : '' }}" href="{{ url('/piket') }}" data-mobile-primary-duplicate>Menu piket</a>
                         @else
                             <span class="nav-link" aria-disabled="true" title="Menu aktif sesuai jadwal piket">Menu piket · tidak bertugas</span>
                         @endif
@@ -2688,20 +2725,24 @@
                         <a
                             class="nav-link {{ request()->is('jurnal*') ? 'active' : '' }}"
                             href="{{ route('jurnal.index') }}"
+                            @if (in_array(auth()->user()->role, ['admin', 'waka', 'sekretaris'], true)) data-mobile-primary-duplicate @endif
                         >
                             Jurnal
                         </a>
                     @endif
 
                     @if (auth()->user()->role === 'guru')
-                        <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}">Jurnal saya</a>
+                        <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}" data-mobile-primary-duplicate>Jurnal saya</a>
                         @if (auth()->user()->kelasWali()->exists())
                             <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                        @endif
+                        @if (filled(config('app.admin_whatsapp')))
+                            <a class="contact-admin" href="https://wa.me/{{ preg_replace('/\D+/', '', config('app.admin_whatsapp')) }}" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>
                         @endif
                     @endif
 
                     @if (in_array(auth()->user()->role, ['admin', 'waka'], true))
-                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Verifikasi dispensasi</a>
+                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Verifikasi dispensasi</a>
                     @endif
                     </nav>
 
@@ -2723,24 +2764,23 @@
                                 <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
                                 <a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Riwayat aktivitas</a>
-                                <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
+                                <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" @if (in_array(auth()->user()->role, ['siswa', 'piket'], true)) data-mobile-primary-duplicate @endif>Dispensasi</a>
                             </nav>
                         </details>
                     @else
-                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*') || request()->is('piket/rekap-jurnal*')) open @endif>
-                            <summary>Menu tambahan</summary>
-                            <nav class="nav-list" aria-label="Menu tambahan">
-                                @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
-                                    <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
-                                @endif
-                                @if (in_array(auth()->user()->role, ['piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                    <a class="nav-link {{ request()->is('piket/rekap-jurnal*') ? 'active' : '' }}" href="{{ route('piket.rekap-jurnal') }}">Rekap jurnal semua guru</a>
-                                @endif
-                                @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
-                                    <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}">Dispensasi</a>
-                                @endif
-                            </nav>
-                        </details>
+                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true))
+                            <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*')) open @endif>
+                                <summary>Menu tambahan</summary>
+                                <nav class="nav-list" aria-label="Menu tambahan">
+                                    @if (in_array(auth()->user()->role, ['sekretaris', 'piket'], true))
+                                        <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                    @endif
+                                    @if (in_array(auth()->user()->role, ['siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
+                                        <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" data-mobile-primary-duplicate>Dispensasi</a>
+                                    @endif
+                                </nav>
+                            </details>
+                        @endif
                     @endif
 
                     <div class="sidebar-datetime" aria-label="Tanggal dan waktu saat ini">
@@ -2754,32 +2794,34 @@
                         >{{ now()->format('H:i:s') }}</time>
                     </div>
 
-                    <div class="nav-label nav-label-account">Akun</div>
-                    <nav class="nav-list" aria-label="Menu akun">
-                    <a
-                        class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
-                        href="{{ route('profile') }}"
-                    >
-                        Profil
-                    </a>
-
-                    @if (auth()->user()->role !== 'admin' && filled(config('app.admin_whatsapp')))
-                        <a
-                            class="contact-admin"
-                            href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Hubungi Admin
-                        </a>
-                    @endif
-                    </nav>
-
                 </div>
 
                 <div class="sidebar-footer">
 
-                    <div class="user-mini">
+                    <div class="nav-label nav-label-account">Akun</div>
+                    <nav class="nav-list" aria-label="Menu akun">
+                        <a
+                            class="nav-link {{ request()->is('profile') ? 'active' : '' }}"
+                            href="{{ route('profile') }}"
+                            data-mobile-primary-duplicate
+                        >
+                            Profil
+                        </a>
+
+                        @if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'guru' && filled(config('app.admin_whatsapp')))
+                            <a
+                                class="contact-admin"
+                                href="https://wa.me/{{ preg_replace('/\\D+/', '', config('app.admin_whatsapp')) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Hubungi Admin
+                            </a>
+                        @endif
+                    </nav>
+
+                    <div class="sidebar-account-card">
+                        <div class="user-mini">
 
                         <span class="avatar">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -2790,21 +2832,22 @@
                             <small>{{ auth()->user()->role }}</small>
                         </span>
 
-                    </div>
+                        </div>
 
-                    <form
-                        action="{{ route('logout') }}"
-                        method="POST"
-                    >
-                        @csrf
-
-                        <button
-                            class="logout"
-                            type="submit"
+                        <form
+                            action="{{ route('logout') }}"
+                            method="POST"
                         >
-                            Keluar dari akun
-                        </button>
-                    </form>
+                            @csrf
+
+                            <button
+                                class="logout"
+                                type="submit"
+                            >
+                                Keluar dari akun
+                            </button>
+                        </form>
+                    </div>
 
                 </div>
 
@@ -2866,7 +2909,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="desktop">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(5)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(5)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2881,7 +2924,7 @@
                                                 {{ $notification->data['message'] ?? 'Ada notifikasi baru.' }}
                                                 <br>
                                                 <small>
-                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    Belum dibaca
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>
@@ -2946,7 +2989,7 @@
 
                                 <div class="notification-list" data-notification-list data-notification-mode="mobile">
 
-                                    @forelse (auth()->user()->notifications()->latest()->limit(20)->get() as $notification)
+                                    @forelse (auth()->user()->unreadNotifications()->latest()->limit(20)->get() as $notification)
 
                                         <form
                                             action="{{ route('notifications.read', $notification->id) }}"
@@ -2963,7 +3006,7 @@
                                                 <br>
 
                                                 <small>
-                                                    {{ $notification->read_at ? 'Sudah dibaca' : 'Belum dibaca' }}
+                                                    Belum dibaca
                                                     ·
                                                     {{ $notification->created_at->format('d/m H:i') }}
                                                 </small>
@@ -3052,6 +3095,28 @@
             shell?.classList.remove('menu-open');
             document.querySelectorAll('[data-menu-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
         };
+
+        const sidebarMenuToggle = document.querySelector('[data-menu-toggle]');
+        const sidebarBackdrop = document.querySelector('[data-menu-close]');
+        const appShell = document.querySelector('.app-shell');
+
+        sidebarMenuToggle?.addEventListener('click', () => {
+            if (!appShell) {
+                return;
+            }
+
+            closeNotificationMenus();
+            const isOpen = appShell.classList.toggle('menu-open');
+            sidebarMenuToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        sidebarBackdrop?.addEventListener('click', closeSidebarMenu);
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeSidebarMenu();
+            }
+        });
 
         mobileMoreButtons.forEach((button) => {
             button.addEventListener('click', () => {
@@ -3258,31 +3323,6 @@
             updateClock();
             window.setInterval(updateClock, 1000);
         });
-
-        document
-            .querySelectorAll('[data-menu-toggle], [data-menu-close]')
-            .forEach((element) => {
-
-                element.addEventListener('click', () => {
-
-                    const shell = document.querySelector('.app-shell');
-
-                    if (!shell) {
-                        return;
-                    }
-
-                    closeNotificationMenus();
-
-                    const isCloseButton = element.matches('[data-menu-close]');
-                    const isOpen = isCloseButton ? false : !shell.classList.contains('menu-open');
-
-                    shell.classList.toggle('menu-open', isOpen);
-
-                    document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
-                        button.setAttribute('aria-expanded', String(isOpen));
-                    });
-                });
-            });
 
         document.querySelectorAll('.notification-menu details').forEach((details) => {
             details.addEventListener('toggle', () => {

@@ -10,8 +10,16 @@
         </div>
         <div class="page-actions">
             <a class="btn" href="{{ route('dispensasi.create') }}">Ajukan dispensasi</a>
+            <a class="btn btn-muted" href="{{ route('calendar.index') }}">Kalender sekolah</a>
         </div>
     </div>
+
+    @if ($nationalHolidayName)
+        <section class="panel panel-spaced"><div class="panel-head"><h2>{{ $nationalHolidayName }}</h2><span class="status approved">Libur Nasional</span></div><div class="panel-body"><p>Status libur nasional tetap berlaku; kegiatan yang ditujukan kepada Anda ditampilkan terpisah.</p></div></section>
+    @endif
+    @if ($schoolEvents->isNotEmpty())
+        <section class="panel panel-spaced"><div class="panel-head"><h2>Kegiatan sekolah</h2><span class="eyebrow">30 hari ke depan</span></div><div class="panel-body event-card-list">@foreach ($schoolEvents as $event)@include('school-calendar._event-card', ['event' => $event])@endforeach</div></section>
+    @endif
 
     <section class="panel panel-spaced">
         <div class="panel-head"><h2>Aksi cepat</h2><span class="eyebrow">Status pengajuan</span></div>
@@ -90,3 +98,7 @@
         </div>
     </section>
 @endsection
+
+@push('styles')
+<style>.event-card-list{display:grid;gap:12px}.school-event-card{box-shadow:none}.school-event-card .panel-body,.event-attendance-status{display:grid;gap:12px}</style>
+@endpush

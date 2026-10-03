@@ -168,9 +168,27 @@
         </div>
 
         <div class="page-actions">
-            <a class="btn" href="{{ route('jurnal.create') }}">Isi jurnal</a>
+            @if (! $specialDay)<a class="btn" href="{{ route('jurnal.create') }}">Isi jurnal</a>@endif
+            <a class="btn btn-muted" href="{{ route('calendar.index') }}">Kalender sekolah</a>
         </div>
     </div>
+
+    @if ($todayEvents->isNotEmpty() || $nationalHolidayName)
+        <section class="panel panel-spaced">
+            <div class="panel-head"><div><h2>Kalender hari ini</h2><span class="eyebrow">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</span></div>@if ($nationalHolidayName)<span class="status approved">{{ $nationalHolidayName }} · Libur Nasional</span>@endif</div>
+            <div class="panel-body">
+                @forelse ($todayEvents as $event)
+                    @include('school-calendar._event-card', ['event' => $event])
+                @empty
+                    @if ($nationalHolidayName)<p>Hari ini libur nasional dan tidak ada kegiatan yang ditujukan kepada Anda.</p>@endif
+                @endforelse
+            </div>
+        </section>
+    @endif
+
+    @if ($schoolEvents->contains(fn ($event) => ! $event->event_date->isToday()))
+        <section class="panel panel-spaced"><div class="panel-head"><h2>Kegiatan mendatang</h2><a href="{{ route('calendar.show', $schoolEvents->first(fn ($event) => ! $event->event_date->isToday())) }}">Lihat kalender</a></div><div class="panel-body event-card-list">@foreach ($schoolEvents->filter(fn ($event) => ! $event->event_date->isToday()) as $event)@include('school-calendar._event-card', ['event' => $event])@endforeach</div></section>
+    @endif
 
     <div class="stats">
         <div class="stat-card">
@@ -315,6 +333,7 @@
         </section>
     @endif
 
+    @if (! $specialDay)
     <section class="panel">
         <div class="panel-head">
             <h2>Jadwal mengajar hari ini</h2>
@@ -375,4 +394,9 @@
             <div class="empty">Belum ada jadwal mengajar hari ini.</div>
         @endif
     </section>
+    @endif
 @endsection
+
+@push('styles')
+<style>.event-card-list,.event-attendance-status{display:grid;gap:12px}.school-event-card{box-shadow:none}.school-event-card .panel-body{display:grid;gap:12px}</style>
+@endpush

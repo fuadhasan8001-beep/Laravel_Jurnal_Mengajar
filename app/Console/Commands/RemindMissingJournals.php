@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\Jurnal;
+use App\Models\NationalHoliday;
+use App\Models\SchoolEvent;
 use App\Notifications\JurnalReminderNotification;
 use Illuminate\Console\Command;
 
@@ -20,14 +21,22 @@ class RemindMissingJournals extends Command
         $time = now();
         $hari = $time->copy()->locale('id')->translatedFormat('l');
         $sent = 0;
+        $isNationalHoliday = NationalHoliday::whereDate('holiday_date', $date)->exists();
+        $overrides = SchoolEvent::whereDate('event_date', $date)
+            ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])->get();
+        $overrideUserIds = $overrides->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id'))->unique()->all();
 
         Jadwal::with(['guru.user', 'jamPelajaran'])
             ->where('hari', $hari)
             ->where('is_active', true)
             ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
             ->get()
-            ->filter(function (Jadwal $jadwal) use ($time, $date): bool {
+            ->filter(function (Jadwal $jadwal) use ($time, $date, $isNationalHoliday, $overrideUserIds): bool {
+                if ($isNationalHoliday || in_array($jadwal->guru->user?->id, $overrideUserIds, true)) {
+                    return false;
+                }
                 [$start, $end] = $jadwal->jamPelajaran->timesForDay($jadwal->hari);
+
                 return $date === today()->toDateString()
                     && $start <= $time->format('H:i:s')
                     && $end <= $time->format('H:i:s')

@@ -43,9 +43,23 @@ it('allows duty teacher access only on the assigned date including direct URLs',
     $this->get('/piket')->assertForbidden();
 });
 
+it('opens teacher piket access only during the assigned shift', function () {
+    JadwalPiket::create(['guru_id' => $this->guru->id, 'tanggal' => today(), 'shift' => 'pagi']);
+
+    $this->travelTo(Carbon::parse('2026-09-28 10:59:00', 'Asia/Jakarta'));
+    expect($this->teacher->fresh()->isPiketHariIni())->toBeTrue();
+
+    $this->travelTo(Carbon::parse('2026-09-28 11:00:00', 'Asia/Jakarta'));
+    expect($this->teacher->fresh()->isPiketHariIni())->toBeFalse();
+
+    $schedule = JadwalPiket::where('guru_id', $this->guru->id)->firstOrFail();
+    $schedule->update(['shift' => 'siang']);
+    expect($this->teacher->fresh()->isPiketHariIni())->toBeTrue();
+});
+
 it('lets waka use the admin workflow and admin-like navigation without being able to submit student dispensasi', function () {
     $this->post('/login', ['login' => 'waka.test', 'password' => 'password'])->assertRedirect('/admin');
-    $this->get('/admin')->assertOk()->assertSee('Buka verifikasi');
+    $this->get('/admin')->assertOk()->assertSee('Verifikasi dispensasi');
     $this->get('/admin/data/guru')->assertOk();
     $this->get('/waka')->assertRedirect('/admin');
     $this->get(route('dispensasi.index'))->assertOk()->assertSee('Verifikasi dispensasi');

@@ -8,18 +8,20 @@ use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\ClassAbsenceRecorded;
-use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class ClassAbsenceNotifier
 {
     /**
-     * Notify class secretaries and teachers scheduled with the affected class today.
+     * Notify class secretaries and teachers scheduled with the affected class on the relevant date.
      *
      * @param  Collection<int, Siswa>  $students
      */
-    public function notify(Collection $students, string $statusLabel): void
+    public function notify(Collection $students, string $statusLabel, Carbon|string|null $date = null): void
     {
-        $weekday = today()->locale('id')->translatedFormat('l');
+        $referenceDate = $date instanceof Carbon ? $date : Carbon::parse($date ?? today());
+        $weekday = $referenceDate->locale('id')->translatedFormat('l');
 
         foreach ($students->groupBy('kelas_id') as $classId => $classStudents) {
             $kelas = Kelas::with('sekretarisUsers')->find($classId);
@@ -47,8 +49,8 @@ class ClassAbsenceNotifier
             }
 
             $studentNames = $classStudents->pluck('nama_siswa')->join(', ');
-            $message = 'Guru piket mencatat '.$studentNames.' sebagai '.$statusLabel.' di kelas '.$kelas->nama_kelas.' untuk hari ini.';
-            $url = route('laporan.absensi', ['tanggal_mulai' => today()->toDateString(), 'tanggal_selesai' => today()->toDateString(), 'kelas_id' => $kelas->id]);
+            $message = 'Guru piket mencatat '.$studentNames.' sebagai '.$statusLabel.' di kelas '.$kelas->nama_kelas.' untuk '.$referenceDate->locale('id')->translatedFormat('l, d F Y').'.';
+            $url = route('laporan.absensi', ['tanggal_mulai' => $referenceDate->toDateString(), 'tanggal_selesai' => $referenceDate->toDateString(), 'kelas_id' => $kelas->id]);
 
             $recipients->each(fn (User $recipient) => $recipient->notify(new ClassAbsenceRecorded($message, $url)));
         }

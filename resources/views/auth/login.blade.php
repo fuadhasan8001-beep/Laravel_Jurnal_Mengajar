@@ -12,19 +12,19 @@
         <a class="signin-brand" href="{{ url('/') }}" aria-label="Jurnal Guru">
             <span class="signin-brand-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+                    <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" />
                 </svg>
             </span>
             <span>Jurnal Guru</span>
         </a>
 
+        <header class="signin-heading">
+            <h1 id="signin-title">Selamat datang</h1>
+            <p>Masuk untuk melanjutkan ke jurnal mengajar Anda.</p>
+        </header>
+
         <section class="signin-card" aria-labelledby="signin-title">
-            <header class="signin-heading">
-                <span class="signin-kicker">PORTAL GURU</span>
-                <h1 id="signin-title">Selamat datang</h1>
-                <p>Masuk untuk melanjutkan ke jurnal mengajar Anda.</p>
-            </header>
 
             @if ($errors->any())
                 <div class="signin-error" role="alert">{{ $errors->first() }}</div>
@@ -37,7 +37,7 @@
                     <div class="signin-input-wrap">
                         <svg class="signin-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                             <circle cx="12" cy="8" r="4" />
-                            <path d="M5 21a7 7 0 0 1 14 0" stroke-linecap="round" />
+                            <path d="M5 21a7 7 0 0 1 14 0" />
                         </svg>
                         <input type="text" id="login" name="login" value="{{ old('login', old('email')) }}" placeholder="Masukkan NISN, username, atau email" autocomplete="username" required autofocus>
                     </div>
@@ -48,7 +48,7 @@
                     <div class="signin-input-wrap">
                         <svg class="signin-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                             <rect x="4" y="10" width="16" height="11" rx="2" />
-                            <path d="M8 10V7a4 4 0 1 1 8 0v3" stroke-linecap="round" />
+                            <path d="M8 10V7a4 4 0 1 1 8 0v3" />
                         </svg>
                         <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password" required>
                         <button type="button" id="toggle-password" class="signin-password-toggle" aria-label="Tampilkan password" title="Tampilkan password">
@@ -71,7 +71,7 @@
         const eyeOpen = document.getElementById('eye-open');
         const eyeClosed = document.getElementById('eye-closed');
 
-        togglePassword.addEventListener('click', function () {
+        togglePassword.addEventListener('click', () => {
             const showPassword = password.type === 'password';
             password.type = showPassword ? 'text' : 'password';
             eyeOpen.classList.toggle('hidden', showPassword);

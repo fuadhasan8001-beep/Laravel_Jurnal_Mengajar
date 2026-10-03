@@ -89,9 +89,10 @@ it('blocks the legacy journal report and export for teachers', function () {
 });
 
 it('keeps the duty report restricted to teachers assigned today', function () {
+    $this->travelTo(today()->setTime(8, 0));
     $this->actingAs($this->teacher)->get(route('piket.rekap-jurnal'))->assertForbidden();
     $this->get(route('piket.rekap-jurnal.export'))->assertForbidden();
-    JadwalPiket::create(['guru_id' => $this->journal->guru_id, 'tanggal' => today()]);
+    JadwalPiket::create(['guru_id' => $this->journal->guru_id, 'tanggal' => today(), 'shift' => 'pagi']);
     $this->get(route('piket.rekap-jurnal'))->assertOk()
         ->assertSee('action="'.route('piket.rekap-jurnal').'"', false)
         ->assertDontSee('action="'.route('laporan.jurnal').'"', false);
@@ -101,7 +102,7 @@ it('keeps the duty report restricted to teachers assigned today', function () {
 it('allows the dedicated duty role to view journal recaps but not attendance reports', function () {
     $piket = User::factory()->create(['role' => 'piket', 'is_active' => true]);
 
-    $this->actingAs($piket)->get(route('piket.rekap-jurnal'))
+    $this->actingAs($piket)->get(route('piket.rekap-jurnal', ['kelas_id' => $this->journal->kelas_id, 'tanggal_mulai' => $this->journal->tanggal->toDateString()]))
         ->assertOk()->assertSee('Tampilkan detail')->assertSee('Materi algoritma');
     $this->get(route('laporan.absensi'))->assertForbidden();
     $this->get(route('laporan.absensi.export'))->assertForbidden();

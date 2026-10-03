@@ -100,7 +100,7 @@
                         </div>
                     </td>
                     <td>
-                        <input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($izinSekolah ? ($izinSekolah->status === 'S' ? 'Sakit seharian berdasarkan surat orang tua.' : 'Izin sekolah seharian berdasarkan surat orang tua.') : ($saved['catatan'] ?? '')) }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($forcedStatus !== null)>
+                        <input data-attendance-note name="absensi[{{ $student->id }}][catatan]" value="{{ $dispensed ? 'Dispensasi disetujui.' : ($izinSekolah ? ($izinSekolah->status === 'S' ? 'Sakit berdasarkan surat dari orang tua.' : 'Izin berdasarkan surat dari orang tua.') : ($saved['catatan'] ?? '')) }}" maxlength="1000" aria-label="Catatan {{ $student->nama_siswa }}" @readonly($forcedStatus !== null)>
                         @if ($izinSekolah)
                             <a href="{{ route('piket.izin-sekolah.surat', $izinSekolah) }}">Lihat surat orang tua</a>
                         @endif

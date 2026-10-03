@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Absensi;
 use App\Models\IzinSekolah;
+use App\Models\IzinMasuk;
+use App\Models\Guru;
+use App\Models\Jadwal;
+use App\Models\JamPelajaran;
 use App\Models\Jurnal;
+use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Models\User;
+use App\Notifications\ClassAbsenceRecorded;
 use App\Services\ClassAbsenceNotifier;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +23,62 @@ use Illuminate\View\View;
 
 class IzinSekolahController extends Controller
 {
+    public function createArrival(Request $request): View
+    {
+        $this->authorizePiketAccess($request);
+
+        return view('izin-sekolah.arrival', [
+            'siswas' => Siswa::with('kelas')->orderBy('nama_siswa')->get(),
+            'jamPelajarans' => JamPelajaran::where('is_active', true)->orderBy('jam_ke')->get(),
+        ]);
+    }
+
+    public function storeArrival(Request $request): RedirectResponse
+    {
+        $this->authorizePiketAccess($request);
+        $data = $request->validate([
+            'siswa_id' => ['required', 'integer', 'exists:siswas,id'],
+            'jam_masuk_ke' => ['required', 'integer', 'exists:jam_pelajarans,jam_ke'],
+            'alasan' => ['nullable', 'string', 'max:1000'],
+        ]);
+        $date = today()->toDateString();
+        $arrivalTime = now()->format('H:i:s');
+        $student = Siswa::with('kelas')->findOrFail($data['siswa_id']);
+
+        if (IzinSekolah::where('siswa_id', $student->id)->whereDate('tanggal', $date)->exists()) {
+            return back()->withInput()->withErrors(['siswa_id' => 'Siswa ini sudah tercatat izin atau sakit seharian.']);
+        }
+
+        $permission = IzinMasuk::updateOrCreate(
+            ['siswa_id' => $student->id, 'tanggal' => $date],
+            [
+                'waktu_masuk' => $arrivalTime,
+                'jam_masuk_ke' => $data['jam_masuk_ke'],
+                'alasan' => $data['alasan'] ?? null,
+                'piket_id' => $request->user()->id,
+            ],
+        );
+
+        $day = Carbon::parse($date)->locale('id')->translatedFormat('l');
+        $jurnals = Jurnal::with(['jamMulai', 'jamSelesai'])
+            ->whereDate('tanggal', $date)
+            ->where('kelas_id', $student->kelas_id)
+            ->get()
+            ->filter(fn (Jurnal $jurnal): bool => $jurnal->jamSelesai->timesForDay($day)[1] > $arrivalTime);
+
+        foreach ($jurnals as $jurnal) {
+            Absensi::updateOrCreate(
+                ['jurnal_id' => $jurnal->id, 'siswa_id' => $student->id],
+                ['status' => 'H', 'catatan' => $this->arrivalNote($permission)],
+            );
+        }
+
+        $this->notifyArrivalRecipients($student, $permission, $day);
+
+        return redirect()->route('piket.izin-masuk.create')
+            ->with('success', 'Surat izin masuk berhasil dicatat. Absensi jam berjalan dan berikutnya diperbarui.');
+    }
+
     public function index(Request $request): View
     {
         $this->authorizePiketAccess($request);
@@ -78,8 +142,8 @@ class IzinSekolahController extends Controller
                             [
                                 'status' => $data['status'],
                                 'catatan' => $data['status'] === 'S'
-                                    ? 'Sakit seharian berdasarkan surat orang tua.'
-                                    : 'Izin sekolah seharian berdasarkan surat orang tua.',
+                                    ? 'Sakit berdasarkan surat dari orang tua.'
+                                    : 'Izin berdasarkan surat dari orang tua.',
                                 'surat_izin_path' => $path,
                             ]
                         );
@@ -91,10 +155,48 @@ class IzinSekolahController extends Controller
             throw $exception;
         }
 
-        $absenceNotifier->notify($students, $data['status'] === 'S' ? 'sakit' : 'izin');
+        $absenceNotifier->notify($students, $data['status'] === 'S' ? 'sakit' : 'izin', $data['tanggal']);
 
         return redirect()->route('piket.izin-sekolah.index')
             ->with('success', ($data['status'] === 'S' ? 'Surat sakit seharian' : 'Surat izin seharian').' berhasil dicatat. Absensi jurnal hari tersebut sudah diperbarui.');
+    }
+
+    private function arrivalNote(IzinMasuk $permission): string
+    {
+        $note = 'Terlambat, izin masuk jam ke-'.$permission->jam_masuk_ke.' pukul '.substr($permission->waktu_masuk, 0, 5).'.';
+
+        return $permission->alasan ? $note.' Alasan: '.$permission->alasan : $note;
+    }
+
+    private function notifyArrivalRecipients(Siswa $student, IzinMasuk $permission, string $day): void
+    {
+        $kelas = Kelas::with('sekretarisUsers')->find($student->kelas_id);
+        if (! $kelas) {
+            return;
+        }
+
+        $scheduledGuruIds = Jadwal::with(['jamPelajaran', 'guru'])
+            ->where('kelas_id', $kelas->id)
+            ->where('hari', $day)
+            ->where('is_active', true)
+            ->get()
+            ->filter(fn (Jadwal $jadwal): bool => $jadwal->jamPelajaran->is_active
+                && $jadwal->jamPelajaran->timesForDay($day)[1] > $permission->waktu_masuk)
+            ->pluck('guru.user_id')
+            ->filter()
+            ->unique();
+
+        $recipients = $kelas->sekretarisUsers->where('is_active', true)
+            ->merge(User::whereIn('id', $scheduledGuruIds)->where('is_active', true)->get())
+            ->unique('id');
+        $message = $student->nama_siswa.' dari kelas '.$kelas->nama_kelas.' terlambat dan masuk pada jam ke-'.$permission->jam_masuk_ke.' pukul '.substr($permission->waktu_masuk, 0, 5).'.';
+        $url = route('laporan.absensi', [
+            'tanggal_mulai' => $permission->tanggal->toDateString(),
+            'tanggal_selesai' => $permission->tanggal->toDateString(),
+            'kelas_id' => $kelas->id,
+        ]);
+
+        $recipients->each(fn (User $recipient) => $recipient->notify(new ClassAbsenceRecorded($message, $url)));
     }
 
     private function authorizePiketAccess(Request $request): void

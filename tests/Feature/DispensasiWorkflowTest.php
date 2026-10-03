@@ -9,6 +9,7 @@ use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
 use App\Models\User;
+use App\Notifications\ClassAbsenceRecorded;
 use App\Notifications\DispensasiApprovalMail;
 use App\Notifications\DispensasiNotification;
 use Carbon\Carbon;
@@ -58,6 +59,21 @@ it('shows todays date as readonly even after validation fails with old input', f
     expect($field->hasAttribute('readonly'))->toBeTrue();
 });
 
+it('hides the photo requirement from the non-piket dispensasi form and review modal', function () {
+    $data = dispensasiSetup();
+
+    $response = $this->actingAs($data['student'] ?? $data['students']->first()->user)->get(route('dispensasi.create'));
+    $response->assertOk();
+
+    $document = new DOMDocument;
+    @$document->loadHTML($response->getContent());
+    $xpath = new DOMXPath($document);
+
+    expect($xpath->query('//input[@name="bukti"]')->length)->toBe(0)
+        ->and($response->getContent())->not->toContain('Tidak ada bukti foto')
+        ->and($response->getContent())->not->toContain('Bukti foto');
+});
+
 function dispensasiSetup(): array
 {
     config(['school.latitude' => 0, 'school.longitude' => 0, 'school.radius_meters' => 100, 'school.max_gps_accuracy' => 25]);
@@ -97,9 +113,11 @@ it('lets piket submit multiple students while leaving attendance pending admin a
         $this->assertDatabaseHas('dispensasis', ['siswa_id' => $student->id, 'piket_id' => $data['piket']->id,
             'status_piket' => 'Disetujui', 'status_admin' => 'Menunggu', 'status_akhir' => 'Menunggu']);
     }
+    $this->assertDatabaseCount('absensis', 0);
     Notification::assertSentToTimes($data['admin'], DispensasiApprovalMail::class, 1);
     Notification::assertSentTo($data['admin'], DispensasiNotification::class, fn ($notification) => $notification->event === 'piket_approved');
     Notification::assertNotSentTo($data['teacher'], DispensasiNotification::class);
+    Notification::assertNotSentTo($data['teacher'], ClassAbsenceRecorded::class);
 });
 
 it('blocks only overlapping dispensasi hours for the same student', function () {
@@ -193,6 +211,25 @@ it('marks only overlapping journals and notifies the teacher once after admin ap
     Notification::assertSentTo($data['teacher'], DispensasiNotification::class, fn ($notification) => $notification->event === 'teacher_approved');
 });
 
+it('notifies the class and teacher when a dispensation is approved for a student', function () {
+    $data = dispensasiSetup();
+    Notification::fake();
+    $secretary = User::factory()->create(['role' => 'sekretaris', 'is_active' => true]);
+    $secretary->kelasSekretaris()->attach($data['kelas']);
+    $student = $data['students']->first();
+    $journal = Jurnal::create($data['journal']);
+    $dispensasi = Dispensasi::create([...$data['payload'], 'siswa_id' => $student->id, 'status_piket' => 'Disetujui']);
+
+    $this->actingAs($data['admin'])->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
+
+    Notification::assertSentTo($data['teacher'], DispensasiNotification::class, fn ($notification) => $notification->event === 'teacher_approved');
+    Notification::assertSentTo($secretary, ClassAbsenceRecorded::class, fn (ClassAbsenceRecorded $notification): bool => str_contains($notification->message, $student->nama_siswa)
+        && str_contains($notification->message, 'dispen')
+        && str_contains($notification->url, 'kelas_id='.$data['kelas']->id)
+        && str_contains($notification->url, $dispensasi->tanggal->toDateString()));
+    $this->assertDatabaseHas('absensis', ['jurnal_id' => $journal->id, 'siswa_id' => $student->id, 'status' => 'D']);
+});
+
 it('notifies a scheduled teacher even before their journal exists', function () {
     $this->freezeTime();
     $data = dispensasiSetup();
@@ -232,6 +269,48 @@ it('notifies only teachers whose Friday schedule overlaps the dispensation and r
             && str_contains($notification->toArray($data['teacher'])['message'], '10:00–11:00');
     });
     Notification::assertNotSentTo($laterTeacher, DispensasiNotification::class);
+});
+
+it('syncs an approved Friday dispensation against Friday lesson times', function () {
+    $data = dispensasiSetup();
+    $this->travelTo(Carbon::parse('2026-09-18 10:20:00', 'Asia/Jakarta'));
+    Notification::fake();
+
+    $data['start']->update(['jam_mulai_jumat' => '10:00', 'jam_selesai_jumat' => '10:30']);
+    $fridayPeriod = JamPelajaran::create([
+        'jam_ke' => 4,
+        'jam_mulai' => '12:00',
+        'jam_selesai' => '12:30',
+        'jam_mulai_jumat' => '10:15',
+        'jam_selesai_jumat' => '10:45',
+        'is_active' => true,
+    ]);
+    $data['schedule']->update(['hari' => 'Jumat', 'jam_pelajaran_id' => $fridayPeriod->id]);
+    $journal = Jurnal::create([
+        ...$data['journal'],
+        'tanggal' => today(),
+        'jam_mulai_id' => $fridayPeriod->id,
+        'jam_selesai_id' => $fridayPeriod->id,
+    ]);
+    $dispensasi = Dispensasi::create([
+        ...$data['payload'],
+        'tanggal' => today(),
+        'jam_mulai_id' => $data['start']->id,
+        'jam_selesai_id' => $data['start']->id,
+        'siswa_id' => $data['students']->first()->id,
+        'status_piket' => 'Disetujui',
+    ]);
+    $waka = User::factory()->create(['role' => 'waka', 'is_active' => true]);
+
+    $this->actingAs($waka)->post(route('dispensasi.verify', $dispensasi), ['status' => 'Disetujui'])->assertRedirect();
+
+    $this->assertDatabaseHas('absensis', [
+        'jurnal_id' => $journal->id,
+        'siswa_id' => $data['students']->first()->id,
+        'status' => 'D',
+    ]);
+    $this->assertDatabaseHas('dispensasis', ['id' => $dispensasi->id, 'waka_id' => $waka->id, 'status_akhir' => 'Disetujui']);
+    Notification::assertSentTo($data['teacher'], DispensasiNotification::class, fn (DispensasiNotification $notification): bool => $notification->event === 'teacher_approved');
 });
 
 it('does not mark attendance or notify teachers when admin rejects', function () {

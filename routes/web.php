@@ -14,9 +14,11 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MasterBypassController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PiketJurnalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RekapController;
+use App\Http\Controllers\SchoolCalendarController;
 use App\Http\Controllers\WaliKelasJurnalController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +62,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('role:admin,waka')->group(function () {
+    Route::get('/admin/kalender', [SchoolCalendarController::class, 'index'])->name('admin.calendar.index');
+    Route::get('/admin/kalender/riwayat', [SchoolCalendarController::class, 'audit'])->name('admin.calendar.audit');
+    Route::post('/admin/kalender/kegiatan', [SchoolCalendarController::class, 'store'])->name('admin.calendar.store');
+    Route::put('/admin/kalender/kegiatan/{schoolEvent}', [SchoolCalendarController::class, 'update'])->name('admin.calendar.update');
+    Route::delete('/admin/kalender/kegiatan/{schoolEvent}', [SchoolCalendarController::class, 'destroy'])->name('admin.calendar.destroy');
+    Route::put('/admin/kalender/kegiatan/{schoolEvent}/peserta/{attendanceRecord}', [SchoolCalendarController::class, 'updateAttendanceStatus'])->name('admin.calendar.attendance-status');
     Route::post('/admin/master-bypass', [MasterBypassController::class, 'update'])->name('admin.master-bypass');
     Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
     Route::get('/admin/jadwal-piket', [AdminPiketController::class, 'index'])->name('admin.piket.index');
@@ -127,11 +135,13 @@ Route::middleware('role:admin,waka,guru,sekretaris')->prefix('rekap')->group(fun
 });
 
 Route::middleware('role:guru,piket')->prefix('piket')->name('piket.')->group(function () {
-    Route::get('/rekap-jurnal', [LaporanController::class, 'jurnalPiket'])->name('rekap-jurnal');
-    Route::get('/rekap-jurnal/export', [LaporanController::class, 'jurnalPiketExport'])->name('rekap-jurnal.export');
+    Route::get('/rekap-jurnal', [PiketJurnalController::class, 'index'])->name('rekap-jurnal');
+    Route::get('/rekap-jurnal/export', [PiketJurnalController::class, 'export'])->name('rekap-jurnal.export');
     Route::get('/izin-sekolah', [IzinSekolahController::class, 'index'])->name('izin-sekolah.index');
     Route::get('/izin-sekolah/create', [IzinSekolahController::class, 'create'])->name('izin-sekolah.create');
     Route::post('/izin-sekolah', [IzinSekolahController::class, 'store'])->name('izin-sekolah.store');
+    Route::get('/izin-masuk/create', [IzinSekolahController::class, 'createArrival'])->name('izin-masuk.create');
+    Route::post('/izin-masuk', [IzinSekolahController::class, 'storeArrival'])->name('izin-masuk.store');
 });
 
 Route::get('/piket/izin-sekolah/{izinSekolah}/surat', [AbsensiController::class, 'downloadSchoolPermissionLetter'])
@@ -165,6 +175,19 @@ Route::middleware('role:guru')->group(function () {
     Route::delete('/jurnal/{jurnal}', [JurnalController::class, 'destroy'])
         ->whereNumber('jurnal')
         ->name('jurnal.destroy');
+});
+
+Route::middleware('role:admin,waka,guru,siswa')->group(function () {
+    Route::get('/kalender/kegiatan/{schoolEvent}', [SchoolCalendarController::class, 'show'])->name('calendar.show');
+});
+
+Route::middleware('role:guru,siswa')->group(function () {
+    Route::get('/kalender', [SchoolCalendarController::class, 'participantCalendar'])->name('calendar.index');
+});
+
+Route::middleware('role:guru,siswa')->group(function () {
+    Route::post('/kalender/kegiatan/{schoolEvent}/absensi', [SchoolCalendarController::class, 'attend'])->name('calendar.attend');
+    Route::post('/kalender/kegiatan/{schoolEvent}/catatan', [SchoolCalendarController::class, 'storeNote'])->name('calendar.note');
 });
 
 Route::middleware('role:admin,waka,guru,sekretaris')->group(function () {

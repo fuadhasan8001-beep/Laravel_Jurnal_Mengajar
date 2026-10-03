@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -37,6 +38,16 @@ class User extends Authenticatable
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    public function guru(): HasOne
+    {
+        return $this->hasOne(Guru::class);
+    }
+
+    public function siswa(): HasOne
+    {
+        return $this->hasOne(Siswa::class);
     }
 
     /**
@@ -72,7 +83,10 @@ class User extends Authenticatable
 
         $guruId = Guru::where('user_id', $this->id)->value('id');
 
-        return $guruId !== null && JadwalPiket::where('guru_id', $guruId)->whereDate('tanggal', today())->exists();
+        return $guruId !== null && JadwalPiket::where('guru_id', $guruId)
+            ->whereDate('tanggal', today())
+            ->get()
+            ->contains(fn (JadwalPiket $jadwalPiket): bool => $jadwalPiket->isActiveNow());
     }
 
     public function isMaster(): bool

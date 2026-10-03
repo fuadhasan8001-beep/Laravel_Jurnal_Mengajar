@@ -29,6 +29,7 @@
     } elseif ($role === 'guru') {
         $mobileNavItems[] = $makeNavItem('jurnal-own', 'Jurnal saya', route('jurnal.index'), 'journal', request()->routeIs('jurnal.index', 'jurnal.show'));
         if ($isPiketToday) {
+            $mobileNavItems[] = $makeNavItem('teacher-piket-recap', 'Rekap jurnal', route('piket.rekap-jurnal'), 'report', request()->is('piket/rekap-jurnal*'));
             $mobileNavItems[] = $makeNavItem('piket', 'Piket', url('/piket'), 'clipboard', request()->is('piket') || request()->is('dispensasi*'));
         } elseif ($isHomeroomTeacher) {
             $mobileNavItems[] = $makeNavItem('homeroom', 'Rekap kelas', route('wali-kelas.jurnal.index'), 'class', request()->routeIs('wali-kelas.jurnal.*'));
@@ -36,7 +37,6 @@
         $mobileMoreItems[] = $makeMoreItem('teacher-journal-create', 'Menu lainnya', 'Isi jurnal', route('jurnal.create'), 'journal-add', request()->routeIs('jurnal.create', 'jurnal.store', 'jurnal.edit', 'jurnal.update'));
         $mobileMoreItems[] = $makeMoreItem('teacher-attendance', 'Menu lainnya', 'Perbarui absensi', route('absensi.index'), 'attendance', request()->is('absensi*'));
         if ($isPiketToday) {
-            $mobileMoreItems[] = $makeMoreItem('teacher-piket-recap', 'Menu lainnya', 'Rekap jurnal semua guru', route('piket.rekap-jurnal'), 'report', request()->is('piket/rekap-jurnal*'));
             $mobileMoreItems[] = $makeMoreItem('teacher-dispensasi', 'Menu lainnya', 'Dispensasi', route('dispensasi.index'), 'approval', request()->is('dispensasi*'));
             if ($isHomeroomTeacher) {
                 $mobileMoreItems[] = $makeMoreItem('teacher-homeroom', 'Menu lainnya', 'Rekap jurnal kelas', route('wali-kelas.jurnal.index'), 'class', request()->routeIs('wali-kelas.jurnal.*'));
@@ -58,8 +58,7 @@
         $mobileMoreItems[] = $makeMoreItem('piket-report', 'Menu lainnya', 'Rekap laporan', route('laporan.jurnal'), 'report', request()->is('rekap*'));
     }
 
-    $mobileMoreItems[] = $makeMoreItem('profile', 'Akun', 'Profil', route('profile'), 'person', request()->is('profile*'));
-    $mobileMoreIsActive = collect($mobileMoreItems)->contains(fn (array $item): bool => $item['active']);
+    $mobileNavItems[] = $makeNavItem('profile', 'Profil', route('profile'), 'person', request()->routeIs('profile', 'profile.update', 'profile.password'));
 @endphp
 
 <nav class="mobile-bottom-nav" data-mobile-bottom-nav aria-label="Navigasi utama" style="--mobile-nav-count: {{ count($mobileNavItems) }}">

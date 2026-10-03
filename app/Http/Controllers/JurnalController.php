@@ -7,12 +7,15 @@ use App\Http\Requests\UpdateJurnalRequest;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
+use App\Models\IzinMasuk;
 use App\Models\IzinSekolah;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\NationalHoliday;
+use App\Models\SchoolEvent;
 use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\JurnalNotification;
@@ -57,12 +60,16 @@ class JurnalController extends Controller
 
     public function create(): View
     {
+        abort_if($this->calendarOverridesJournal(today()->toDateString()), 403, 'Hari ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
+
         return view('jurnal.create', $this->formData());
     }
 
     public function store(StoreJurnalRequest $request, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
+        abort_if($this->calendarOverridesJournal(today()->toDateString()), 403, 'Hari ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         $data = $request->validated();
+        abort_if($this->calendarOverridesJournal($data['tanggal']), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
             $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
         }
@@ -151,6 +158,7 @@ class JurnalController extends Controller
     public function edit(Jurnal $jurnal): View
     {
         $this->authorizeJournal($jurnal, true);
+        abort_if($this->calendarOverridesJournal($jurnal->tanggal->toDateString()), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         $jurnal->load('absensis');
 
         return view('jurnal.edit', [
@@ -162,6 +170,7 @@ class JurnalController extends Controller
     public function update(UpdateJurnalRequest $request, Jurnal $jurnal, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $this->authorizeJournal($jurnal, true);
+        abort_if($this->calendarOverridesJournal($jurnal->tanggal->toDateString()), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
@@ -244,6 +253,20 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
+    private function calendarOverridesJournal(string $date): bool
+    {
+        if (NationalHoliday::whereDate('holiday_date', $date)->exists()) {
+            return true;
+        }
+
+        $participant = $this->calendarParticipantUser();
+
+        return $participant && SchoolEvent::whereDate('event_date', $date)
+            ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])
+            ->get()
+            ->contains(fn (SchoolEvent $event): bool => $event->isParticipant($participant));
+    }
+
     /** @return array<string, mixed> */
     private function locationData(array $data, SchoolLocationVerifier $locationVerifier): array
     {
@@ -258,10 +281,19 @@ class JurnalController extends Controller
             ];
         }
 
+        $participant = $this->calendarParticipantUser();
+        $eventLocation = $participant ? SchoolEvent::whereDate('event_date', $data['tanggal'])
+            ->where('attendance_mode', 'normal')
+            ->get()
+            ->first(fn (SchoolEvent $event): bool => $event->isParticipant($participant) && $event->location_mode === 'custom') : null;
+
         $verifiedLocation = $locationVerifier->verify(
             $data['latitude'] ?? null,
             $data['longitude'] ?? null,
             $data['location_accuracy'] ?? null,
+            $eventLocation?->location_latitude,
+            $eventLocation?->location_longitude,
+            $eventLocation?->location_radius_meters,
         );
 
         return [
@@ -272,6 +304,16 @@ class JurnalController extends Controller
             'location_valid' => true,
             'location_verified_at' => $verifiedLocation['verified_at'],
         ];
+    }
+
+    private function calendarParticipantUser(): ?User
+    {
+        $user = auth()->user();
+        if ($user->isMaster() && session('master_bypass_enabled')) {
+            return Guru::find(session('master_bypass_guru_id'))?->user;
+        }
+
+        return $user;
     }
 
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
@@ -312,6 +354,8 @@ class JurnalController extends Controller
         $dispensedStudentIds = Dispensasi::approvedForJournal($jurnal)->pluck('siswa_id');
         $allDayIzin = IzinSekolah::whereDate('tanggal', $jurnal->tanggal)
             ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
+        $arrivalPermissions = IzinMasuk::whereDate('tanggal', $jurnal->tanggal)
+            ->whereIn('siswa_id', $studentIds)->get()->keyBy('siswa_id');
 
         abort_unless($submittedAbsensis->keys()->diff($studentIds)->isEmpty(), 422, 'Siswa tidak termasuk dalam kelas jurnal ini.');
         abort_if(
@@ -321,7 +365,7 @@ class JurnalController extends Controller
         );
 
         $timestamp = now();
-        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds, $allDayIzin): array {
+        $records = $students->map(function (Siswa $student) use ($jurnal, $submittedAbsensis, $timestamp, $dispensedStudentIds, $allDayIzin, $arrivalPermissions): array {
             $absensi = $submittedAbsensis->get($student->id, []);
 
             if ($allDayIzin->has($student->id)) {
@@ -329,12 +373,21 @@ class JurnalController extends Controller
                 $absensi = [
                     'status' => $izin->status,
                     'catatan' => $izin->status === 'S'
-                        ? 'Sakit seharian berdasarkan surat orang tua.'
-                        : 'Izin sekolah seharian berdasarkan surat orang tua.',
+                        ? 'Sakit berdasarkan surat dari orang tua.'
+                        : 'Izin berdasarkan surat dari orang tua.',
                     'surat_izin_path' => $izin->surat_izin_path,
                 ];
             } elseif ($dispensedStudentIds->contains($student->id)) {
                 $absensi = ['status' => 'D', 'catatan' => 'Dispensasi disetujui.'];
+            } elseif ($arrivalPermissions->has($student->id) && $this->journalAtOrAfterArrival($jurnal, $arrivalPermissions->get($student->id))) {
+                $permission = $arrivalPermissions->get($student->id);
+                $absensi = [
+                    'status' => 'H',
+                    'catatan' => 'Terlambat, izin masuk jam ke-'.$permission->jam_masuk_ke.' pukul '.substr($permission->waktu_masuk, 0, 5).'.',
+                ];
+                if ($permission->alasan) {
+                    $absensi['catatan'] .= ' Alasan: '.$permission->alasan;
+                }
             }
 
             return [
@@ -366,6 +419,13 @@ class JurnalController extends Controller
                 ->values()
                 ->all(),
         ]);
+    }
+
+    private function journalAtOrAfterArrival(Jurnal $jurnal, IzinMasuk $permission): bool
+    {
+        $day = $jurnal->tanggal->locale('id')->translatedFormat('l');
+
+        return $jurnal->jamSelesai->timesForDay($day)[1] > $permission->waktu_masuk;
     }
 
     /**
