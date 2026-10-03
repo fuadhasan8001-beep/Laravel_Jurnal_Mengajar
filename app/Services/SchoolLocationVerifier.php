@@ -10,14 +10,14 @@ class SchoolLocationVerifier
     /**
      * @return array{latitude: float, longitude: float, accuracy: float, distance: float, verified_at: Carbon}
      */
-    public function verify(mixed $latitude, mixed $longitude, mixed $accuracy): array
+    public function verify(mixed $latitude, mixed $longitude, mixed $accuracy, mixed $targetLatitude = null, mixed $targetLongitude = null, mixed $targetRadius = null): array
     {
         $latitude = $this->coordinate($latitude, -90, 90, 'latitude');
         $longitude = $this->coordinate($longitude, -180, 180, 'longitude');
         $accuracy = is_numeric($accuracy) ? (float) $accuracy : NAN;
-        $schoolLatitude = config('school.latitude');
-        $schoolLongitude = config('school.longitude');
-        $radius = config('school.radius_meters');
+        $schoolLatitude = $targetLatitude ?? config('school.latitude');
+        $schoolLongitude = $targetLongitude ?? config('school.longitude');
+        $radius = $targetRadius ?? config('school.radius_meters');
         $maximumAccuracy = config('school.max_gps_accuracy');
 
         if (! is_finite($accuracy) || $accuracy < 0 || ! is_numeric($maximumAccuracy) || $accuracy > (float) $maximumAccuracy) {

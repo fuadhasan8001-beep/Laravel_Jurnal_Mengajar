@@ -8,7 +8,10 @@ use App\Models\Jadwal;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\NationalHoliday;
+use App\Models\SchoolEvent;
 use App\Models\Siswa;
+use App\Services\SchoolEventScheduleConflictDetector;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -30,14 +33,29 @@ class DashboardController extends Controller
             'disetujuiBulanIni' => Dispensasi::where('status_akhir', 'Disetujui')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
             'perluPerhatian' => Dispensasi::where('status_akhir', 'Ditolak')->whereMonth('updated_at', now()->month)->whereYear('updated_at', now()->year)->count(),
             'masterGurus' => auth()->user()->isMaster() ? Guru::with('user')->orderBy('nama_guru')->get() : collect(),
+            'schoolEventsToday' => SchoolEvent::with('attendances')->whereDate('event_date', today())->orderBy('activity_start')->get(),
+            'nationalHolidayToday' => NationalHoliday::whereDate('holiday_date', today())->value('name'),
         ]);
     }
 
-    public function guru(): View
+    public function guru(SchoolEventScheduleConflictDetector $conflictDetector): View
     {
         $now = now();
         $hariIni = $now->copy()->locale('id')->translatedFormat('l');
         $guru = Guru::where('user_id', auth()->id())->first();
+        $nationalHolidayName = NationalHoliday::whereDate('holiday_date', $now->toDateString())->value('name');
+        $schoolEvents = SchoolEvent::with('attendances')->whereBetween('event_date', [$now->toDateString(), $now->copy()->addDays(30)->toDateString()])
+            ->orderBy('event_date')->orderBy('activity_start')->get()
+            ->filter(fn (SchoolEvent $event): bool => $event->isParticipant(auth()->user()))
+            ->values();
+        $holidayNames = NationalHoliday::whereBetween('holiday_date', [$now->toDateString(), $now->copy()->addDays(30)->toDateString()])->pluck('name', 'holiday_date');
+        $schoolEvents->each(function (SchoolEvent $event) use ($guru, $conflictDetector, $holidayNames): void {
+            $event->setAttribute('attendance_record', $event->attendances->firstWhere('user_id', auth()->id()));
+            $event->setAttribute('schedule_conflicts', $guru ? $conflictDetector->conflicts($event)->where('teacher_id', $guru->id)->values() : collect());
+            $event->setAttribute('holiday_name', $holidayNames[$event->event_date->toDateString()] ?? null);
+        });
+        $todayEvents = $schoolEvents->filter(fn (SchoolEvent $event): bool => $event->event_date->isToday())->values();
+        $specialDay = (bool) $nationalHolidayName || $todayEvents->contains(fn (SchoolEvent $event): bool => $event->overridesScheduledAttendance());
         $jadwalHariIni = Jadwal::with(['kelas', 'mapel', 'jamPelajaran'])
             ->where('guru_id', $guru?->id)
             ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
@@ -46,7 +64,7 @@ class DashboardController extends Controller
             ->get()
             ->sortBy('jamPelajaran.jam_ke')
             ->values();
-        $sessions = $guru ? Jadwal::sessionsForGuru($guru, $now) : collect();
+        $sessions = $guru && ! $specialDay ? Jadwal::sessionsForGuru($guru, $now) : collect();
         $activeJadwalIds = $sessions->where('active', true)
             ->flatMap(fn (array $session): array => $session['jadwal_ids'])
             ->unique()
@@ -69,6 +87,10 @@ class DashboardController extends Controller
             'jurnalTerbaru' => Jurnal::with(['guru', 'kelas', 'mapel', 'jamMulai', 'jamSelesai', 'absensis.siswa'])
                 ->where('guru_id', $guru?->id)->latest('tanggal')->first(),
             'activeJadwalIds' => $activeJadwalIds,
+            'schoolEvents' => $schoolEvents,
+            'todayEvents' => $todayEvents,
+            'nationalHolidayName' => $nationalHolidayName,
+            'specialDay' => $specialDay,
         ]);
     }
 
@@ -76,12 +98,22 @@ class DashboardController extends Controller
     {
         $siswa = Siswa::where('user_id', auth()->id())->first();
         $dispensasi = $siswa ? Dispensasi::where('siswa_id', $siswa->id) : Dispensasi::whereRaw('1 = 0');
+        $schoolEvents = SchoolEvent::with('attendances')->whereBetween('event_date', [today()->toDateString(), today()->addDays(30)->toDateString()])
+            ->orderBy('event_date')->get()->filter(fn (SchoolEvent $event): bool => $event->isParticipant(auth()->user()))->values();
+        $holidayNames = NationalHoliday::whereBetween('holiday_date', [today()->toDateString(), today()->addDays(30)->toDateString()])->pluck('name', 'holiday_date');
+        $schoolEvents->each(function (SchoolEvent $event) use ($holidayNames): void {
+            $event->setAttribute('attendance_record', $event->attendances->firstWhere('user_id', auth()->id()));
+            $event->setAttribute('holiday_name', $holidayNames[$event->event_date->toDateString()] ?? null);
+            $event->setAttribute('schedule_conflicts', collect());
+        });
 
         return view('dashboard.siswa', [
             'menunggu' => (clone $dispensasi)->where('status_akhir', 'Menunggu')->count(),
             'disetujui' => (clone $dispensasi)->where('status_akhir', 'Disetujui')->count(),
             'ditolak' => (clone $dispensasi)->where('status_akhir', 'Ditolak')->count(),
             'totalPengajuan' => $dispensasi->count(),
+            'schoolEvents' => $schoolEvents,
+            'nationalHolidayName' => NationalHoliday::whereDate('holiday_date', today())->value('name'),
         ]);
     }
 

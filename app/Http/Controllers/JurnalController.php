@@ -7,13 +7,15 @@ use App\Http\Requests\UpdateJurnalRequest;
 use App\Models\Absensi;
 use App\Models\Dispensasi;
 use App\Models\Guru;
-use App\Models\IzinSekolah;
 use App\Models\IzinMasuk;
+use App\Models\IzinSekolah;
 use App\Models\Jadwal;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\NationalHoliday;
+use App\Models\SchoolEvent;
 use App\Models\Siswa;
 use App\Models\User;
 use App\Notifications\JurnalNotification;
@@ -58,12 +60,16 @@ class JurnalController extends Controller
 
     public function create(): View
     {
+        abort_if($this->calendarOverridesJournal(today()->toDateString()), 403, 'Hari ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
+
         return view('jurnal.create', $this->formData());
     }
 
     public function store(StoreJurnalRequest $request, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
+        abort_if($this->calendarOverridesJournal(today()->toDateString()), 403, 'Hari ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         $data = $request->validated();
+        abort_if($this->calendarOverridesJournal($data['tanggal']), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
             $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
         }
@@ -152,6 +158,7 @@ class JurnalController extends Controller
     public function edit(Jurnal $jurnal): View
     {
         $this->authorizeJournal($jurnal, true);
+        abort_if($this->calendarOverridesJournal($jurnal->tanggal->toDateString()), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         $jurnal->load('absensis');
 
         return view('jurnal.edit', [
@@ -163,6 +170,7 @@ class JurnalController extends Controller
     public function update(UpdateJurnalRequest $request, Jurnal $jurnal, SchoolLocationVerifier $locationVerifier): RedirectResponse
     {
         $this->authorizeJournal($jurnal, true);
+        abort_if($this->calendarOverridesJournal($jurnal->tanggal->toDateString()), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
@@ -245,6 +253,20 @@ class JurnalController extends Controller
         return Guru::where('user_id', auth()->id())->firstOrFail();
     }
 
+    private function calendarOverridesJournal(string $date): bool
+    {
+        if (NationalHoliday::whereDate('holiday_date', $date)->exists()) {
+            return true;
+        }
+
+        $participant = $this->calendarParticipantUser();
+
+        return $participant && SchoolEvent::whereDate('event_date', $date)
+            ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])
+            ->get()
+            ->contains(fn (SchoolEvent $event): bool => $event->isParticipant($participant));
+    }
+
     /** @return array<string, mixed> */
     private function locationData(array $data, SchoolLocationVerifier $locationVerifier): array
     {
@@ -259,10 +281,19 @@ class JurnalController extends Controller
             ];
         }
 
+        $participant = $this->calendarParticipantUser();
+        $eventLocation = $participant ? SchoolEvent::whereDate('event_date', $data['tanggal'])
+            ->where('attendance_mode', 'normal')
+            ->get()
+            ->first(fn (SchoolEvent $event): bool => $event->isParticipant($participant) && $event->location_mode === 'custom') : null;
+
         $verifiedLocation = $locationVerifier->verify(
             $data['latitude'] ?? null,
             $data['longitude'] ?? null,
             $data['location_accuracy'] ?? null,
+            $eventLocation?->location_latitude,
+            $eventLocation?->location_longitude,
+            $eventLocation?->location_radius_meters,
         );
 
         return [
@@ -273,6 +304,16 @@ class JurnalController extends Controller
             'location_valid' => true,
             'location_verified_at' => $verifiedLocation['verified_at'],
         ];
+    }
+
+    private function calendarParticipantUser(): ?User
+    {
+        $user = auth()->user();
+        if ($user->isMaster() && session('master_bypass_enabled')) {
+            return Guru::find(session('master_bypass_guru_id'))?->user;
+        }
+
+        return $user;
     }
 
     private function authorizeJournal(Jurnal $jurnal, bool $mustOwn = false): void
