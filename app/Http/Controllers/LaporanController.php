@@ -13,6 +13,7 @@ use App\Models\Siswa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -34,10 +35,16 @@ class LaporanController extends Controller
 
     private function journalReport(Request $request, bool $includeAllTeachers = false): View
     {
+        $request->validate(['tampilan' => ['nullable', 'in:kelas,guru']]);
         $jurnals = $this->jurnalQuery($request, $includeAllTeachers)->paginate(20)->withQueryString();
+        $groupBy = $request->input('tampilan', 'kelas') === 'guru' ? 'guru_id' : 'kelas_id';
+        $groupLabel = $groupBy === 'guru_id' ? 'guru' : 'kelas';
+        $journalGroups = $jurnals->getCollection()->groupBy($groupBy);
 
         return view('laporan.jurnal', [
             'jurnals' => $jurnals,
+            'journalGroups' => $journalGroups,
+            'groupLabel' => $groupLabel,
             'monitoringDate' => Carbon::parse($request->input('monitoring_date', today()->toDateString())),
             'monitoring' => $this->journalMonitoring($request, $includeAllTeachers),
             ...$this->filterData(),
@@ -80,10 +87,39 @@ class LaporanController extends Controller
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
+        $studentAttendance = (clone $query)
+            ->join('jurnals as report_jurnals', 'report_jurnals.id', '=', 'absensis.jurnal_id')
+            ->selectRaw('report_jurnals.kelas_id as kelas_id, absensis.status as status, count(*) as total')
+            ->groupBy('report_jurnals.kelas_id', 'absensis.status')
+            ->get();
+        $teacherAttendance = $this->jurnalQuery($request)
+            ->selectRaw('kelas_id, status_guru as status, count(*) as total')
+            ->groupBy('kelas_id', 'status_guru')
+            ->get();
+        $classIds = $studentAttendance->pluck('kelas_id')->merge($teacherAttendance->pluck('kelas_id'))->unique();
+        $classes = Kelas::query()->whereIn('id', $classIds)->orderBy('nama_kelas')->get();
+        $attendanceGroups = $classes->groupBy(fn (Kelas $class): string => $this->jurusanFromClassName($class))
+            ->map(function (Collection $jurusanClasses) use ($studentAttendance, $teacherAttendance): array {
+                $classStats = $jurusanClasses->map(function (Kelas $class) use ($studentAttendance, $teacherAttendance): array {
+                    return [
+                        'kelas' => $class,
+                        'siswa' => $this->attendanceCounts($studentAttendance->where('kelas_id', $class->id)),
+                        'guru' => $this->attendanceCounts($teacherAttendance->where('kelas_id', $class->id)),
+                    ];
+                });
+
+                return [
+                    'classes' => $classStats,
+                    'siswa' => $this->attendanceCounts($studentAttendance->whereIn('kelas_id', $jurusanClasses->modelKeys())),
+                    'guru' => $this->attendanceCounts($teacherAttendance->whereIn('kelas_id', $jurusanClasses->modelKeys())),
+                ];
+            });
 
         return view('laporan.absensi', [
             'absensis' => $query->paginate(30)->withQueryString(),
             'summary' => $summary,
+            'teacherSummary' => $this->attendanceCounts($teacherAttendance),
+            'attendanceGroups' => $attendanceGroups,
             ...$this->filterData(),
             'siswas' => Siswa::orderBy('nama_siswa')->get(),
         ]);
@@ -215,6 +251,42 @@ class LaporanController extends Controller
     private function currentGuru(): Guru
     {
         return Guru::where('user_id', auth()->id())->firstOrFail();
+    }
+
+    /** @param Collection<int, object> $rows
+     * @return array<string, int>
+     */
+    private function attendanceCounts(Collection $rows): array
+    {
+        $statuses = ['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi', 'Dinas', 'Tanpa Keterangan'];
+        $counts = array_fill_keys($statuses, 0);
+
+        foreach ($rows as $row) {
+            $label = match ($row->status) {
+                'H' => 'Hadir',
+                'S' => 'Sakit',
+                'I' => 'Izin',
+                'A' => 'Alpa',
+                'D' => 'Dispensasi',
+                default => $row->status,
+            };
+            $counts[$label] = ($counts[$label] ?? 0) + (int) $row->total;
+        }
+
+        return $counts;
+    }
+
+    private function jurusanFromClassName(Kelas $class): string
+    {
+        $parts = preg_split('/\s+/', trim($class->nama_kelas), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if ($parts !== [] && Str::lower($parts[0]) === Str::lower($class->tingkat)) {
+            array_shift($parts);
+        }
+        if ($parts !== [] && preg_match('/^(\d+|[A-Z])$/i', $parts[array_key_last($parts)]) === 1) {
+            array_pop($parts);
+        }
+
+        return $parts === [] ? 'Umum' : implode(' ', $parts);
     }
 
     /**
