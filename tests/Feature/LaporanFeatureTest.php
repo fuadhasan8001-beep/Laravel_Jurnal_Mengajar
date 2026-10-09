@@ -33,6 +33,13 @@ it('exports report data as csv', function () {
     $this->actingAs($user)->get(route('laporan.dispensasi.export'))->assertDownload('rekap-dispensasi.csv');
 });
 
+it('keeps piket users on the roster-protected journal report', function () {
+    $piket = User::factory()->create(['role' => 'piket', 'is_active' => true]);
+
+    $this->actingAs($piket)->get(route('laporan.jurnal'))->assertForbidden();
+    $this->get(route('laporan.absensi'))->assertForbidden();
+});
+
 it('classifies scheduled lessons by journal and teacher leave status', function () {
     $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
     $teacherUser = User::factory()->create(['role' => 'guru', 'is_active' => true]);

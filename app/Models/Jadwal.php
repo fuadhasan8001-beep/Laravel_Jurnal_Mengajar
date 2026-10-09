@@ -60,7 +60,19 @@ class Jadwal extends Model
             }
         }
 
-        return collect($sessions)->sortBy('jam_mulai')->values();
+        $sessions = collect($sessions)->sortBy('jam_mulai')->values();
+        $dismissalTimes = SchoolEvent::query()->whereDate('event_date', $time->toDateString())
+            ->whereNotNull('early_dismissal_at')->where('attendance_mode', 'normal')->get()
+            ->filter(fn (SchoolEvent $event): bool => $guru->user && $event->isParticipant($guru->user))
+            ->pluck('early_dismissal_at');
+
+        if ($dismissalTimes->isEmpty()) {
+            return $sessions;
+        }
+
+        $dismissalTime = $dismissalTimes->min();
+
+        return $sessions->filter(fn (array $session): bool => $session['jam_mulai'] < $dismissalTime)->values();
     }
 
     public function guru(): BelongsTo

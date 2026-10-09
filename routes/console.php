@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('jurnal:remind-missing')->hourly();
-Schedule::command('calendar:sync-holidays')->monthlyOn(2, '01:00');
-Schedule::command('calendar:close-event-attendance')->everyMinute();
+Schedule::command('calendar:sync-holidays')->monthlyOn(2, '01:00')->withoutOverlapping();
+Schedule::command('calendar:close-event-attendance')->everyMinute()->withoutOverlapping();

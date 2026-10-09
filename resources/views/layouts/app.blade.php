@@ -2758,11 +2758,12 @@
                                 <a class="nav-link {{ request()->is('admin/secretaries*') ? 'active' : '' }}" href="{{ route('admin.secretaries.index') }}">Pengurus kelas</a>
                             </nav>
                         </details>
-                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('dispensasi*')) open @endif>
+                        <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('admin/kalender*') || request()->is('dispensasi*')) open @endif>
                             <summary>Operasional</summary>
                             <nav class="nav-list" aria-label="Operasional">
                                 <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
+                                <a class="nav-link {{ request()->is('admin/kalender*') ? 'active' : '' }}" href="{{ route('admin.calendar.index') }}">Hari libur & kalender</a>
                                 <a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Riwayat aktivitas</a>
                                 <a class="nav-link {{ request()->is('dispensasi*') ? 'active' : '' }}" href="{{ route('dispensasi.index') }}" @if (in_array(auth()->user()->role, ['siswa', 'piket'], true)) data-mobile-primary-duplicate @endif>Dispensasi</a>
                             </nav>

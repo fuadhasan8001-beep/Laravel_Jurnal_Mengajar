@@ -242,14 +242,17 @@ class SchoolCalendarController extends Controller
         abort_if($data['session'] === 'once' && $schoolEvent->attendance_mode !== 'once', 422);
         abort_if($data['session'] !== 'once' && $schoolEvent->attendance_mode !== 'morning_evening', 422);
         $statusField = 'status_'.$data['session'];
-        $before = $attendanceRecord->{$statusField};
-        $attendanceRecord->update([$statusField => $data['status']]);
-        $schoolEvent->audits()->create([
-            'actor_id' => $request->user()->id,
-            'action' => 'attendance_status_updated',
-            'changes' => ['user_id' => $attendanceRecord->user_id, 'field' => $statusField, 'before' => $before, 'after' => $data['status']],
-            'event_snapshot' => $schoolEvent->getAttributes(),
-        ]);
+        DB::transaction(function () use ($attendanceRecord, $data, $statusField, $request, $schoolEvent): void {
+            $attendanceRecord = SchoolEventAttendanceRecord::whereKey($attendanceRecord->id)->lockForUpdate()->firstOrFail();
+            $before = $attendanceRecord->{$statusField};
+            $attendanceRecord->update([$statusField => $data['status']]);
+            $schoolEvent->audits()->create([
+                'actor_id' => $request->user()->id,
+                'action' => 'attendance_status_updated',
+                'changes' => ['user_id' => $attendanceRecord->user_id, 'field' => $statusField, 'before' => $before, 'after' => $data['status']],
+                'event_snapshot' => $schoolEvent->getAttributes(),
+            ]);
+        });
 
         return back()->with('success', 'Status absensi peserta berhasil diperbarui.');
     }
@@ -267,6 +270,7 @@ class SchoolCalendarController extends Controller
             'participant_ids.*' => ['integer', 'distinct', Rule::when($request->input('participant_scope') === 'guru_tertentu', ['exists:gurus,id']), Rule::when($request->input('participant_scope') === 'kelas_tertentu', ['exists:kelas,id'])],
             'activity_start' => ['required', 'date_format:H:i'],
             'activity_end' => ['required', 'date_format:H:i', 'after:activity_start'],
+            'early_dismissal_at' => ['nullable', 'date_format:H:i', 'after:activity_start', 'before:activity_end'],
             'attendance_mode' => ['required', Rule::in(['normal', 'morning_evening', 'once', 'none'])],
             'once_start' => ['required_if:attendance_mode,once', 'nullable', 'date_format:H:i'],
             'once_deadline' => ['required_if:attendance_mode,once', 'nullable', 'date_format:H:i', 'after_or_equal:once_start'],

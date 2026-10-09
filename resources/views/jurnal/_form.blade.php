@@ -30,6 +30,8 @@
         @error('status_guru')<small class="error">{{ $message }}</small>@enderror
     </fieldset>
     <div class="form-grid">
+        <div class="field"><label for="learning_mode">Mode pembelajaran</label><select id="learning_mode" name="learning_mode" required><option value="tatap_muka" @selected(old('learning_mode', $jurnal?->learning_mode ?? 'tatap_muka') === 'tatap_muka')>Tatap muka</option><option value="daring" @selected(old('learning_mode', $jurnal?->learning_mode ?? 'tatap_muka') === 'daring')>Daring</option></select>@error('learning_mode')<small class="error">{{ $message }}</small>@enderror</div>
+        @if ($schoolEvents->isNotEmpty())<div class="field"><label for="school_event_id">Kegiatan sekolah (opsional)</label><select id="school_event_id" name="school_event_id"><option value="">Pembelajaran reguler</option>@foreach ($schoolEvents as $schoolEvent)<option value="{{ $schoolEvent->id }}" @selected((string) old('school_event_id', $jurnal?->school_event_id) === (string) $schoolEvent->id)>{{ $schoolEvent->title }} · {{ $schoolEvent->event_type }}</option>@endforeach</select>@error('school_event_id')<small class="error">{{ $message }}</small>@enderror</div>@endif
         <div class="field"><label for="guru_nama">Guru</label><input id="guru_nama" value="{{ auth()->user()->name }}" readonly></div>
         <div class="field"><label for="tanggal">Tanggal</label><input id="tanggal" value="{{ $date->translatedFormat('l, d F Y') }}" readonly></div>
         @if (! $isEdit && $sessions->where('active', true)->count() > 1)
@@ -117,7 +119,7 @@
         </div>
     </section>
     <section class="journal-detail-panel" aria-labelledby="location-title" data-school-latitude="{{ config('school.latitude') }}" data-school-longitude="{{ config('school.longitude') }}" data-school-radius="{{ config('school.radius_meters') }}" data-max-gps-accuracy="{{ config('school.max_gps_accuracy') }}">
-        <div class="journal-card-header"><div><h3 id="location-title">Verifikasi lokasi sekolah</h3><p>Status Hadir memerlukan verifikasi GPS di area sekolah.</p></div></div>
+        <div class="journal-card-header"><div><h3 id="location-title">Verifikasi lokasi sekolah</h3><p>Tatap muka: status Hadir memerlukan GPS. Pembelajaran daring tidak memerlukan GPS.</p></div></div>
         <p id="location-status" role="status" aria-live="polite">📍 Mendeteksi lokasi...</p>
         <input type="hidden" name="latitude" id="location-latitude" value="{{ old('latitude') }}">
         <input type="hidden" name="longitude" id="location-longitude" value="{{ old('longitude') }}">
@@ -195,6 +197,7 @@
     renderStudents();
 
     let locationValid = false;
+    const learningMode = document.getElementById('learning_mode');
     const schoolLatitude = Number(locationPanel.dataset.schoolLatitude);
     const schoolLongitude = Number(locationPanel.dataset.schoolLongitude);
     const radius = Number(locationPanel.dataset.schoolRadius);
@@ -210,13 +213,14 @@
         learningActivity.hidden = !isPresent;
         learningActivity.style.display = isPresent ? '' : 'none';
         document.getElementById('kegiatan').disabled = !isPresent;
-        const canSubmit = selectedStatus() !== 'Hadir' || locationValid;
+        const isOnline = learningMode.value === 'daring';
+        const canSubmit = selectedStatus() !== 'Hadir' || isOnline || locationValid;
         saveTrigger.disabled = !canSubmit;
         finalSubmit.disabled = !canSubmit;
-        locationPanel.hidden = selectedStatus() !== 'Hadir';
-        locationPanel.style.display = selectedStatus() === 'Hadir' ? '' : 'none';
-        retryLocationButton.hidden = selectedStatus() !== 'Hadir' || !retryLocationButton.dataset.available;
-        document.getElementById('confirm-location').parentElement.hidden = selectedStatus() !== 'Hadir';
+        locationPanel.hidden = selectedStatus() !== 'Hadir' || isOnline;
+        locationPanel.style.display = selectedStatus() === 'Hadir' && !isOnline ? '' : 'none';
+        retryLocationButton.hidden = selectedStatus() !== 'Hadir' || isOnline || !retryLocationButton.dataset.available;
+        document.getElementById('confirm-location').parentElement.hidden = selectedStatus() !== 'Hadir' || isOnline;
     }
 
     function distanceMeters(latitude, longitude) {
@@ -304,7 +308,7 @@
         document.getElementById('confirm-assignment-row').hidden = status === 'Hadir';
         document.getElementById('confirm-tugas').textContent = document.getElementById('tugas').value.trim() || 'Tidak ada tugas';
         document.getElementById('confirm-absensi').textContent = `Hadir ${counts.H}, Sakit ${counts.S}, Izin ${counts.I}, Alpa ${counts.A}, Dispen ${counts.D}`;
-        document.getElementById('confirm-location').textContent = status !== 'Hadir' ? 'Tidak diwajibkan untuk status ini' : (locationValid ? locationStatus.textContent : 'Belum valid');
+        document.getElementById('confirm-location').textContent = learningMode.value === 'daring' ? 'Tidak diwajibkan untuk pembelajaran daring' : (status !== 'Hadir' ? 'Tidak diwajibkan untuk status ini' : (locationValid ? locationStatus.textContent : 'Belum valid'));
     }
 
     function openConfirmModal() {
@@ -316,7 +320,7 @@
     }
 
     statusSelect.addEventListener('change', () => {
-        if (selectedStatus() === 'Hadir') checkLocation();
+        if (selectedStatus() === 'Hadir' && learningMode.value === 'tatap_muka') checkLocation();
         else {
             locationValid = false;
             latitudeInput.value = '';
@@ -327,10 +331,11 @@
         updateButtons();
         updateSummary();
     });
+    learningMode.addEventListener('change', updateButtons);
     retryLocationButton.addEventListener('click', checkLocation);
     saveTrigger.addEventListener('click', openConfirmModal);
     finalSubmit.addEventListener('click', () => {
-        if (selectedStatus() === 'Hadir' && !locationValid) return;
+        if (selectedStatus() === 'Hadir' && learningMode.value === 'tatap_muka' && !locationValid) return;
         form.submit();
     });
     confirmModal?.addEventListener('click', (event) => { if (event.target === confirmModal) closeConfirmModal(); });
@@ -354,7 +359,7 @@
     updateAttendanceNotes();
     updateButtons();
     updateSummary();
-    if (selectedStatus() === 'Hadir') checkLocation();
+    if (selectedStatus() === 'Hadir' && learningMode.value === 'tatap_muka') checkLocation();
 })();
 </script>
 @if (! $isEdit && $sessions->where('active', true)->count() > 1)

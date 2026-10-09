@@ -16,6 +16,8 @@ class Jurnal extends Model
         'jam_selesai_id',
         'tanggal',
         'status_guru',
+        'learning_mode',
+        'school_event_id',
         'materi',
         'tujuan_pembelajaran',
         'kegiatan',
@@ -48,6 +50,11 @@ class Jurnal extends Model
     public function guru(): BelongsTo
     {
         return $this->belongsTo(Guru::class);
+    }
+
+    public function schoolEvent(): BelongsTo
+    {
+        return $this->belongsTo(SchoolEvent::class);
     }
 
     public function kelas(): BelongsTo

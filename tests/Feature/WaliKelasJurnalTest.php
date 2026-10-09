@@ -79,13 +79,13 @@ it('validates date filters', function () {
     $this->actingAs($this->wali)->get(route('wali-kelas.jurnal.index', ['tanggal' => 'bukan-tanggal']))->assertSessionHasErrors('tanggal');
 });
 
-it('blocks the legacy journal report and export for teachers', function () {
-    foreach ([$this->teacher, $this->wali] as $user) {
-        $this->actingAs($user)->get(route('laporan.jurnal'))->assertForbidden();
-        $this->get(route('laporan.jurnal.export'))->assertForbidden();
-        $this->get('/guru')->assertOk()->assertDontSee('Rekap laporan');
-        $this->get(route('jurnal.index'))->assertOk();
-    }
+it('limits teacher journal reports to journals owned by the authenticated teacher', function () {
+    $this->actingAs($this->teacher)->get(route('laporan.jurnal'))->assertOk()->assertSee('Materi algoritma');
+    $this->get(route('laporan.jurnal.export'))->assertDownload('rekap-jurnal.csv');
+    $this->actingAs($this->wali)->get(route('laporan.jurnal'))->assertOk()->assertDontSee('Materi algoritma');
+    $this->get(route('laporan.jurnal.export'))->assertDownload('rekap-jurnal.csv');
+    $this->get('/guru')->assertOk();
+    $this->get(route('jurnal.index'))->assertOk();
 });
 
 it('keeps the duty report restricted to teachers assigned today', function () {

@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -71,6 +72,60 @@ class AdminPiketController extends Controller
             'is_koordinator' => $data['jenis_tugas'] === 'kbm' && $request->boolean('is_koordinator')])->save();
 
         return back()->with('success', 'Jadwal piket guru berhasil disimpan.');
+    }
+
+    public function repeatWakaRoster(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['bulan' => ['required', 'date_format:Y-m']]);
+        $targetMonth = Carbon::createFromFormat('!Y-m', $data['bulan']);
+        $sourceMonth = $targetMonth->copy()->subMonthNoOverflow();
+        $sourceSchedules = JadwalPiket::where('shift', JadwalPiket::SHIFT_WAKA)
+            ->whereBetween('tanggal', [$sourceMonth->copy()->startOfMonth()->toDateString(), $sourceMonth->copy()->endOfMonth()->toDateString()])
+            ->orderBy('tanggal')
+            ->get();
+
+        if ($sourceSchedules->isEmpty()) {
+            return back()->withErrors(['bulan' => 'Tidak ada jadwal Piket Waka pada bulan sebelumnya untuk disalin.']);
+        }
+
+        $copied = 0;
+        $skipped = 0;
+        $targetDates = [];
+
+        DB::transaction(function () use ($request, $sourceSchedules, $targetMonth, &$copied, &$skipped, &$targetDates): void {
+            JadwalPiket::where('shift', JadwalPiket::SHIFT_WAKA)
+                ->whereBetween('tanggal', [$targetMonth->copy()->startOfMonth()->toDateString(), $targetMonth->copy()->endOfMonth()->toDateString()])
+                ->delete();
+
+            foreach ($sourceSchedules as $sourceSchedule) {
+                $day = min($sourceSchedule->tanggal->day, $targetMonth->daysInMonth);
+                $targetDate = $targetMonth->copy()->day($day)->toDateString();
+
+                if (isset($targetDates[$targetDate])) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                $targetDates[$targetDate] = true;
+                JadwalPiket::create([
+                    'guru_id' => null,
+                    'user_id' => $sourceSchedule->user_id,
+                    'tanggal' => $targetDate,
+                    'shift' => JadwalPiket::SHIFT_WAKA,
+                    'dibuat_oleh' => $request->user()->id,
+                    'is_koordinator' => false,
+                ])->save();
+                $copied++;
+            }
+        });
+
+        $message = "$copied jadwal Piket Waka berhasil disalin dari bulan sebelumnya.";
+        if ($skipped > 0) {
+            $message .= " $skipped jadwal dilewati karena tanggal bertumpuk setelah penyesuaian akhir bulan.";
+        }
+
+        return back()->with('success', $message);
     }
 
     public function update(Request $request, JadwalPiket $jadwalPiket): RedirectResponse

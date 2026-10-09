@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SchoolEvent extends Model
 {
-    protected $fillable = ['event_date', 'title', 'description', 'event_type', 'participant_scope', 'participant_ids', 'activity_start', 'activity_end', 'attendance_enabled', 'attendance_mode', 'once_start', 'once_deadline', 'morning_start', 'morning_deadline', 'evening_start', 'evening_deadline', 'location_mode', 'location_latitude', 'location_longitude', 'location_radius_meters'];
+    protected $fillable = ['event_date', 'title', 'description', 'event_type', 'participant_scope', 'participant_ids', 'activity_start', 'activity_end', 'early_dismissal_at', 'attendance_enabled', 'attendance_mode', 'once_start', 'once_deadline', 'morning_start', 'morning_deadline', 'evening_start', 'evening_deadline', 'location_mode', 'location_latitude', 'location_longitude', 'location_radius_meters'];
 
     protected function casts(): array
     {

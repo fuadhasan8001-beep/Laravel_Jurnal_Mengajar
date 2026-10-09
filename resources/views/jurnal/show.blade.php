@@ -32,6 +32,8 @@
                 <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnal->guru->nama_guru }}</dd></div>
                 <div class="detail-item"><dt>Jam</dt><dd>{{ substr($jurnal->jamMulai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[0], 0, 5) }} - {{ substr($jurnal->jamSelesai->timesForDay($jurnal->tanggal->copy()->locale('id')->translatedFormat('l'))[1], 0, 5) }}</dd></div>
                 <div class="detail-item"><dt>Status guru</dt><dd>{{ $jurnal->status_guru }}</dd></div>
+                <div class="detail-item"><dt>Mode pembelajaran</dt><dd><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : 'Tatap muka' }}</span></dd></div>
+                <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>{{ $jurnal->schoolEvent?->title ?? 'Pembelajaran reguler' }}@if ($jurnal->schoolEvent?->early_dismissal_at)<br>Pulang lebih awal {{ substr($jurnal->schoolEvent->early_dismissal_at, 0, 5) }}@endif</dd></div>
                 <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
                 <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
                 <div class="detail-item detail-item-full"><dt>Kegiatan</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>

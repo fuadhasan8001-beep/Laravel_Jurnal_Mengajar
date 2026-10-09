@@ -23,6 +23,9 @@ class StoreJurnalRequest extends FormRequest
         if ($this->input('status_guru') === null || $this->input('status_guru') === '') {
             $this->merge(['status_guru' => 'Hadir']);
         }
+        if ($this->input('learning_mode') === null || $this->input('learning_mode') === '') {
+            $this->merge(['learning_mode' => 'tatap_muka']);
+        }
 
         $this->merge([
             'tanggal' => today()->toDateString(), 'materi' => $this->input('materi') ?? '',
@@ -69,6 +72,8 @@ class StoreJurnalRequest extends FormRequest
             'jam_mulai_id' => ['required', 'exists:jam_pelajarans,id'],
             'jam_selesai_id' => ['required', 'exists:jam_pelajarans,id'],
             'status_guru' => ['required', 'in:Hadir,Izin,Sakit'],
+            'learning_mode' => ['required', 'in:tatap_muka,daring'],
+            'school_event_id' => ['nullable', 'integer', 'exists:school_events,id'],
             'latitude' => ['nullable'],
             'longitude' => ['nullable'],
             'location_accuracy' => ['nullable'],

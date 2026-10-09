@@ -5,6 +5,7 @@
     </div>
     <div class="panel-body">
         @if ($event->description)<p>{{ $event->description }}</p>@endif
+        @if ($event->early_dismissal_at)<p><span class="status pending">Pulang lebih awal {{ substr($event->early_dismissal_at, 0, 5) }} · sesi setelah waktu ini tidak dijadwalkan</span></p>@endif
         @if ($event->attendance_mode === 'morning_evening')<p>Absensi: pagi {{ substr($event->morning_start, 0, 5) }}–{{ substr($event->morning_deadline, 0, 5) }} · sore {{ substr($event->evening_start, 0, 5) }}–{{ substr($event->evening_deadline, 0, 5) }}</p>@elseif ($event->attendance_mode === 'once')<p>Absensi: {{ substr($event->once_start, 0, 5) }}–{{ substr($event->once_deadline, 0, 5) }}</p>@endif
         @if ($event->schedule_conflicts?->isNotEmpty())
             <div class="status pending">Ada konflik dengan {{ $event->schedule_conflicts->count() }} sesi jadwal mengajar</div>

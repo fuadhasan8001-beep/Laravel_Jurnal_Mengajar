@@ -18,6 +18,7 @@
                     @unless (auth()->user()->role === 'sekretaris')
                         <div class="field"><label for="kelas_id">Kelas</label><select id="kelas_id" name="kelas_id"><option value="">Semua kelas</option>@foreach ($kelas as $item)<option value="{{ $item->id }}" @selected((string) request('kelas_id') === (string) $item->id)>{{ $item->nama_kelas }}</option>@endforeach</select></div>
                     @endunless
+                    <div class="field"><label for="program">Jurusan / program</label><select id="program" name="program"><option value="">Semua jurusan / program</option>@foreach ($programs as $program)<option value="{{ $program }}" @selected(request('program') === $program)>{{ $program }}</option>@endforeach</select></div>
                     <div class="field"><label for="mapel_id">Mapel</label><select id="mapel_id" name="mapel_id"><option value="">Semua mapel</option>@foreach ($mapels as $mapel)<option value="{{ $mapel->id }}" @selected((string) request('mapel_id') === (string) $mapel->id)>{{ $mapel->nama_mapel }}</option>@endforeach</select></div>
                     <div class="field"><label for="status_verifikasi">Status</label><select id="status_verifikasi" name="status_verifikasi"><option value="">Semua status</option>@foreach (['Menunggu', 'Disetujui', 'Ditolak'] as $status)<option value="{{ $status }}" @selected(request('status_verifikasi') === $status)>{{ $status }}</option>@endforeach</select></div>
                 </div>
@@ -39,7 +40,7 @@
                             <td data-label="Kelas">{{ $jurnal->kelas->nama_kelas }}</td>
                             <td data-label="Mapel">{{ $jurnal->mapel->nama_mapel }}</td>
                             <td data-label="Jam">{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
-                            <td data-label="Status">{{ $jurnal->status_verifikasi }}</td>
+                            <td data-label="Status"><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span></td>
                             <td class="report-journal-action"><button class="btn btn-muted" type="button" data-open-dialog="report-jurnal-detail-{{ $jurnal->id }}">Tampilkan detail</button></td>
                         </tr>
                         <dialog class="journal-detail-dialog" id="report-jurnal-detail-{{ $jurnal->id }}" aria-labelledby="report-jurnal-title-{{ $jurnal->id }}">
@@ -51,9 +52,21 @@
                                 <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnal->mapel->nama_mapel }}</dd></div>
                                 <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</dd></div>
                                 <div class="detail-item"><dt>Status verifikasi</dt><dd>{{ $jurnal->status_verifikasi }}</dd></div>
+                                <div class="detail-item"><dt>Kehadiran guru</dt><dd><span class="status {{ $jurnal->status_guru === 'Hadir' ? 'approved' : ($jurnal->status_guru === 'Izin' || $jurnal->status_guru === 'Sakit' ? 'pending' : 'rejected') }}">{{ $jurnal->status_guru }}</span></dd></div>
+                                <div class="detail-item"><dt>Mode pembelajaran</dt><dd>{{ $jurnal->learning_mode === 'daring' ? 'Daring' : ($jurnal->learning_mode === 'tatap_muka' ? 'Tatap muka' : ucfirst(str_replace('_', ' ', $jurnal->learning_mode ?? 'tatap_muka'))) }}</dd></div>
+                                <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>{{ $jurnal->schoolEvent?->title ?? 'Pembelajaran reguler' }}</dd></div>
+                                <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
+                                <div class="detail-item detail-item-full"><dt>Kegiatan pembelajaran</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
                                 <div class="detail-item detail-item-full"><dt>Materi</dt><dd>{{ $jurnal->materi ?: '-' }}</dd></div>
                                 <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
+                                <div class="detail-item detail-item-full"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
+                                <div class="detail-item"><dt>Absensi siswa</dt><dd>{{ $jurnal->absensis->count() }} tercatat</dd></div>
+                                <div class="detail-item"><dt>Lokasi</dt><dd>{{ $jurnal->learning_mode === 'daring' ? 'Tidak memerlukan GPS' : ($jurnal->location_valid ? 'Terverifikasi' : 'Tidak tercatat') }}</dd></div>
+                                @if ($jurnal->schoolEvent)
+                                    <div class="detail-item detail-item-full"><dt>Kondisi khusus</dt><dd><span class="status pending">Kegiatan sekolah: {{ $jurnal->schoolEvent->title }}</span></dd></div>
+                                @endif
                             </dl>
+                            @if ($jurnal->absensis->isNotEmpty())<div class="table-wrap"><table><thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($jurnal->absensis as $absensi)<tr><td>{{ $absensi->siswa->nama_siswa }}</td><td>{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status }}</td><td>{{ $absensi->catatan ?: '-' }}</td></tr>@endforeach</tbody></table></div>@endif
                         </dialog>
                     @endforeach
                 </tbody></table></div>

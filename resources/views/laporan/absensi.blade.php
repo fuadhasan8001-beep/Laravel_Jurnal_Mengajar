@@ -8,15 +8,15 @@
         <a class="btn" href="{{ route('laporan.absensi.export', request()->query()) }}">Export CSV</a>
     </div>
     <div class="stats">
-        @foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $status => $label)
-            <div class="stat-card"><span><small>{{ $label }}</small><strong>{{ $summary[$status] ?? 0 }}</strong></span></div>
+        @foreach ($studentSummary as $status => $total)
+            <div class="stat-card"><span><small>{{ $status }}</small><strong>{{ $total }}</strong><small>{{ number_format($studentSummaryPercentages[$status] ?? 0, 1, ',', '.') }}% dari absensi tercatat</small></span></div>
         @endforeach
     </div>
     <section class="panel">
         <div class="panel-head"><h2>Statistik kehadiran guru</h2><span class="eyebrow">Sesuai filter aktif</span></div>
         <div class="stats">
-            @foreach (['Hadir', 'Izin', 'Sakit', 'Dinas', 'Tanpa Keterangan'] as $status)
-                <div class="stat-card"><span><small>{{ $status }}</small><strong>{{ $teacherSummary[$status] ?? 0 }}</strong></span></div>
+            @foreach ($teacherSummary as $status => $total)
+                <div class="stat-card"><span><small>{{ $status }}</small><strong>{{ $total }}</strong><small>{{ number_format($teacherSummaryPercentages[$status] ?? 0, 1, ',', '.') }}% dari jurnal tercatat</small></span></div>
             @endforeach
         </div>
     </section>
@@ -28,6 +28,7 @@
                     <div class="field"><label for="tanggal_selesai">Sampai tanggal</label><input id="tanggal_selesai" type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"></div>
                     <div class="field"><label for="guru_id">Guru</label><select id="guru_id" name="guru_id"><option value="">Semua guru</option>@foreach ($gurus as $guru)<option value="{{ $guru->id }}" @selected((string) request('guru_id') === (string) $guru->id)>{{ $guru->nama_guru }}</option>@endforeach</select></div>
                     <div class="field"><label for="kelas_id">Kelas</label><select id="kelas_id" name="kelas_id"><option value="">Semua kelas</option>@foreach ($kelas as $item)<option value="{{ $item->id }}" @selected((string) request('kelas_id') === (string) $item->id)>{{ $item->nama_kelas }}</option>@endforeach</select></div>
+                    <div class="field"><label for="program">Jurusan / program</label><select id="program" name="program"><option value="">Semua jurusan / program</option>@foreach ($programs as $program)<option value="{{ $program }}" @selected(request('program') === $program)>{{ $program }}</option>@endforeach</select></div>
                     <div class="field"><label for="mapel_id">Mapel</label><select id="mapel_id" name="mapel_id"><option value="">Semua mapel</option>@foreach ($mapels as $mapel)<option value="{{ $mapel->id }}" @selected((string) request('mapel_id') === (string) $mapel->id)>{{ $mapel->nama_mapel }}</option>@endforeach</select></div>
                     <div class="field"><label for="siswa_id">Siswa</label><select id="siswa_id" name="siswa_id"><option value="">Semua siswa</option>@foreach ($siswas as $siswa)<option value="{{ $siswa->id }}" @selected((string) request('siswa_id') === (string) $siswa->id)>{{ $siswa->nama_siswa }}</option>@endforeach</select></div>
                     <div class="field"><label for="status">Status</label><select id="status" name="status"><option value="">Semua status</option>@foreach (['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'] as $value => $label)<option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>@endforeach</select></div>
@@ -37,7 +38,7 @@
         </div>
     </section>
     <section class="panel">
-        <div class="panel-head"><h2>Statistik bertingkat</h2><span class="eyebrow">Keseluruhan → jurusan → kelas</span></div>
+        <div class="panel-head"><h2>Statistik bertingkat</h2><span class="eyebrow">Keseluruhan → jurusan / program → kelas · persentase memakai catatan absensi aktif</span></div>
         <div class="panel-body">
             @if ($attendanceGroups->isEmpty())
                 <div class="empty">Belum ada data statistik untuk filter ini.</div>
@@ -53,11 +54,12 @@
                                     @php($overall[$status] += $count)
                                 @endforeach
                             @endforeach
-                            <tr><th>Keseluruhan</th><td>{{ $overall['Hadir'] }}</td><td>{{ $overall['Sakit'] }}</td><td>{{ $overall['Izin'] }}</td><td>{{ $overall['Alpa'] }}</td><td>{{ $overall['Dispensasi'] }}</td>@if ($audience === 'guru')<td>{{ $overall['Dinas'] }}</td><td>{{ $overall['Tanpa Keterangan'] }}</td>@endif</tr>
+                            @php($overallTotal = array_sum($overall))
+                            <tr><th>Keseluruhan</th>@foreach (['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi'] as $status)<td>{{ $overall[$status] }} <small>({{ $overallTotal ? number_format($overall[$status] * 100 / $overallTotal, 1, ',', '.') : '0,0' }}%)</small></td>@endforeach @if ($audience === 'guru')<td>{{ $overall['Dinas'] }} <small>({{ $overallTotal ? number_format($overall['Dinas'] * 100 / $overallTotal, 1, ',', '.') : '0,0' }}%)</small></td><td>{{ $overall['Tanpa Keterangan'] }} <small>({{ $overallTotal ? number_format($overall['Tanpa Keterangan'] * 100 / $overallTotal, 1, ',', '.') : '0,0' }}%)</small></td>@endif</tr>
                             @foreach ($attendanceGroups as $jurusan => $group)
-                                <tr><th>{{ $jurusan }}</th>@foreach (['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi'] as $status)<td>{{ $group[$audience][$status] }}</td>@endforeach @if ($audience === 'guru')<td>{{ $group[$audience]['Dinas'] }}</td><td>{{ $group[$audience]['Tanpa Keterangan'] }}</td>@endif</tr>
+                                <tr><th>{{ $jurusan }}</th>@foreach (['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi'] as $status)<td>{{ $group[$audience][$status] }} <small>({{ number_format($group[$audience.'_persen'][$status], 1, ',', '.') }}%)</small></td>@endforeach @if ($audience === 'guru')<td>{{ $group[$audience]['Dinas'] }} <small>({{ number_format($group[$audience.'_persen']['Dinas'], 1, ',', '.') }}%)</small></td><td>{{ $group[$audience]['Tanpa Keterangan'] }} <small>({{ number_format($group[$audience.'_persen']['Tanpa Keterangan'], 1, ',', '.') }}%)</small></td>@endif</tr>
                                 @foreach ($group['classes'] as $classStat)
-                                    <tr><td>&nbsp;&nbsp;{{ $classStat['kelas']->nama_kelas }}</td>@foreach (['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi'] as $status)<td>{{ $classStat[$audience][$status] }}</td>@endforeach @if ($audience === 'guru')<td>{{ $classStat[$audience]['Dinas'] }}</td><td>{{ $classStat[$audience]['Tanpa Keterangan'] }}</td>@endif</tr>
+                                    <tr><td>&nbsp;&nbsp;{{ $classStat['kelas']->nama_kelas }}</td>@foreach (['Hadir', 'Sakit', 'Izin', 'Alpa', 'Dispensasi'] as $status)<td>{{ $classStat[$audience][$status] }} <small>({{ number_format($classStat[$audience.'_persen'][$status], 1, ',', '.') }}%)</small></td>@endforeach @if ($audience === 'guru')<td>{{ $classStat[$audience]['Dinas'] }} <small>({{ number_format($classStat[$audience.'_persen']['Dinas'], 1, ',', '.') }}%)</small></td><td>{{ $classStat[$audience]['Tanpa Keterangan'] }} <small>({{ number_format($classStat[$audience.'_persen']['Tanpa Keterangan'], 1, ',', '.') }}%)</small></td>@endif</tr>
                                 @endforeach
                             @endforeach
                         </tbody>

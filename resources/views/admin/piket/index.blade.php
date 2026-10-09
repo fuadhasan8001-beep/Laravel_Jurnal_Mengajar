@@ -67,6 +67,12 @@
             <div class="field"><label for="bulan">Bulan jadwal</label><input type="month" id="bulan" name="bulan" value="{{ $bulan }}"></div>
             <div class="form-actions"><button class="btn" type="submit">Tampilkan bulan</button></div>
         </form>
+        <form method="POST" action="{{ route('admin.piket.repeat-waka') }}" class="form-actions" data-confirm="Ganti seluruh jadwal Piket Waka bulan {{ Carbon\Carbon::createFromFormat('!Y-m', $bulan)->locale('id')->translatedFormat('F Y') }} dengan jadwal dari bulan sebelumnya?">
+            @csrf
+            <input type="hidden" name="bulan" value="{{ $bulan }}">
+            <button class="btn btn-muted" type="submit">Salin jadwal Waka bulan sebelumnya</button>
+        </form>
+        <p class="eyebrow">Jadwal bulan sebelumnya menggantikan seluruh jadwal Waka di bulan pilihan. Tanggal yang tidak tersedia dipindahkan ke tanggal terakhir bulan.</p>
         <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Petugas piket</th><th>Ubah jadwal</th><th></th></tr></thead><tbody>
             @forelse ($jadwals as $jadwal)
                 <tr>

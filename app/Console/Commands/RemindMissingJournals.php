@@ -25,17 +25,25 @@ class RemindMissingJournals extends Command
         $overrides = SchoolEvent::whereDate('event_date', $date)
             ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])->get();
         $overrideUserIds = $overrides->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id'))->unique()->all();
+        $dismissalByUser = SchoolEvent::whereDate('event_date', $date)->whereNotNull('early_dismissal_at')
+            ->where('attendance_mode', 'normal')->get()
+            ->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id')->mapWithKeys(fn (int $userId): array => [$userId => $event->early_dismissal_at]))
+            ->all();
 
         Jadwal::with(['guru.user', 'jamPelajaran'])
             ->where('hari', $hari)
             ->where('is_active', true)
             ->whereHas('jamPelajaran', fn ($query) => $query->where('is_active', true))
             ->get()
-            ->filter(function (Jadwal $jadwal) use ($time, $date, $isNationalHoliday, $overrideUserIds): bool {
+            ->filter(function (Jadwal $jadwal) use ($time, $date, $isNationalHoliday, $overrideUserIds, $dismissalByUser): bool {
                 if ($isNationalHoliday || in_array($jadwal->guru->user?->id, $overrideUserIds, true)) {
                     return false;
                 }
                 [$start, $end] = $jadwal->jamPelajaran->timesForDay($jadwal->hari);
+
+                if (isset($dismissalByUser[$jadwal->guru->user?->id]) && $start >= $dismissalByUser[$jadwal->guru->user->id]) {
+                    return false;
+                }
 
                 return $date === today()->toDateString()
                     && $start <= $time->format('H:i:s')

@@ -72,6 +72,7 @@ Route::middleware('role:admin,waka')->group(function () {
     Route::get('/admin/activity-logs', [AdminDataController::class, 'activityLogs'])->name('admin.activity-logs');
     Route::get('/admin/jadwal-piket', [AdminPiketController::class, 'index'])->name('admin.piket.index');
     Route::post('/admin/jadwal-piket', [AdminPiketController::class, 'store'])->name('admin.piket.store');
+    Route::post('/admin/jadwal-piket/salin-waka', [AdminPiketController::class, 'repeatWakaRoster'])->name('admin.piket.repeat-waka');
     Route::put('/admin/jadwal-piket/{jadwalPiket}', [AdminPiketController::class, 'update'])->name('admin.piket.update');
     Route::delete('/admin/jadwal-piket/{jadwalPiket}', [AdminPiketController::class, 'destroy'])->name('admin.piket.destroy');
 });
@@ -122,7 +123,7 @@ Route::middleware('role:admin,waka')->prefix('admin')->group(function () {
     Route::post('/secretaries/{kelas}/reset', [AdminDataController::class, 'resetSecretary'])->name('admin.secretaries.reset');
 });
 
-Route::middleware('role:admin,waka,guru,sekretaris,piket')->prefix('rekap')->group(function () {
+Route::middleware('role:admin,waka,guru,sekretaris')->prefix('rekap')->group(function () {
     Route::get('/jurnal', [LaporanController::class, 'jurnal'])->name('laporan.jurnal');
     Route::get('/jurnal/export', [LaporanController::class, 'jurnalExport'])->name('laporan.jurnal.export');
     Route::get('/dispensasi', [LaporanController::class, 'dispensasi'])->name('laporan.dispensasi');

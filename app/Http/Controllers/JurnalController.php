@@ -70,6 +70,7 @@ class JurnalController extends Controller
         abort_if($this->calendarOverridesJournal(today()->toDateString()), 403, 'Hari ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
         $data = $request->validated();
         abort_if($this->calendarOverridesJournal($data['tanggal']), 403, 'Tanggal ini tidak menggunakan absensi jurnal berdasarkan jadwal.');
+        $this->assertJournalEvent($data);
         if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
             $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
         }
@@ -136,6 +137,7 @@ class JurnalController extends Controller
                 'guru',
                 'kelas',
                 'mapel',
+                'schoolEvent',
                 'jamMulai',
                 'jamSelesai',
                 'absensis.siswa',
@@ -174,6 +176,7 @@ class JurnalController extends Controller
         abort_if($jurnal->status_verifikasi !== 'Menunggu', 422, 'Jurnal yang sudah diverifikasi tidak dapat diubah.');
 
         $data = $request->validated();
+        $this->assertJournalEvent($data);
         if (auth()->user()->isMaster() && session('master_bypass_enabled')) {
             $data['catatan'] = trim(($data['catatan'] ?? '').' bypass master');
         }
@@ -270,7 +273,7 @@ class JurnalController extends Controller
     /** @return array<string, mixed> */
     private function locationData(array $data, SchoolLocationVerifier $locationVerifier): array
     {
-        if ($data['status_guru'] !== 'Hadir') {
+        if ($data['status_guru'] !== 'Hadir' || ($data['learning_mode'] ?? 'tatap_muka') === 'daring') {
             return [
                 'latitude' => null,
                 'longitude' => null,
@@ -304,6 +307,19 @@ class JurnalController extends Controller
             'location_valid' => true,
             'location_verified_at' => $verifiedLocation['verified_at'],
         ];
+    }
+
+    /** @param array<string, mixed> $data */
+    private function assertJournalEvent(array $data): void
+    {
+        if (empty($data['school_event_id'])) {
+            return;
+        }
+
+        $event = SchoolEvent::findOrFail($data['school_event_id']);
+        abort_unless($event->event_date->toDateString() === $data['tanggal']
+            && $event->attendance_mode === 'normal'
+            && $event->isParticipant($this->calendarParticipantUser()), 422, 'Kegiatan tidak berlaku untuk jurnal ini.');
     }
 
     private function calendarParticipantUser(): ?User
@@ -444,6 +460,8 @@ class JurnalController extends Controller
 
         return [
             'sessions' => $sessions,
+            'schoolEvents' => SchoolEvent::whereDate('event_date', $tanggal)->where('attendance_mode', 'normal')
+                ->get()->filter(fn (SchoolEvent $event): bool => $event->isParticipant($this->calendarParticipantUser()))->values(),
             'activeSession' => $jurnal ? null : $activeSession,
             'existingJournal' => $activeSession
                 ? Jurnal::query()

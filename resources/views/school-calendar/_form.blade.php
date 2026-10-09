@@ -30,6 +30,7 @@
     <div class="form-grid">
         <div class="field"><label>Mulai kegiatan</label><input type="time" name="activity_start" value="{{ old('activity_start', $event?->activity_start ?? '07:00') }}" required></div>
         <div class="field"><label>Selesai kegiatan</label><input type="time" name="activity_end" value="{{ old('activity_end', $event?->activity_end ?? '15:00') }}" required></div>
+        <div class="field"><label>Waktu pulang lebih awal (opsional)</label><input type="time" name="early_dismissal_at" value="{{ old('early_dismissal_at', $event?->early_dismissal_at) }}"><small>Jadwal setelah waktu ini tidak perlu diisi pada hari kegiatan.</small></div>
         <div class="field"><label>Mode absensi</label><select name="attendance_mode" data-attendance-mode required>
             @foreach (['normal' => 'Normal sesuai jadwal', 'morning_evening' => 'Pagi & sore', 'once' => 'Sekali saja', 'none' => 'Tanpa absensi'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('attendance_mode', $event?->attendance_mode ?? 'normal') === $value)>{{ $label }}</option>
