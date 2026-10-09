@@ -3,9 +3,9 @@
 use App\Models\Dispensasi;
 use App\Models\Guru;
 use App\Models\Jadwal;
+use App\Models\JadwalPiket;
 use App\Models\JamPelajaran;
 use App\Models\Jurnal;
-use App\Models\JadwalPiket;
 use App\Models\Kelas;
 use App\Models\Mapel;
 use App\Models\Siswa;
@@ -33,6 +33,18 @@ it('renders every role dashboard without undefined view data', function (string 
     $user = User::factory()->create(['role' => $role, 'is_active' => true]);
     $this->actingAs($user)->get('/'.$role)->assertOk();
 })->with(['admin', 'guru', 'piket', 'siswa', 'sekretaris']);
+
+it('renders the admin header before dashboard content', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+
+    $this->actingAs($admin)
+        ->get('/admin')
+        ->assertOk()
+        ->assertSeeInOrder([
+            '<header class="topbar">',
+            '<main class="content">',
+        ], false);
+});
 
 it('renders role-approved mobile destinations and account actions', function (string $role, string $path, array $destinations, array $unavailable, array $moreDestinations, array $unavailableMore) {
     $user = User::factory()->create(['role' => $role, 'is_active' => true]);
@@ -84,17 +96,17 @@ it('shows the class recap or piket destination only when the teacher qualifies',
         ->assertSee('Rekap jurnal kelas');
 });
 
-    it('does not render an empty secondary menu for a teacher who is not on piket duty', function () {
-        $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
+it('does not render an empty secondary menu for a teacher who is not on piket duty', function () {
+    $teacher = User::factory()->create(['role' => 'guru', 'is_active' => true]);
 
-        $this->actingAs($teacher)->get('/guru')
+    $this->actingAs($teacher)->get('/guru')
         ->assertOk()
         ->assertDontSee('<summary>Menu tambahan</summary>', false);
-    });
+});
 
 it('excludes disabled periods from teacher dashboard schedules and current lessons', function () {
     $data = navigationLesson();
-    $this->travelTo(\Carbon\Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
+    $this->travelTo(Carbon::parse('2026-09-14 07:15:00', 'Asia/Jakarta'));
     $data['period']->update(['is_active' => false]);
     Jadwal::create(['guru_id' => $data['guru']->id, 'kelas_id' => $data['kelas']->id, 'mapel_id' => $data['mapel']->id,
         'jam_pelajaran_id' => $data['period']->id, 'hari' => 'Senin', 'is_active' => true]);

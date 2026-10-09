@@ -2011,6 +2011,7 @@
             }
 
             .main {
+                flex: 0 0 100%;
                 width: 100%;
                 margin-left: 0;
             }

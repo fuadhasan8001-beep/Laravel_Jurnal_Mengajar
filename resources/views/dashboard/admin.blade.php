@@ -24,3 +24,5 @@
     </p>
 
     <div class="stats-grid">
+    </div>
+@endsection

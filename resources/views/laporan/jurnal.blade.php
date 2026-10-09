@@ -43,33 +43,35 @@
                             <td data-label="Status"><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span><br><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : 'Tatap muka' }}</span>@if ($jurnal->schoolEvent)<br><span class="status pending">{{ $jurnal->schoolEvent->title }}</span>@endif</td>
                             <td class="report-journal-action"><button class="btn btn-muted" type="button" data-open-dialog="report-jurnal-detail-{{ $jurnal->id }}">Tampilkan detail</button></td>
                         </tr>
-                        <dialog class="journal-detail-dialog" id="report-jurnal-detail-{{ $jurnal->id }}" aria-labelledby="report-jurnal-title-{{ $jurnal->id }}">
-                            <div class="journal-detail-head"><h2 id="report-jurnal-title-{{ $jurnal->id }}">Detail jurnal</h2><form method="dialog"><button class="btn btn-muted" aria-label="Tutup detail">Tutup</button></form></div>
-                            <dl class="detail-grid">
-                                <div class="detail-item"><dt>Tanggal</dt><dd>{{ $jurnal->tanggal->format('d M Y') }}</dd></div>
-                                <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnal->guru->nama_guru }}</dd></div>
-                                <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
-                                <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnal->mapel->nama_mapel }}</dd></div>
-                                <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</dd></div>
-                                <div class="detail-item"><dt>Status verifikasi</dt><dd>{{ $jurnal->status_verifikasi }}</dd></div>
-                                <div class="detail-item"><dt>Kehadiran guru</dt><dd><span class="status {{ $jurnal->status_guru === 'Hadir' ? 'approved' : ($jurnal->status_guru === 'Izin' || $jurnal->status_guru === 'Sakit' ? 'pending' : 'rejected') }}">{{ $jurnal->status_guru }}</span></dd></div>
-                                <div class="detail-item"><dt>Mode pembelajaran</dt><dd><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : ($jurnal->learning_mode === 'tatap_muka' ? 'Tatap muka' : ucfirst(str_replace('_', ' ', $jurnal->learning_mode ?? 'tatap_muka'))) }}</span></dd></div>
-                                <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>@if ($jurnal->schoolEvent)<span class="status pending">{{ $jurnal->schoolEvent->title }}</span>@else<span class="status approved">Pembelajaran reguler</span>@endif</dd></div>
-                                <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
-                                <div class="detail-item detail-item-full"><dt>Kegiatan pembelajaran</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
-                                <div class="detail-item detail-item-full"><dt>Materi</dt><dd>{{ $jurnal->materi ?: '-' }}</dd></div>
-                                <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
-                                <div class="detail-item detail-item-full"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
-                                <div class="detail-item"><dt>Absensi siswa</dt><dd>{{ $jurnal->absensis->count() }} tercatat</dd></div>
-                                <div class="detail-item"><dt>Lokasi</dt><dd>{{ $jurnal->learning_mode === 'daring' ? 'Tidak memerlukan GPS' : ($jurnal->location_valid ? 'Terverifikasi' : 'Tidak tercatat') }}</dd></div>
-                                @if ($jurnal->schoolEvent)
-                                    <div class="detail-item detail-item-full"><dt>Kondisi khusus</dt><dd><span class="status pending">Kegiatan sekolah: {{ $jurnal->schoolEvent->title }}</span></dd></div>
-                                @endif
-                            </dl>
-                            @if ($jurnal->absensis->isNotEmpty())<div class="table-wrap"><table><thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($jurnal->absensis as $absensi)<tr><td>{{ $absensi->siswa->nama_siswa }}</td><td>{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status }}</td><td>{{ $absensi->catatan ?: '-' }}</td></tr>@endforeach</tbody></table></div>@endif
-                        </dialog>
                     @endforeach
                 </tbody></table></div>
+                @foreach ($groupJurnals as $jurnal)
+                    <dialog class="journal-detail-dialog" id="report-jurnal-detail-{{ $jurnal->id }}" aria-labelledby="report-jurnal-title-{{ $jurnal->id }}">
+                        <div class="journal-detail-head"><h2 id="report-jurnal-title-{{ $jurnal->id }}">Detail jurnal</h2><form method="dialog"><button class="btn btn-muted" aria-label="Tutup detail">Tutup</button></form></div>
+                        <dl class="detail-grid">
+                            <div class="detail-item"><dt>Tanggal</dt><dd>{{ $jurnal->tanggal->format('d M Y') }}</dd></div>
+                            <div class="detail-item"><dt>Guru</dt><dd>{{ $jurnal->guru->nama_guru }}</dd></div>
+                            <div class="detail-item"><dt>Kelas</dt><dd>{{ $jurnal->kelas->nama_kelas }}</dd></div>
+                            <div class="detail-item"><dt>Mata pelajaran</dt><dd>{{ $jurnal->mapel->nama_mapel }}</dd></div>
+                            <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</dd></div>
+                            <div class="detail-item"><dt>Status verifikasi</dt><dd>{{ $jurnal->status_verifikasi }}</dd></div>
+                            <div class="detail-item"><dt>Kehadiran guru</dt><dd><span class="status {{ $jurnal->status_guru === 'Hadir' ? 'approved' : ($jurnal->status_guru === 'Izin' || $jurnal->status_guru === 'Sakit' ? 'pending' : 'rejected') }}">{{ $jurnal->status_guru }}</span></dd></div>
+                            <div class="detail-item"><dt>Mode pembelajaran</dt><dd><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : ($jurnal->learning_mode === 'tatap_muka' ? 'Tatap muka' : ucfirst(str_replace('_', ' ', $jurnal->learning_mode ?? 'tatap_muka'))) }}</span></dd></div>
+                            <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>@if ($jurnal->schoolEvent)<span class="status pending">{{ $jurnal->schoolEvent->title }}</span>@else<span class="status approved">Pembelajaran reguler</span>@endif</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Kegiatan pembelajaran</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Materi</dt><dd>{{ $jurnal->materi ?: '-' }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Tugas</dt><dd>{{ $jurnal->tugas ?: '-' }}</dd></div>
+                            <div class="detail-item detail-item-full"><dt>Catatan</dt><dd>{{ $jurnal->catatan ?: '-' }}</dd></div>
+                            <div class="detail-item"><dt>Absensi siswa</dt><dd>{{ $jurnal->absensis->count() }} tercatat</dd></div>
+                            <div class="detail-item"><dt>Lokasi</dt><dd>{{ $jurnal->learning_mode === 'daring' ? 'Tidak memerlukan GPS' : ($jurnal->location_valid ? 'Terverifikasi' : 'Tidak tercatat') }}</dd></div>
+                            @if ($jurnal->schoolEvent)
+                                <div class="detail-item detail-item-full"><dt>Kondisi khusus</dt><dd><span class="status pending">Kegiatan sekolah: {{ $jurnal->schoolEvent->title }}</span></dd></div>
+                            @endif
+                        </dl>
+                        @if ($jurnal->absensis->isNotEmpty())<div class="table-wrap"><table><thead><tr><th>Siswa</th><th>Status</th><th>Catatan</th></tr></thead><tbody>@foreach ($jurnal->absensis as $absensi)<tr><td>{{ $absensi->siswa->nama_siswa }}</td><td>{{ ['H' => 'Hadir', 'S' => 'Sakit', 'I' => 'Izin', 'A' => 'Alpa', 'D' => 'Dispensasi'][$absensi->status] ?? $absensi->status }}</td><td>{{ $absensi->catatan ?: '-' }}</td></tr>@endforeach</tbody></table></div>@endif
+                    </dialog>
+                @endforeach
             @endforeach
             <div class="panel-body">{{ $jurnals->links() }}</div>
         @else
