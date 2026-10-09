@@ -25,10 +25,14 @@ class RemindMissingJournals extends Command
         $overrides = SchoolEvent::whereDate('event_date', $date)
             ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])->get();
         $overrideUserIds = $overrides->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id'))->unique()->all();
-        $dismissalByUser = SchoolEvent::whereDate('event_date', $date)->whereNotNull('early_dismissal_at')
+        $dismissalByUser = [];
+        SchoolEvent::whereDate('event_date', $date)->whereNotNull('early_dismissal_at')
             ->where('attendance_mode', 'normal')->get()
-            ->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id')->mapWithKeys(fn (int $userId): array => [$userId => $event->early_dismissal_at]))
-            ->all();
+            ->each(function (SchoolEvent $event) use (&$dismissalByUser): void {
+                foreach ($event->targetUsers()->pluck('users.id') as $userId) {
+                    $dismissalByUser[$userId] = min($dismissalByUser[$userId] ?? '23:59:59', $event->early_dismissal_at);
+                }
+            });
 
         Jadwal::with(['guru.user', 'jamPelajaran'])
             ->where('hari', $hari)

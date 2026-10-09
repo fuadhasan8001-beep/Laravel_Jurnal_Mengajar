@@ -40,7 +40,7 @@
                             <td data-label="Kelas">{{ $jurnal->kelas->nama_kelas }}</td>
                             <td data-label="Mapel">{{ $jurnal->mapel->nama_mapel }}</td>
                             <td data-label="Jam">{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</td>
-                            <td data-label="Status"><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span></td>
+                            <td data-label="Status"><span class="status {{ $jurnal->status_verifikasi === 'Disetujui' ? 'approved' : ($jurnal->status_verifikasi === 'Ditolak' ? 'rejected' : 'pending') }}">{{ $jurnal->status_verifikasi }}</span><br><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : 'Tatap muka' }}</span>@if ($jurnal->schoolEvent)<br><span class="status pending">{{ $jurnal->schoolEvent->title }}</span>@endif</td>
                             <td class="report-journal-action"><button class="btn btn-muted" type="button" data-open-dialog="report-jurnal-detail-{{ $jurnal->id }}">Tampilkan detail</button></td>
                         </tr>
                         <dialog class="journal-detail-dialog" id="report-jurnal-detail-{{ $jurnal->id }}" aria-labelledby="report-jurnal-title-{{ $jurnal->id }}">
@@ -53,8 +53,8 @@
                                 <div class="detail-item"><dt>Jam</dt><dd>{{ $jurnal->jamMulai->jam_ke }} - {{ $jurnal->jamSelesai->jam_ke }}</dd></div>
                                 <div class="detail-item"><dt>Status verifikasi</dt><dd>{{ $jurnal->status_verifikasi }}</dd></div>
                                 <div class="detail-item"><dt>Kehadiran guru</dt><dd><span class="status {{ $jurnal->status_guru === 'Hadir' ? 'approved' : ($jurnal->status_guru === 'Izin' || $jurnal->status_guru === 'Sakit' ? 'pending' : 'rejected') }}">{{ $jurnal->status_guru }}</span></dd></div>
-                                <div class="detail-item"><dt>Mode pembelajaran</dt><dd>{{ $jurnal->learning_mode === 'daring' ? 'Daring' : ($jurnal->learning_mode === 'tatap_muka' ? 'Tatap muka' : ucfirst(str_replace('_', ' ', $jurnal->learning_mode ?? 'tatap_muka'))) }}</dd></div>
-                                <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>{{ $jurnal->schoolEvent?->title ?? 'Pembelajaran reguler' }}</dd></div>
+                                <div class="detail-item"><dt>Mode pembelajaran</dt><dd><span class="status {{ $jurnal->learning_mode === 'daring' ? 'pending' : 'approved' }}">{{ $jurnal->learning_mode === 'daring' ? 'Daring' : ($jurnal->learning_mode === 'tatap_muka' ? 'Tatap muka' : ucfirst(str_replace('_', ' ', $jurnal->learning_mode ?? 'tatap_muka'))) }}</span></dd></div>
+                                <div class="detail-item"><dt>Kegiatan sekolah</dt><dd>@if ($jurnal->schoolEvent)<span class="status pending">{{ $jurnal->schoolEvent->title }}</span>@else<span class="status approved">Pembelajaran reguler</span>@endif</dd></div>
                                 <div class="detail-item detail-item-full"><dt>Tujuan pembelajaran</dt><dd>{{ $jurnal->tujuan_pembelajaran ?: '-' }}</dd></div>
                                 <div class="detail-item detail-item-full"><dt>Kegiatan pembelajaran</dt><dd>{{ $jurnal->kegiatan ?: '-' }}</dd></div>
                                 <div class="detail-item detail-item-full"><dt>Materi</dt><dd>{{ $jurnal->materi ?: '-' }}</dd></div>
@@ -90,7 +90,7 @@
             </form>
         </div>
         @if ($monitoring->isNotEmpty())
-            <div class="table-wrap responsive-card-table-wrap"><table class="responsive-card-table"><thead><tr><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th></tr></thead><tbody>@foreach ($monitoring as $item)<tr><td data-label="Guru">{{ $item['guru'] }}</td><td data-label="Kelas">{{ $item['kelas'] }}</td><td data-label="Mapel">{{ $item['mapel'] }}</td><td data-label="Jam">{{ $item['jam'] }}</td><td data-label="Status">{{ $item['status'] }}</td></tr>@endforeach</tbody></table></div>
+            <div class="table-wrap responsive-card-table-wrap"><table class="responsive-card-table"><thead><tr><th>Guru</th><th>Kelas</th><th>Mapel</th><th>Jam</th><th>Status</th></tr></thead><tbody>@foreach ($monitoring as $item)<tr><td data-label="Guru">{{ $item['guru'] }}</td><td data-label="Kelas">{{ $item['kelas'] }}</td><td data-label="Mapel">{{ $item['mapel'] }}</td><td data-label="Jam">{{ $item['jam'] }}</td><td data-label="Status"><span class="status {{ str_contains($item['status'], 'hadir') || str_contains($item['status'], 'dibuat') ? 'approved' : (str_contains($item['status'], 'Belum') ? 'rejected' : 'pending') }}">{{ $item['status'] }}</span></td></tr>@endforeach</tbody></table></div>
         @else
             <div class="empty">Tidak ada jadwal aktif pada tanggal ini.</div>
         @endif

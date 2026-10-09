@@ -9,8 +9,11 @@ use App\Models\Jadwal;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\NationalHoliday;
+use App\Models\SchoolEvent;
 use App\Models\Siswa;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -78,17 +81,35 @@ class LaporanController extends Controller
 
     public function absensi(Request $request): View
     {
+        $request->validate([
+            'tanggal_mulai' => ['nullable', 'date'],
+            'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
+        ]);
+
+        if (! $request->filled('tanggal_mulai') && ! $request->filled('tanggal_selesai')) {
+            $request->merge([
+                'tanggal_mulai' => today()->startOfMonth()->toDateString(),
+                'tanggal_selesai' => today()->endOfMonth()->toDateString(),
+            ]);
+        } elseif (! $request->filled('tanggal_mulai')) {
+            $request->merge(['tanggal_mulai' => Carbon::parse($request->input('tanggal_selesai'))->startOfMonth()->toDateString()]);
+        } elseif (! $request->filled('tanggal_selesai')) {
+            $request->merge(['tanggal_selesai' => Carbon::parse($request->input('tanggal_mulai'))->endOfMonth()->toDateString()]);
+        }
+
         $query = $this->absensiQuery($request);
         $summary = (clone $query)
+            ->reorder()
             ->selectRaw('status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
         $studentAttendance = (clone $query)
+            ->reorder()
             ->join('jurnals as report_jurnals', 'report_jurnals.id', '=', 'absensis.jurnal_id')
             ->selectRaw('report_jurnals.kelas_id as kelas_id, absensis.status as status, count(*) as total')
             ->groupBy('report_jurnals.kelas_id', 'absensis.status')
             ->get();
-        $teacherAttendance = $this->jurnalQuery($request)
+        $teacherAttendance = $this->statisticsJournalQuery($request)
             ->selectRaw('kelas_id, status_guru as status, count(*) as total')
             ->groupBy('kelas_id', 'status_guru')
             ->get();
@@ -104,6 +125,7 @@ class LaporanController extends Controller
                         'kelas' => $class,
                         'siswa' => $studentCounts,
                         'siswa_persen' => $this->attendancePercentages($studentCounts),
+                        'siswa_hadir_persen' => $this->studentAttendanceRate($studentCounts),
                         'guru' => $teacherCounts,
                         'guru_persen' => $this->attendancePercentages($teacherCounts),
                     ];
@@ -115,6 +137,7 @@ class LaporanController extends Controller
                     'classes' => $classStats,
                     'siswa' => $studentCounts,
                     'siswa_persen' => $this->attendancePercentages($studentCounts),
+                    'siswa_hadir_persen' => $this->studentAttendanceRate($studentCounts),
                     'guru' => $teacherCounts,
                     'guru_persen' => $this->attendancePercentages($teacherCounts),
                 ];
@@ -122,6 +145,43 @@ class LaporanController extends Controller
 
         $studentSummary = $this->attendanceCounts($summary->map(fn ($total, $status) => (object) ['status' => $status, 'total' => $total])->values());
         $teacherSummary = $this->attendanceCounts($teacherAttendance);
+        $rankingRequest = clone $request;
+        $rankingRequest->query->remove('status');
+        $rankingAbsensi = $this->absensiQuery($rankingRequest);
+        $studentAbsenceLeaders = (clone $rankingAbsensi)
+            ->join('siswas as statistics_siswas', 'statistics_siswas.id', '=', 'absensis.siswa_id')
+            ->select('absensis.siswa_id', 'statistics_siswas.nama_siswa')
+            ->selectRaw("SUM(CASE WHEN absensis.status IN ('S', 'I', 'A') THEN 1 ELSE 0 END) as absence_count")
+            ->selectRaw("SUM(CASE WHEN absensis.status IN ('H', 'S', 'I', 'A') THEN 1 ELSE 0 END) as eligible_sessions")
+            ->groupBy('absensis.siswa_id', 'statistics_siswas.nama_siswa')
+            ->havingRaw("SUM(CASE WHEN absensis.status IN ('S', 'I', 'A') THEN 1 ELSE 0 END) > 0")
+            ->reorder()->orderByDesc('absence_count')->orderBy('statistics_siswas.nama_siswa')->limit(10)->get();
+        $teacherAbsenceLeaders = (clone $this->statisticsJournalQuery($request))
+            ->join('gurus as statistics_gurus', 'statistics_gurus.id', '=', 'jurnals.guru_id')
+            ->select('jurnals.guru_id', 'statistics_gurus.nama_guru')
+            ->selectRaw("SUM(CASE WHEN jurnals.status_guru IN ('Izin', 'Sakit', 'Tanpa Keterangan') THEN 1 ELSE 0 END) as absence_count")
+            ->selectRaw('COUNT(*) as recorded_journals')
+            ->groupBy('jurnals.guru_id', 'statistics_gurus.nama_guru')
+            ->havingRaw("SUM(CASE WHEN jurnals.status_guru IN ('Izin', 'Sakit', 'Tanpa Keterangan') THEN 1 ELSE 0 END) > 0")
+            ->reorder()->orderByDesc('absence_count')->orderBy('statistics_gurus.nama_guru')->limit(10)->get();
+        $selectedClass = $request->filled('kelas_id')
+            ? $this->statisticsClassQuery()->whereKey($request->integer('kelas_id'))->first()
+            : null;
+        $selectedProgram = $request->string('program')->toString();
+        $statisticsScopeLabel = match (auth()->user()->role) {
+            'admin', 'waka' => 'Statistik sekolah',
+            'guru' => auth()->user()->kelasWali()->exists() ? 'Statistik kelas yang diampu dan kelas wali' : 'Statistik kelas yang diampu',
+            'sekretaris' => 'Statistik kelas penugasan sekretaris',
+            default => 'Statistik kelas yang dapat diakses',
+        };
+        if ($selectedProgram !== '') {
+            $statisticsScopeLabel = 'Statistik program '.$selectedProgram;
+        }
+        if ($selectedClass && ($selectedProgram === '' || $this->jurusanFromClassName($selectedClass) === $selectedProgram)) {
+            $statisticsScopeLabel = 'Statistik kelas '.$selectedClass->nama_kelas;
+        }
+        $periodStart = Carbon::parse($request->input('tanggal_mulai'));
+        $periodEnd = Carbon::parse($request->input('tanggal_selesai'));
 
         return view('laporan.absensi', [
             'absensis' => $query->paginate(30)->withQueryString(),
@@ -130,9 +190,19 @@ class LaporanController extends Controller
             'studentSummaryPercentages' => $this->attendancePercentages($studentSummary),
             'teacherSummary' => $teacherSummary,
             'teacherSummaryPercentages' => $this->attendancePercentages($teacherSummary),
+            'studentAttendanceRate' => $this->studentAttendanceRate($studentSummary),
+            'studentAbsenceLeaders' => $studentAbsenceLeaders,
+            'teacherAbsenceLeaders' => $teacherAbsenceLeaders,
             'studentStatusList' => collect($studentSummary)->keys()->map(fn (string $status) => $this->studentStatusLabel($status))->filter()->values()->all(),
             'teacherStatusList' => collect($teacherSummary)->keys()->map(fn (string $status) => $this->teacherStatusLabel($status))->filter()->values()->all(),
             'attendanceGroups' => $attendanceGroups,
+            'selectedProgram' => $selectedProgram,
+            'selectedClass' => $selectedClass,
+            'statisticsScopeLabel' => $statisticsScopeLabel,
+            'periodLabel' => $periodStart->locale('id')->translatedFormat('d F Y').' - '.$periodEnd->locale('id')->translatedFormat('d F Y'),
+            'hasAttendanceData' => $studentAttendance->isNotEmpty() || $teacherAttendance->isNotEmpty(),
+            'hasStudentAttendance' => $studentAttendance->isNotEmpty(),
+            'hasTeacherAttendance' => $teacherAttendance->isNotEmpty(),
             ...$this->filterData(),
             'siswas' => Siswa::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id')))
                 ->when(auth()->user()->role === 'guru', fn ($query) => $query->whereIn('kelas_id', Jadwal::where('guru_id', $this->currentGuru()->id)->select('kelas_id')->distinct()))
@@ -227,7 +297,17 @@ class LaporanController extends Controller
         $programClassIds = $this->classIdsForProgram($request->input('program'));
 
         return Absensi::with(['siswa', 'jurnal.guru', 'jurnal.kelas', 'jurnal.mapel'])
-            ->when(auth()->user()->role === 'guru', fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->where('guru_id', $this->currentGuru()->id)))
+            ->when(auth()->user()->role === 'guru', fn ($query) => $query->whereHas('jurnal', function ($journal): void {
+                $user = auth()->user();
+                $journal->where('guru_id', $this->currentGuru()->id)
+                    ->orWhere(function ($waliJournals) use ($user): void {
+                        $waliJournals->whereIn('kelas_id', $user->kelasWali()->select('kelas.id'))
+                            ->where('status_verifikasi', 'Disetujui')
+                            ->whereHas('verifikasiJurnals', fn ($verification) => $verification
+                                ->where('status', 'Disetujui')
+                                ->whereHas('verifikator', fn ($verifikator) => $verifikator->where('role', 'sekretaris')));
+                    });
+            }))
             ->when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereIn('kelas_id', auth()->user()->kelasSekretaris()->select('kelas.id'))))
             ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereDate('tanggal', '>=', $request->date('tanggal_mulai'))))
             ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereHas('jurnal', fn ($journal) => $journal->whereDate('tanggal', '<=', $request->date('tanggal_selesai'))))
@@ -268,12 +348,61 @@ class LaporanController extends Controller
 
         return [
             'gurus' => Guru::when($guruId, fn ($query) => $query->whereKey($guruId))->orderBy('nama_guru')->get(),
-            'kelas' => Kelas::when(auth()->user()->role === 'sekretaris', fn ($query) => $query->whereIn('id', auth()->user()->kelasSekretaris()->select('kelas.id')))
-                ->when($guruId, fn ($query) => $query->whereHas('jadwals', fn ($schedule) => $schedule->where('guru_id', $guruId)))
-                ->orderBy('nama_kelas')->get(),
+            'kelas' => $this->statisticsClassQuery()->orderBy('nama_kelas')->get(),
             'mapels' => Mapel::when($guruId, fn ($query) => $query->whereHas('gurus', fn ($teacher) => $teacher->whereKey($guruId)))->orderBy('nama_mapel')->get(),
-            'programs' => Kelas::query()->get()->map(fn (Kelas $class): string => $this->jurusanFromClassName($class))->unique()->sort()->values(),
+            'programs' => $this->statisticsClassQuery()->get()->map(fn (Kelas $class): string => $this->jurusanFromClassName($class))->unique()->sort()->values(),
         ];
+    }
+
+    private function statisticsJournalQuery(Request $request): Builder
+    {
+        $user = auth()->user();
+        $programClassIds = $this->classIdsForProgram($request->input('program'));
+
+        return Jurnal::query()
+            ->when($user->role === 'guru', function ($query) use ($user): void {
+                $query->where(function ($scope) use ($user): void {
+                    $scope->where('guru_id', $this->currentGuru()->id)
+                        ->orWhere(function ($waliJournals) use ($user): void {
+                            $waliJournals->whereIn('kelas_id', $user->kelasWali()->select('kelas.id'))
+                                ->where('status_verifikasi', 'Disetujui')
+                                ->whereHas('verifikasiJurnals', fn ($verification) => $verification
+                                    ->where('status', 'Disetujui')
+                                    ->whereHas('verifikator', fn ($verifikator) => $verifikator->where('role', 'sekretaris')));
+                        });
+                });
+            })
+            ->when($user->role === 'sekretaris', fn ($query) => $query->whereIn('kelas_id', $user->kelasSekretaris()->select('kelas.id')))
+            ->when($request->filled('tanggal_mulai'), fn ($query) => $query->whereDate('tanggal', '>=', $request->date('tanggal_mulai')))
+            ->when($request->filled('tanggal_selesai'), fn ($query) => $query->whereDate('tanggal', '<=', $request->date('tanggal_selesai')))
+            ->when($request->filled('guru_id'), fn ($query) => $query->where('guru_id', $request->integer('guru_id')))
+            ->when($request->filled('kelas_id'), fn ($query) => $query->where('kelas_id', $request->integer('kelas_id')))
+            ->when($programClassIds !== null, fn ($query) => $query->whereIn('kelas_id', $programClassIds))
+            ->when($request->filled('mapel_id'), fn ($query) => $query->where('mapel_id', $request->integer('mapel_id')));
+    }
+
+    private function statisticsClassQuery(): Builder
+    {
+        $user = auth()->user();
+        $guruId = $user->role === 'guru' ? $this->currentGuru()->id : null;
+
+        return Kelas::query()
+            ->when($user->role === 'sekretaris', fn ($query) => $query->whereIn('id', $user->kelasSekretaris()->select('kelas.id')))
+            ->when($guruId, fn ($query) => $query->where(function ($classes) use ($guruId, $user): void {
+                $classes->whereHas('jadwals', fn ($schedule) => $schedule->where('guru_id', $guruId))
+                    ->orWhereIn('id', $user->kelasWali()->select('kelas.id'));
+            }));
+    }
+
+    /** @param array<string, int> $counts */
+    private function studentAttendanceRate(array $counts): ?float
+    {
+        $eligibleSessions = array_sum($counts) - ($counts['Dispensasi'] ?? 0);
+        if ($eligibleSessions === 0) {
+            return null;
+        }
+
+        return round(($counts['Hadir'] ?? 0) * 100 / $eligibleSessions, 1);
     }
 
     /** @return array<int, int>|null */
@@ -372,6 +501,10 @@ class LaporanController extends Controller
     private function journalMonitoring(Request $request, bool $includeAllTeachers = false): Collection
     {
         $date = Carbon::parse($request->input('monitoring_date', today()->toDateString()));
+        if (NationalHoliday::whereDate('holiday_date', $date)->exists()) {
+            return collect();
+        }
+
         $weekday = $date->copy()->locale('id')->translatedFormat('l');
         $schedules = Jadwal::query()
             ->with(['guru', 'kelas', 'mapel', 'jamPelajaran'])
@@ -384,6 +517,32 @@ class LaporanController extends Controller
             ->when($request->filled('kelas_id'), fn ($query) => $query->where('kelas_id', $request->integer('kelas_id')))
             ->when($request->filled('mapel_id'), fn ($query) => $query->where('mapel_id', $request->integer('mapel_id')))
             ->get();
+
+        $overrideUserIds = SchoolEvent::whereDate('event_date', $date)
+            ->whereIn('attendance_mode', ['morning_evening', 'once', 'none'])
+            ->get()
+            ->flatMap(fn (SchoolEvent $event) => $event->targetUsers()->pluck('users.id'))
+            ->unique();
+        $dismissalEvents = SchoolEvent::whereDate('event_date', $date)
+            ->whereNotNull('early_dismissal_at')
+            ->where('attendance_mode', 'normal')
+            ->get();
+        $dismissalByUser = [];
+        foreach ($dismissalEvents as $event) {
+            foreach ($event->targetUsers()->pluck('users.id') as $userId) {
+                $dismissalByUser[$userId] = min($dismissalByUser[$userId] ?? '23:59:59', $event->early_dismissal_at);
+            }
+        }
+        $schedules = $schedules->reject(function (Jadwal $schedule) use ($weekday, $overrideUserIds, $dismissalByUser): bool {
+            $userId = $schedule->guru->user_id;
+            if ($overrideUserIds->contains($userId)) {
+                return true;
+            }
+
+            [$start] = $schedule->jamPelajaran->timesForDay($weekday);
+
+            return isset($dismissalByUser[$userId]) && $start >= $dismissalByUser[$userId];
+        });
         $journals = Jurnal::with(['jamMulai', 'jamSelesai'])
             ->whereDate('tanggal', $date)
             ->whereIn('guru_id', $schedules->pluck('guru_id')->unique())

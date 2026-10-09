@@ -2735,6 +2735,7 @@
                         <a class="nav-link {{ request()->routeIs('jurnal.index') ? 'active' : '' }}" href="{{ route('jurnal.index') }}" data-mobile-primary-duplicate>Jurnal saya</a>
                         @if (auth()->user()->kelasWali()->exists())
                             <a class="nav-link {{ request()->routeIs('wali-kelas.jurnal.*') ? 'active' : '' }}" href="{{ route('wali-kelas.jurnal.index') }}">Rekap jurnal kelas</a>
+                            <a class="nav-link {{ request()->is('rekap/absensi*') ? 'active' : '' }}" href="{{ route('laporan.absensi') }}">Statistik kehadiran kelas</a>
                         @endif
                         @if (filled(config('app.admin_whatsapp')))
                             <a class="contact-admin" href="https://wa.me/{{ preg_replace('/\D+/', '', config('app.admin_whatsapp')) }}" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>
@@ -2761,7 +2762,8 @@
                         <details class="nav-extra" @if (request()->is('rekap*') || request()->is('admin/jadwal-piket*') || request()->is('admin/activity-logs*') || request()->is('admin/kalender*') || request()->is('dispensasi*')) open @endif>
                             <summary>Operasional</summary>
                             <nav class="nav-list" aria-label="Operasional">
-                                <a class="nav-link {{ request()->is('rekap*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                <a class="nav-link {{ request()->is('rekap/jurnal*') || request()->is('rekap/dispensasi*') ? 'active' : '' }}" href="{{ route('laporan.jurnal') }}">Rekap laporan</a>
+                                <a class="nav-link {{ request()->is('rekap/absensi*') ? 'active' : '' }}" href="{{ route('laporan.absensi') }}">Statistik kehadiran</a>
                                 <a class="nav-link {{ request()->is('admin/jadwal-piket*') ? 'active' : '' }}" href="{{ route('admin.piket.index') }}">Jadwal piket guru</a>
                                 <a class="nav-link {{ request()->is('admin/kalender*') ? 'active' : '' }}" href="{{ route('admin.calendar.index') }}">Hari libur & kalender</a>
                                 <a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">Riwayat aktivitas</a>
@@ -2769,7 +2771,7 @@
                             </nav>
                         </details>
                     @else
-                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true))
+                        @if (in_array(auth()->user()->role, ['sekretaris', 'siswa', 'piket'], true) || (auth()->user()->role === 'guru' && auth()->user()->isPiketHariIni()))
                             <details class="nav-extra" @if (request()->is('rekap*') || request()->is('dispensasi*')) open @endif>
                                 <summary>Menu tambahan</summary>
                                 <nav class="nav-list" aria-label="Menu tambahan">

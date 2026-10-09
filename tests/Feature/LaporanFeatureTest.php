@@ -6,6 +6,7 @@ use App\Models\JamPelajaran;
 use App\Models\Jurnal;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use App\Models\SchoolEvent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -58,6 +59,19 @@ it('classifies scheduled lessons by journal and teacher leave status', function 
             'jam_pelajaran_id' => $period->id, 'hari' => 'Senin', 'is_active' => true]);
     }
 
+    SchoolEvent::create([
+        'event_date' => '2026-09-14',
+        'title' => 'Pulang lebih awal',
+        'event_type' => 'Perubahan jadwal',
+        'participant_scope' => 'semua_guru',
+        'participant_ids' => [],
+        'activity_start' => '07:00',
+        'activity_end' => '12:00',
+        'early_dismissal_at' => '09:00',
+        'attendance_mode' => 'normal',
+        'location_mode' => 'school',
+    ]);
+
     foreach (['Hadir', 'Izin', 'Sakit'] as $index => $status) {
         Jurnal::create(['guru_id' => $guru->id, 'kelas_id' => $kelas->id, 'mapel_id' => $mapel->id,
             'jam_mulai_id' => $periods[$index]->id, 'jam_selesai_id' => $periods[$index]->id,
@@ -66,12 +80,10 @@ it('classifies scheduled lessons by journal and teacher leave status', function 
 
     $response = $this->actingAs($admin)->get(route('laporan.jurnal', ['monitoring_date' => '2026-09-14']));
 
-    $response->assertOk()->assertViewHas('monitoring', function ($monitoring): bool {
-        return $monitoring->pluck('status')->all() === [
-            'Guru hadir',
-            'Guru izin',
-            'Guru sakit',
-            'Belum mengisi jurnal',
-        ];
-    });
+    $response->assertOk();
+    expect($response->viewData('monitoring')->pluck('status')->all())->toBe([
+        'Guru hadir',
+        'Guru izin',
+        'Guru sakit',
+    ]);
 });

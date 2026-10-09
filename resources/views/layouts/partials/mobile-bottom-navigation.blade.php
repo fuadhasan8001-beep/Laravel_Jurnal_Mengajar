@@ -22,7 +22,7 @@
             $makeMoreItem('admin-jam', 'Data & akun', 'Jam pelajaran', route('admin.jam.index'), 'clock', request()->is('admin/data/jam*')),
             $makeMoreItem('admin-pengurus', 'Data & akun', 'Pengurus kelas', route('admin.secretaries.index'), 'people', request()->is('admin/secretaries*')),
             $makeMoreItem('admin-pendaftaran', 'Data & akun', 'Pendaftaran akun', route('admin.registrations.index'), 'approval', request()->is('admin/registrations*')),
-            $makeMoreItem('admin-laporan', 'Operasional', 'Rekap laporan', route('laporan.jurnal'), 'report', request()->is('rekap*')),
+            $makeMoreItem('admin-laporan', 'Operasional', 'Rekap laporan', route('laporan.jurnal'), 'report', request()->is('rekap/jurnal*') || request()->is('rekap/dispensasi*')),
             $makeMoreItem('admin-piket', 'Operasional', 'Jadwal piket guru', route('admin.piket.index'), 'calendar', request()->is('admin/jadwal-piket*')),
             $makeMoreItem('admin-log', 'Operasional', 'Riwayat aktivitas', route('admin.activity-logs'), 'activity', request()->is('admin/activity-logs*')),
         ];
